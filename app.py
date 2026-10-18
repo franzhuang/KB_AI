@@ -508,38 +508,47 @@ def get_template(filename: str) -> str:
         return f.read()
 
 @app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
 async def page_index():
     return HTMLResponse(content=get_template("index.html"))
 
 @app.get("/tools", response_class=HTMLResponse)
+@app.get("/tools.html", response_class=HTMLResponse)
 async def page_tools():
     return HTMLResponse(content=get_template("tools.html"))
 
 @app.get("/tools/legal-letter", response_class=HTMLResponse)
+@app.get("/legal_letter.html", response_class=HTMLResponse)
 async def page_legal_letter():
     return HTMLResponse(content=get_template("legal_letter.html"))
 
 @app.get("/tools/de-id", response_class=HTMLResponse)
+@app.get("/deid.html", response_class=HTMLResponse)
 async def page_deid():
     return HTMLResponse(content=get_template("deid.html"))
 
 @app.get("/tools/event-reminder", response_class=HTMLResponse)
+@app.get("/events_reminder.html", response_class=HTMLResponse)
 async def page_event_reminder():
     return HTMLResponse(content=get_template("events_reminder.html"))
 
 @app.get("/tools/pdf-watermark", response_class=HTMLResponse)
+@app.get("/pdf_watermark.html", response_class=HTMLResponse)
 async def page_pdf_watermark():
     return HTMLResponse(content=get_template("pdf_watermark.html"))
 
 @app.get("/tools/legal-ocr", response_class=HTMLResponse)
+@app.get("/legal_ocr.html", response_class=HTMLResponse)
 async def page_legal_ocr():
     return HTMLResponse(content=get_template("legal_ocr.html"))
 
 @app.get("/chat", response_class=HTMLResponse)
+@app.get("/chat.html", response_class=HTMLResponse)
 async def page_chat():
     return HTMLResponse(content=get_template("chat.html"))
 
 @app.get("/bulletin", response_class=HTMLResponse)
+@app.get("/bulletin.html", response_class=HTMLResponse)
 async def page_bulletin():
     return HTMLResponse(content=get_template("bulletin.html"))
 

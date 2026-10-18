@@ -60,7 +60,7 @@
       ],
       "rating": 5.0,
       "rating_count": 1,
-      "url": "/tools/timeline-calc",
+      "url": "events_reminder.html",
       "is_integrated": false,
       "tool_type": "web",
       "code_or_prompt": "",
@@ -83,7 +83,7 @@
       ],
       "rating": 5.0,
       "rating_count": 3,
-      "url": "/tools/legal-letter",
+      "url": "legal_letter.html",
       "is_integrated": true,
       "internal_route": "legal-letter",
       "created_at": "2026-10-15T10:00:00Z"
@@ -105,7 +105,7 @@
       ],
       "rating": 4.92,
       "rating_count": 118,
-      "url": "/tools/de-id",
+      "url": "deid.html",
       "is_integrated": true,
       "internal_route": "de-id",
       "created_at": "2026-10-16T14:30:00Z"
@@ -127,7 +127,7 @@
       ],
       "rating": 4.88,
       "rating_count": 96,
-      "url": "/tools/event-reminder",
+      "url": "events_reminder.html",
       "is_integrated": true,
       "internal_route": "event-reminder",
       "created_at": "2026-10-16T18:00:00Z"
@@ -149,7 +149,7 @@
       ],
       "rating": 4.85,
       "rating_count": 87,
-      "url": "/tools/pdf-watermark",
+      "url": "pdf_watermark.html",
       "is_integrated": true,
       "internal_route": "pdf-watermark",
       "created_at": "2026-10-17T09:15:00Z"
@@ -171,7 +171,7 @@
       ],
       "rating": 4.82,
       "rating_count": 75,
-      "url": "/tools/legal-ocr",
+      "url": "legal_ocr.html",
       "is_integrated": true,
       "internal_route": "legal-ocr",
       "created_at": "2026-10-17T11:20:00Z"
@@ -193,7 +193,7 @@
       ],
       "rating": 4.79,
       "rating_count": 64,
-      "url": "/tools/fee-calc",
+      "url": "tools.html?category=cost-calc",
       "is_integrated": true,
       "internal_route": "fee-calc",
       "created_at": "2026-10-17T16:00:00Z"
@@ -215,7 +215,7 @@
       ],
       "rating": 4.76,
       "rating_count": 59,
-      "url": "/tools/judgment-extractor",
+      "url": "tools.html?category=case-research",
       "is_integrated": true,
       "internal_route": "judgment-extractor",
       "created_at": "2026-10-18T08:00:00Z"
@@ -237,7 +237,7 @@
       ],
       "rating": 4.73,
       "rating_count": 52,
-      "url": "/tools/contract-redline",
+      "url": "tools.html?category=contract-review",
       "is_integrated": true,
       "internal_route": "contract-redline",
       "created_at": "2026-10-18T10:30:00Z"
