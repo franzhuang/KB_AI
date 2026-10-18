@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>案卷個資去識別化系統 (De-ID) | 司法AI工具交換所</title>
+  <title>案卷個資去識別化系統 (De-ID & Re-ID) | 司法AI工具交換所</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="de-id-app/css/style.css">
   <script>
     tailwind.config = {
       theme: {
@@ -20,73 +21,230 @@
       }
     }
   </script>
+  <style>
+    /* 局部微調以相容 Tailwind 與 De-ID 原生樣式 */
+    .deid-native-container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 24px 20px;
+    }
+    textarea.editor {
+      min-height: 420px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+  </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden bg-slate-100">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-amber-100 selection:text-amber-900">
 
   <!-- 統一亮色頂部導覽列 -->
-  <header class="h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 shadow-sm">
-    <div class="flex items-center space-x-3">
-      <a href="index.html" class="flex items-center space-x-2 group">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
-          <i data-lucide="scale" class="w-4 h-4"></i>
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="flex items-center space-x-2 group">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+            <i data-lucide="scale" class="w-4 h-4"></i>
+          </div>
+          <span class="font-brand text-sm font-bold tracking-wider text-slate-900 hidden sm:inline">LEXCRAFT</span>
+        </a>
+        <span class="text-slate-300">/</span>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs sm:text-sm font-bold text-slate-900 flex items-center space-x-1.5">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>案卷個資去識別化系統 (De-ID & Re-ID)</span>
+          </span>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 hidden md:inline font-medium">
+            純前端本地運算・零隱私外洩
+          </span>
         </div>
-        <span class="font-brand text-sm font-bold tracking-wider text-slate-900 hidden sm:inline">LEXCRAFT</span>
-      </a>
-      <span class="text-slate-300">/</span>
-      <div class="flex items-center space-x-2">
-        <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
-          <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-          <span>案卷個資去識別化系統 (De-ID & Re-ID)</span>
-        </span>
-        <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 hidden md:inline font-medium">
-          純前端本地運算・零隱私外洩
-        </span>
       </div>
-    </div>
 
-    <div class="flex items-center space-x-2">
-      <button onclick="reloadFrame()" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition" title="重新載入工具">
-        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-      </button>
-      <button onclick="toggleFullscreen()" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition" title="全螢幕專注模式">
-        <i data-lucide="maximize" class="w-4 h-4"></i>
-      </button>
-      <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition flex items-center space-x-1 font-medium">
-        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        <span>返回市集</span>
-      </a>
+      <div class="flex items-center space-x-2">
+        <a href="index.html" class="text-xs px-2.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition hidden sm:inline-flex items-center space-x-1">
+          <i data-lucide="home" class="w-3.5 h-3.5"></i>
+          <span>首頁</span>
+        </a>
+        <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200 transition flex items-center space-x-1 font-semibold">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>返回工具市集</span>
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- 嵌入的原生去識別化 Web 應用程式 -->
-  <main class="flex-grow w-full h-[calc(100vh-3.5rem)] bg-slate-50 relative">
-    <iframe 
-      id="deidFrame" 
-      src="de-id-app/index.html" 
-      class="w-full h-full border-none"
-      title="個資去識別化系統"
-    ></iframe>
+  <!-- 原生去識別化主工作區（免 iframe，直出 DOM） -->
+  <main class="flex-grow w-full">
+    <div class="deid-native-container">
+      
+      <!-- 標題與安全保證區塊 -->
+      <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+          <div>
+            <h1 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 flex items-center gap-2">
+              <span>臺灣法律與醫療文書個資去識別化系統</span>
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+              由專業法務團隊維護・100% 於瀏覽器本機端執行・無任何資料上傳伺服器或第三方雲端
+            </p>
+          </div>
+          <div class="shrink-0 flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full text-xs font-semibold">
+              <i data-lucide="lock" class="w-3.5 h-3.5 text-emerald-600"></i>
+              本機離線安全保證
+            </span>
+          </div>
+        </div>
+
+        <!-- 免責聲明 -->
+        <div style="margin-top: 14px; background-color: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; color: #92400e; line-height: 1.5;">
+          <strong>⚠️ 免責聲明：</strong>本系統可能因特殊排版、罕見語境或特殊符號等情形而發生疏漏或誤判。請務必自行再次核對審查。開發團隊不為此系統的使用承擔任何法律責任。
+        </div>
+      </div>
+
+      <!-- 分頁切換 (Tabs) -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tabMask">🔒 去識別化 (De-ID)</button>
+        <button class="tab-btn" id="tabRestore">🔑 反向還原 (Re-ID)</button>
+      </div>
+
+      <!-- 去識別化主區塊 -->
+      <div id="maskSection">
+
+        <!-- 工作區雙欄 -->
+        <div class="workspace-grid">
+          <!-- 左欄：原始文書 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">📄 原始文書段落（含個資）</span>
+              <div class="panel-actions">
+                <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+                  <input type="checkbox" id="optKeepCity" checked> 保留縣市管轄
+                </label>
+              </div>
+            </div>
+            <textarea id="rawInput" class="editor" placeholder="請在此貼上民事起訴狀、答辯狀、判決書、病歷摘要或金流明細..."></textarea>
+          </div>
+
+          <!-- 右欄：去識別化結果 -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">✨ 去識別化結果</span>
+              <div class="panel-actions">
+                <button class="btn btn-secondary btn-sm" id="btnCopyMasked">📋 複製</button>
+                <button class="btn btn-secondary btn-sm" id="btnDownloadMasked">💾 下載 .txt</button>
+              </div>
+            </div>
+            <textarea id="maskedOutput" class="editor" readonly placeholder="去識別化後的文字將即時呈現於此..."></textarea>
+          </div>
+        </div>
+
+        <!-- 本地端點選配 (選填) -->
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:12px 16px; margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <label style="font-size:0.9rem; font-weight:600; display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="chkUseEndpoint"> ⚙️ 啟用本機端點輔助抽取 (僅回傳實體 JSON，由規則引擎進行替換)
+            </label>
+            <span style="font-size:0.8rem; color:var(--text-muted);">支援本地 Ollama / LM Studio 等端點</span>
+          </div>
+          <div id="endpointConfigPanel" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); font-size:0.85rem; gap:16px; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <label for="inputEndpointUrl">API 端點：</label>
+              <input type="text" id="inputEndpointUrl" value="http://localhost:11434" style="padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:0.85rem; width:220px;">
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <label for="inputEndpointModel">模型名稱：</label>
+              <input type="text" id="inputEndpointModel" value="qwen2.5:7b" style="padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:0.85rem; width:140px;">
+            </div>
+            <div style="color:var(--text-muted); font-size:0.8rem; flex-basis:100%;">
+              提示：本機端點僅輔助產出實體候選清單，若字串不存在於原文將自動略過。
+            </div>
+          </div>
+        </div>
+
+        <!-- 控制按鈕列 -->
+        <div class="controls-bar">
+          <button class="btn btn-primary" id="btnProcess">⚡ 立即執行去識別化</button>
+          <button class="btn btn-secondary" id="btnDownloadMapping">📥 下載對照字典 (.mapping.json)</button>
+        </div>
+
+        <!-- 統計徽章 -->
+        <div class="stats-summary" id="statsContainer"></div>
+
+        <!-- 對照表清單 -->
+        <div class="mapping-section">
+          <h3>
+            <span>📑 本次實體對照清單 <small id="mappingCount" style="color:var(--text-muted); font-size:0.85rem;"></small></span>
+            <span style="font-size:0.8rem; color:var(--danger-text); font-weight:normal;">⚠️ 包含原始真實資料對照，請妥善保管</span>
+          </h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:25%;">代號 (Token)</th>
+                  <th style="width:35%;">原始敏感資訊</th>
+                  <th style="width:20%;">個資類別</th>
+                  <th style="width:20%;">法律/醫療角色</th>
+                </tr>
+              </thead>
+              <tbody id="mappingTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 反向還原區塊 -->
+      <section id="restoreSection" style="display:none;">
+        <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:20px;">
+          <h3 style="margin-bottom:8px; font-size:1.05rem;">🔑 載入對照字典</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">
+            若您在上方「去識別化」分頁剛剛執行過，系統會自動使用當前的對照表。您亦可從電腦上傳先前記存的 <code>.mapping.json</code> 檔案：
+          </p>
+          <input type="file" id="mappingFileInput" accept=".json">
+        </div>
+
+        <div class="workspace-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">📄 待還原文字 (含代號)</span>
+            </div>
+            <textarea id="restoreInput" class="editor" placeholder="請在此貼上欲還原之文字段落..."></textarea>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">🎉 還原結果</span>
+              <div class="panel-actions">
+                <button class="btn btn-secondary btn-sm" id="btnCopyRestored">📋 複製還原結果</button>
+              </div>
+            </div>
+            <textarea id="restoreOutput" class="editor" readonly placeholder="還原後的文字將呈現於此..."></textarea>
+          </div>
+        </div>
+
+        <div class="controls-bar">
+          <button class="btn btn-primary" id="btnRunRestore">🔄 一鍵反向還原 (Re-ID)</button>
+        </div>
+      </section>
+
+      <!-- 頁腳說明 -->
+      <footer style="margin-top:40px; padding-top:20px; border-top:1px solid var(--border); text-align:center; color:var(--text-muted); font-size:0.85rem;">
+        臺灣法律與醫療去識別化系統 (de-ID Web) • 100% 離線純前端運算 • 符合個資法第19條與司法實務規範
+      </footer>
+    </div>
   </main>
 
+  <div id="toast"></div>
+
+  <!-- 去識別化核心模組與互動腳本 -->
+  <script src="de-id-app/js/deid-engine.js"></script>
+  <script src="de-id-app/js/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
-
-    function reloadFrame() {
-      const f = document.getElementById('deidFrame');
-      f.src = f.src;
-    }
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
       }
-    }
+    });
   </script>
 </body>
 </html>

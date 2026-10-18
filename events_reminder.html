@@ -3,90 +3,4734 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>職場調查與法律程序時限管家 | 司法AI工具交換所</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>職場霸凌申訴調查程序時限管理系統</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --accent: #4f46e5;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --success-border: #a7f3d0;
+      --warning: #d97706;
+      --warning-light: #fffbeb;
+      --warning-border: #fde68a;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fecaca;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --card-bg: #ffffff;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+      --shadow-lg: 0 10px 25px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+      --radius-sm: 8px;
+      --radius: 14px;
+      --radius-lg: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+      color: var(--slate-800);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--slate-200);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      color: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .brand-title h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+
+    .brand-title p {
+      font-size: 0.75rem;
+      color: var(--slate-500);
+    }
+
+    .header-right-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .storage-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #f8fafc;
+      border: 1.5px solid var(--slate-300);
+      color: var(--slate-700);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      user-select: none;
+    }
+
+    .storage-status-pill:hover {
+      background: #f1f5f9;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 最常見標準連線狀態小圓點 (Online Green / Warning Yellow) */
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 0.3rem;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .status-dot.green {
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    .status-dot.yellow {
+      background: #f59e0b;
+      box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+    }
+
+    .btn-header-save {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      background: var(--primary);
+      color: white;
+      border: 1.5px solid var(--primary);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      user-select: none;
+    }
+
+    .btn-header-save:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+      box-shadow: 0 1px 5px rgba(37, 99, 235, 0.28);
+    }
+
+    /* 已連結狀態：大眾最熟知的標準連線綠 */
+    .storage-status-pill.linked {
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+      color: #065f46;
+    }
+
+    .storage-status-pill.linked:hover {
+      background: #d1fae5;
+      border-color: #34d399;
+      box-shadow: 0 1px 4px rgba(16, 185, 129, 0.15);
+    }
+
+    /* 待確認授權狀態：標準溫暖提醒黃 */
+    .storage-status-pill.prompt {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #b45309;
+    }
+
+    .storage-status-pill.prompt:hover {
+      background: #fef3c7;
+      border-color: #f59e0b;
+    }
+
+    .storage-time {
+      font-size: 0.72rem;
+      color: #047857;
+      font-weight: 600;
+      margin-left: 0.15rem;
+    }
+
+    .save-indicator-toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 0.6rem 1.15rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 12px 28px -4px rgba(0,0,0,0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+    }
+
+    .save-indicator-toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .file-sync-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1.15rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .file-sync-banner-text {
+      font-size: 0.85rem;
+      color: #1e40af;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-dgpa {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 4rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      outline: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--slate-700);
+      border: 1px solid var(--slate-300);
+    }
+
+    .btn-outline:hover {
+      background: var(--slate-50);
+      border-color: var(--slate-400);
+      color: var(--slate-900);
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
+    /* View Management */
+    .view-container {
+      display: none;
+    }
+
+    .view-container.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home View (Cases Grid) */
+    .home-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .filter-bar {
+      background: white;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--slate-200);
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: 0.55rem 0.85rem 0.55rem 2.25rem;
+      border: 1px solid var(--slate-300);
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      background: var(--slate-50);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input input:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--slate-400);
+      pointer-events: none;
+    }
+
+    .status-filters {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-pill {
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--slate-100);
+      color: var(--slate-600);
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .filter-pill:hover {
+      background: var(--slate-200);
+    }
+
+    .filter-pill.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .filter-sort-wrapper {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .sort-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 104px;
+      gap: 0.4rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      border: 1.5px solid var(--slate-300);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .sort-pill-btn:hover {
+      background: white;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .sort-pill-btn.active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    .sort-btn-icon {
+      font-size: 0.88rem;
+    }
+
+    /* Cases Grid */
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .case-card {
+      background: var(--card-bg);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .case-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-border);
+    }
+
+    .case-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0.9;
+    }
+
+    .case-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .case-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      line-height: 1.35;
+    }
+
+    .case-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-review {
+      background: var(--warning-light);
+      color: var(--warning);
+      border: 1px solid var(--warning-border);
+    }
+
+    .status-accepted {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    .status-rejected {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .case-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+      padding: 0.85rem;
+      background: var(--slate-50);
+      border-radius: var(--radius-sm);
+    }
+
+    .case-meta-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .meta-label { color: var(--slate-500); }
+    .meta-value { font-weight: 600; color: var(--slate-800); }
+
+    .case-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--slate-100);
+    }
+
+    .enter-timeline-hint {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Detail View Navigation */
+    .detail-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      color: var(--slate-600);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: white;
+      color: var(--primary);
+    }
+
+    .back-arrow {
+      font-size: 1.35rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -2px;
+      font-weight: 800;
+    }
+
+    /* Minimal Controls Panel */
+    .controls-panel {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.75rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--slate-200);
+      margin-bottom: 1.5rem;
+    }
+
+    .case-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--slate-200);
+      flex-wrap: wrap;
+    }
+
+    .case-title-input {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      border: 1px solid transparent;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      outline: none;
+      flex: 1;
+      min-width: 250px;
+      transition: all 0.2s;
+    }
+
+    .case-title-input:hover,
+    .case-title-input:focus {
+      border-color: var(--slate-300);
+      background: var(--slate-50);
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .date-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .date-input-wrapper input {
+      width: 100%;
+      padding: 0.55rem 6.2rem 0.55rem 0.85rem;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--slate-800);
+      background: white;
+      outline: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .date-input-wrapper input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      cursor: text;
+    }
+
+    .date-input-btn {
+      position: absolute;
+      right: 0.35rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .date-input-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .date-helper-text {
+      font-size: 0.775rem;
+      color: var(--slate-500);
+      margin-top: 0.35rem;
+      line-height: 1.4;
+    }
+
+    .status-segmented {
+      display: flex;
+      background: var(--slate-100);
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      gap: 0.25rem;
+    }
+
+    .status-segment-btn {
+      flex: 1;
+      padding: 0.45rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .status-segment-btn.active {
+      background: white;
+      color: var(--slate-900);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .status-segment-btn.active.is-accepted { color: var(--success); }
+    .status-segment-btn.active.is-rejected { color: var(--danger); }
+    .status-segment-btn.active.is-review { color: var(--warning); }
+
+    /* ==========================================================================
+       THE GRAPHIC LONG ARROW TIMELINE (長箭頭圖案 ‧ 上下拉線純寫事件 ‧ 極簡明瞭)
+       ========================================================================== */
+    .arrow-timeline-hero {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--slate-200);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .arrow-hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px dashed var(--slate-200);
+      position: relative;
+    }
+
+    .header-left-spacer {
+      width: 40px;
+      height: 40px;
+    }
+
+    .arrow-hero-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-camera-copy {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--slate-300);
+      background: white;
+      color: var(--slate-700);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      outline: none;
+    }
+
+    .btn-camera-copy:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      transform: scale(1.08);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-camera-copy:active {
+      transform: scale(0.95);
+    }
+
+    .btn-camera-copy.copied {
+      background: #ecfdf5;
+      border-color: #10b981;
+    }
+
+    /* SVG Timeline Container */
+    .svg-timeline-container {
+      width: 100%;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+      scrollbar-width: thin;
+    }
+
+    .svg-timeline {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* SVG Interactive Elements */
+    .event-label-group {
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .event-label-group:hover text.event-text {
+      fill: var(--primary) !important;
+      font-weight: 900;
+    }
+
+    .event-label-group:hover rect.event-box {
+      stroke: var(--primary);
+      stroke-width: 2px;
+      fill: #eff6ff;
+    }
+
+    .event-label-group:hover circle.milestone-dot {
+      r: 8px;
+      fill: var(--primary);
+    }
+
+    .timeline-click-hint {
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    /* ==========================================================================
+       MODAL: DETAILED CALCULATION BASIS (點進去才看見詳細計算依據)
+       ========================================================================== */
+    .detail-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+
+    .detail-modal-backdrop.active {
+      display: flex;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .detail-modal-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      width: 100%;
+      max-width: 720px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid var(--slate-200);
+      display: flex;
+      flex-direction: column;
+      animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .detail-modal-header {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .detail-modal-header h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .detail-modal-close {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--slate-400);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.25rem;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+
+    .detail-modal-close:hover {
+      color: var(--slate-800);
+    }
+
+    .detail-modal-body {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-date-hero {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .modal-date-roc {
+      font-size: 1.65rem;
+      font-weight: 900;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+
+    .modal-date-sub {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      margin-top: 0.15rem;
+    }
+
+    .modal-rule-pill {
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .modal-legal-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.925rem;
+      color: var(--slate-700);
+      line-height: 1.65;
+    }
+
+    .modal-holiday-alert {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: #9a3412;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-breakdown-section h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--slate-800);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .breakdown-table th,
+    .breakdown-table td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--slate-200);
+    }
+
+    .breakdown-table th {
+      background: var(--slate-100);
+      font-weight: 700;
+      color: var(--slate-700);
+    }
+
+    .tag-workday { color: var(--primary); font-weight: 700; }
+    .tag-holiday { color: var(--danger); font-weight: 600; }
+    .tag-weekend { color: var(--slate-400); }
+
+    .detail-modal-footer {
+      padding: 1rem 1.75rem;
+      border-top: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: flex-end;
+      background: var(--slate-50);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    /* ==========================================================================
+       CALENDAR PICKER FLOATING DROPDOWN (OFFLINE READY)
+       ========================================================================== */
+    .calendar-modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      z-index: 120;
+      pointer-events: none;
+    }
+
+    .calendar-modal-backdrop.active {
+      display: block;
+    }
+
+    .calendar-dialog {
+      pointer-events: auto;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.08);
+      width: 350px;
+      overflow: hidden;
+      border: 1px solid var(--slate-200);
+      animation: popIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      position: fixed;
+    }
+
+    .calendar-header {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      color: white;
+      padding: 0.85rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cal-title-box { display: flex; flex-direction: column; }
+    .cal-year-roc { font-size: 1.15rem; font-weight: 800; }
+    .cal-year-ad { font-size: 0.8rem; color: var(--slate-400); }
+
+    .cal-nav-buttons { display: flex; gap: 0.35rem; }
+    .cal-nav-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      transition: background 0.2s;
+    }
+
+    .cal-nav-btn:hover { background: rgba(255, 255, 255, 0.25); }
+    .calendar-body { padding: 1rem; }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--slate-500);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .cal-weekdays .weekend { color: var(--danger); }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+
+    .cal-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+
+    .cal-day-cell:hover:not(.empty) {
+      background: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary);
+    }
+
+    .cal-day-cell.empty { cursor: default; }
+    .cal-day-cell.selected {
+      background: var(--primary) !important;
+      color: white !important;
+      font-weight: 800;
+    }
+
+    .cal-day-cell.today { border-color: var(--primary); }
+    .cal-day-cell.is-holiday { color: var(--danger); background: #fef2f2; }
+    .cal-day-cell.is-weekend:not(.is-holiday) { color: var(--slate-400); }
+
+    .cal-day-cell .holiday-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--danger);
+      margin-top: 2px;
+    }
+
+    .cal-day-cell.selected .holiday-dot { background: white; }
+
+    .cal-quick-months {
+      display: flex;
+      gap: 0.35rem;
+      padding: 0.5rem 1rem 0.4rem;
+      background: white;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--slate-100);
+    }
+
+    .cal-qmonth-btn {
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-700);
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .cal-qmonth-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary);
+    }
+
+    .cal-qmonth-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .cal-footer {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--slate-100);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--slate-50);
+    }
+
+    /* New Case Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 90;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .modal-dialog {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+      border: 1px solid var(--slate-200);
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--slate-200);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      background: var(--slate-50);
+    }
+
+    /* Decision Button Card on Case Detail */
+    .btn-decision-card {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1.15rem;
+      background: white;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .btn-decision-card:hover {
+      border-color: var(--primary);
+      background: #f8fafc;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .decision-card-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .decision-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .decision-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .decision-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+
+    .decision-sub {
+      font-size: 0.82rem;
+      color: var(--slate-500);
+      margin-top: 0.2rem;
+      transition: color 0.2s;
+    }
+
+    .decision-sub.is-accepted {
+      color: #059669;
+      font-weight: 700;
+    }
+
+    .decision-sub.is-rejected {
+      color: #dc2626;
+      font-weight: 700;
+    }
+
+    .decision-card-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .decision-pill {
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .decision-pill.is-review {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .decision-pill.is-accepted {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .decision-pill.is-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .decision-pill.is-closed {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
+
+    .case-status-badge.status-closed {
+      background: #f1f5f9 !important;
+      color: #475569 !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+
+    /* 1. 首頁已結案卡片 (文字全部轉為比其他灰深一點的深灰色 #475569) */
+    .case-card.case-closed {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+      opacity: 0.92;
+    }
+
+    .case-card.case-closed::before {
+      background: #94a3b8 !important;
+      opacity: 0.6;
+    }
+
+    .case-card.case-closed .case-name {
+      color: #475569 !important; /* 標題不維持黑色，改為深一點的灰色 */
+    }
+
+    .case-card.case-closed .meta-label {
+      color: #64748b !important;
+    }
+
+    .case-card.case-closed .meta-value {
+      color: #475569 !important; /* 深灰色 */
+    }
+
+    .case-card.case-closed .enter-timeline-hint {
+      color: #64748b !important;
+    }
+
+    .case-card.case-closed .enter-timeline-hint span {
+      color: #64748b !important;
+    }
+
+    /* 2. 詳情頁已結案全畫面 (View Detail 所有文字與元件轉為深灰) */
+    #view-detail.case-closed {
+      color: #475569 !important;
+      filter: grayscale(1);
+    }
+
+    /* 案件名稱標題 */
+    #view-detail.case-closed .case-title-input {
+      color: #475569 !important; /* 不維持黑色，變為深一點的灰色 */
+      -webkit-text-fill-color: #475569 !important;
+    }
+
+    /* 各欄位文字與標籤 */
+    #view-detail.case-closed .form-label,
+    #view-detail.case-closed .form-label span {
+      color: #475569 !important;
+    }
+
+    #view-detail.case-closed .date-input-wrapper input {
+      color: #475569 !important;
+      -webkit-text-fill-color: #475569 !important;
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    #view-detail.case-closed .date-input-btn {
+      color: #64748b !important;
+      border-color: #cbd5e1 !important;
+      background: #f1f5f9 !important;
+    }
+
+    #view-detail.case-closed .btn-decision-card {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    #view-detail.case-closed .decision-title {
+      color: #475569 !important;
+    }
+
+    #view-detail.case-closed .controls-panel {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    #view-detail.case-closed .arrow-timeline-hero {
+      background: #f8fafc !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    #view-detail.case-closed .arrow-hero-title,
+    #view-detail.case-closed .arrow-hero-title span {
+      color: #475569 !important;
+    }
+
+    #view-detail.case-closed .back-btn {
+      color: #64748b !important;
+    }
+
+    #view-detail.case-closed .back-btn:hover {
+      color: #334155 !important;
+    }
+
+    /* 時間軸 SVG 內部所有文字與圖形：字體全數變為深灰色 */
+    #view-detail.case-closed svg text {
+      fill: #475569 !important;
+    }
+
+    #view-detail.case-closed svg line {
+      stroke: #94a3b8 !important;
+    }
+
+    #view-detail.case-closed svg marker path {
+      fill: #64748b !important;
+    }
+
+    #view-detail.case-closed svg circle.milestone-dot {
+      fill: #64748b !important;
+      stroke: #f1f5f9 !important;
+    }
+
+    #view-detail.case-closed svg rect.event-box {
+      fill: #f1f5f9 !important;
+      stroke: #cbd5e1 !important;
+    }
+
+    .decision-chevron {
+      color: var(--slate-400);
+      font-size: 1.1rem;
+      font-weight: 800;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .btn-decision-card:hover .decision-chevron {
+      transform: translateX(3px);
+      color: var(--primary);
+    }
+
+    /* Decision Modal Custom Styling */
+    .decision-modal-dialog {
+      max-width: 530px;
+    }
+
+    .decision-options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .decision-option-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      padding: 1rem 1.1rem;
+      border: 2px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .decision-option-card:hover {
+      border-color: var(--slate-300);
+      background: #f8fafc;
+    }
+
+    .decision-option-card.selected {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    #optAccepted.selected {
+      border-color: #059669;
+      background: #f0fdf4;
+    }
+
+    #optRejected.selected {
+      border-color: #dc2626;
+      background: #fef2f2;
+    }
+
+    .option-radio-circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--slate-300);
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .decision-option-card.selected .option-radio-circle {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    #optAccepted.selected .option-radio-circle {
+      border-color: #059669;
+      background: #059669;
+    }
+
+    #optRejected.selected .option-radio-circle {
+      border-color: #dc2626;
+      background: #dc2626;
+    }
+
+    .decision-option-card.selected .option-radio-circle::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    .option-content {
+      flex: 1;
+    }
+
+    .option-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .option-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--slate-900);
+    }
+
+    .option-tag {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      background: var(--slate-100);
+      color: var(--slate-600);
+      font-weight: 700;
+    }
+
+    .option-tag.tag-success {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .option-tag.tag-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .option-desc {
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      margin-top: 0.25rem;
+      line-height: 1.45;
+    }
+
+    .accepted-date-collapse {
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1.5px dashed #86efac;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .collapse-date-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #166534;
+      margin-bottom: 0.45rem;
+    }
+
+    .collapse-date-hints {
+      font-size: 0.78rem;
+      color: #15803d;
+      margin-top: 0.4rem;
+      line-height: 1.4;
+    }
+
+    /* =========================================================================
+       TIMELINE MAP VIEW (時間地圖專屬樣式)
+       ========================================================================= */
+    .btn-timeline-map {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: white;
+      color: var(--primary);
+      border: 1.5px solid var(--primary-border);
+      padding: 0.55rem 1.15rem;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.92rem;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+
+    .btn-timeline-map:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+    }
+
+    .timeline-map-card {
+      background: var(--card-bg);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-map-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.5rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--slate-200);
+      flex-wrap: wrap;
+    }
+
+    .map-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .map-icon {
+      font-size: 1.45rem;
+    }
+
+    .map-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      letter-spacing: -0.01em;
+    }
+
+    .map-count-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.15rem 0.65rem;
+      border-radius: 9999px;
+    }
+
+    .map-desc {
+      font-size: 0.86rem;
+      color: var(--slate-500);
+      line-height: 1.5;
+    }
+
+    .timeline-map-legend {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--slate-50);
+      padding: 0.5rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--slate-200);
+    }
+
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.82rem;
+      color: var(--slate-700);
+      font-weight: 600;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .timeline-map-scroll-area {
+      overflow-x: auto;
+      overflow-y: hidden;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      background: white;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .timeline-map-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    .map-row-highlight {
+      transition: fill 0.15s ease;
+      cursor: pointer;
+    }
+
+    .map-row-group:hover .map-row-highlight {
+      fill: #f1f5f9;
+    }
+
+    .map-row-left-bar {
+      fill: transparent;
+      transition: fill 0.18s ease;
+    }
+
+    .map-row-group:hover .map-row-left-bar {
+      fill: var(--primary);
+    }
+
+    /* Y 軸（案件名稱與狀態）懸停顯著變大效果 */
+    .map-case-label {
+      cursor: pointer;
+    }
+
+    .map-y-case-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      fill: #0f172a;
+      transition: font-size 0.18s cubic-bezier(0.4, 0, 0.2, 1), fill 0.18s ease, font-weight 0.18s ease;
+      paint-order: stroke fill;
+      stroke: #ffffff;
+      stroke-width: 0px;
+      stroke-linejoin: round;
+    }
+
+    .map-y-case-meta {
+      font-size: 11px;
+      fill: #64748b;
+      transition: font-size 0.18s cubic-bezier(0.4, 0, 0.2, 1), fill 0.18s ease;
+    }
+
+    /* 當滑鼠移至整行或案件名稱時，Y軸字體放大至 18px，申訴日放大至 12.5px */
+    .map-row-group:hover .map-y-case-name,
+    .map-case-label:hover .map-y-case-name {
+      font-size: 18px;
+      font-weight: 900;
+      fill: #1d4ed8;
+      stroke-width: 6px; /* 白色描邊，避免字體放大時被背景線條干擾 */
+      filter: drop-shadow(0 2px 5px rgba(37, 99, 235, 0.2));
+    }
+
+    .map-row-group:hover .map-y-case-meta,
+    .map-case-label:hover .map-y-case-meta {
+      font-size: 12.5px;
+      font-weight: 700;
+      fill: #334155;
+    }
+
+    /* X 軸（時間刻度）懸停顯著變大效果 */
+    .map-x-tick {
+      cursor: pointer;
+    }
+
+    .tick-hover-pill {
+      fill: transparent;
+      stroke: transparent;
+      stroke-width: 1.5;
+      transition: fill 0.18s ease, stroke 0.18s ease, filter 0.18s ease;
+    }
+
+    .map-tick-text-main {
+      font-size: 11.5px;
+      font-weight: 700;
+      fill: #334155;
+      transition: font-size 0.18s cubic-bezier(0.4, 0, 0.2, 1), fill 0.18s ease, font-weight 0.18s ease;
+      pointer-events: none;
+    }
+
+    .map-tick-text-sub {
+      font-size: 10px;
+      font-weight: 600;
+      fill: #64748b;
+      transition: font-size 0.18s cubic-bezier(0.4, 0, 0.2, 1), fill 0.18s ease, font-weight 0.18s ease;
+      pointer-events: none;
+    }
+
+    /* 當滑鼠移至 X 軸刻度時，背景顯示高亮膠囊，日期放大至 16.5px，星期放大至 13px */
+    .map-x-tick:hover .tick-hover-pill {
+      fill: #eff6ff;
+      stroke: #3b82f6;
+      filter: drop-shadow(0 3px 6px rgba(37, 99, 235, 0.22));
+    }
+
+    .map-x-tick:hover .map-tick-text-main {
+      font-size: 16.5px;
+      font-weight: 900;
+      fill: #1d4ed8;
+    }
+
+    .map-x-tick:hover .map-tick-text-sub {
+      font-size: 13px;
+      font-weight: 800;
+      fill: #2563eb;
+    }
+
+    .map-x-tick:hover .tick-mark {
+      stroke: #1d4ed8;
+      stroke-width: 2.5;
+    }
+
+    /* 節點時限文字：平時小巧精緻不疊字，懸停才放大 */
+    .map-node-label-title {
+      font-size: 10.5px !important;
+      font-weight: 700;
+      paint-order: stroke fill;
+      stroke: #ffffff;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      transition: font-size 0.18s ease, font-weight 0.18s ease;
+      pointer-events: none;
+    }
+
+    .map-node-label-date {
+      font-size: 9.5px !important;
+      font-weight: 600;
+      paint-order: stroke fill;
+      stroke: #ffffff;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      transition: font-size 0.18s ease, font-weight 0.18s ease;
+      pointer-events: none;
+    }
+
+    .map-node-group {
+      cursor: pointer;
+    }
+
+    .map-node-group:hover circle.node-core {
+      filter: brightness(1.15) drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+
+    .map-node-group:hover .map-node-label-title {
+      font-size: 13.5px !important;
+      font-weight: 900;
+      stroke-width: 4px;
+    }
+
+    .map-node-group:hover .map-node-label-date {
+      font-size: 11.5px !important;
+      font-weight: 800;
+      stroke-width: 4px;
+    }
+
+    /* Print */
+    @media print {
+      header, .controls-panel, .detail-nav, .filter-bar, .home-hero button, .btn {
+        display: none !important;
+      }
+      body { background: white; color: black; }
+      .arrow-timeline-hero, .timeline-map-card { box-shadow: none; border: 1px solid #ccc; }
+      .timeline-map-scroll-area { overflow: visible !important; border: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LexCraft 頂部統一導覽列 -->
+  <div style="background:#ffffff; border-bottom:1px solid #e2e8f0; padding:8px 24px; display:flex; align-items:center; justify-content:space-between; font-size:13px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; position:relative; z-index:50;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <a href="index.html" style="display:flex; align-items:center; gap:8px; text-decoration:none; color:#0f172a; font-weight:700;">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:6px; background:#fffbeb; border:1px solid #fde68a; color:#b45309; font-size:14px;">⚖️</span>
+        <span style="letter-spacing:1px; font-weight:800;">LEXCRAFT</span>
+      </a>
+      <span style="color:#cbd5e1;">/</span>
+      <span style="font-weight:600; color:#1e293b;">職場調查與法律程序時限管家</span>
+      <span style="font-size:11px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:2px 8px; border-radius:4px; font-weight:600;">
+        黃耀平律師建置・純本機離線運算
+      </span>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <a href="index.html" style="text-decoration:none; color:#64748b; font-weight:500; font-size:12px;">首頁總覽</a>
+      <span style="color:#e2e8f0;">|</span>
+      <a href="tools.html" style="display:inline-flex; align-items:center; gap:4px; text-decoration:none; color:#92400e; background:#fef3c7; border:1px solid #fde68a; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:700;">
+        <span>← 返回工具市集</span>
+      </a>
+    </div>
+  </div>
+
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand" onclick="navigateTo('home')">
+        <div class="brand-icon">🛡️</div>
+        <div class="brand-title">
+          <h1>職場霸凌申訴調查程序時限管理系統</h1>
+        </div>
+      </div>
+      <div class="header-right-tools">
+        <button type="button" id="btnFileStorageStatus" class="storage-status-pill" onclick="connectOrManageLocalFile()" title="點選連結硬碟案件紀錄檔">
+          <span id="storageStatusText">連結紀錄檔</span>
+        </button>
+        <button type="button" id="btnManualSave" class="btn-header-save" onclick="handleManualSaveCaseFile()" title="儲存所有案件至紀錄檔">
+          <span>💾 儲存</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- VIEW 1: CASE LIST (首頁：各案件名稱清單) -->
+    <div id="view-home" class="view-container active">
+      <div class="home-hero">
+        <div class="home-hero-left">
+          <button type="button" class="btn btn-timeline-map" onclick="navigateTo('timeline-map')" title="查看所有未完成案件時間線圖">
+            <span style="font-size: 1.15rem;">🗺️</span>
+            <span>時間地圖</span>
+          </button>
+        </div>
+        <div class="home-hero-right">
+          <button class="btn btn-primary" onclick="openNewCaseModal()">
+            <span>＋</span> 新增霸凌申訴案
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Search & Filter Bar -->
+      <div class="filter-bar">
+        <div class="search-input">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜尋案件名稱..." oninput="renderCaseCards()">
+        </div>
+        <div class="status-filters">
+          <button class="filter-pill active" onclick="setFilter('all', this)">全部</button>
+          <button class="filter-pill" onclick="setFilter('review', this)">受理審查中</button>
+          <button class="filter-pill" onclick="setFilter('accepted', this)">已受理</button>
+          <button class="filter-pill" onclick="setFilter('rejected', this)">不予受理</button>
+          <button class="filter-pill" onclick="setFilter('closed', this)">已結案</button>
+        </div>
+        <div class="filter-sort-wrapper">
+          <button type="button" id="btnToggleSort" class="sort-pill-btn" onclick="toggleCaseSort()" title="點擊切換為：依照截止排序">
+            <span id="sortBtnIcon" class="sort-btn-icon">🕒</span>
+            <span id="sortBtnText" class="sort-btn-text">編輯排序</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Case Cards Grid -->
+      <div id="casesGrid" class="cases-grid"></div>
+    </div>
+
+    <!-- VIEW 2: CASE DETAIL (案件進度條頁面：長箭頭圖案 ‧ 上下拉線 ‧ 單純寫事件) -->
+    <div id="view-detail" class="view-container">
+      <div class="detail-nav">
+        <a class="back-btn" id="detailNavBack" onclick="navigateTo('home')">
+          <span class="back-arrow">←</span>
+          <span>返回各案件清單</span>
+        </a>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn btn-outline btn-sm" onclick="window.print()">
+            <span>🖨️</span> 列印 / 另存 PDF
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCurrentCase()">
+            <span>🗑️</span> 刪除此案
+          </button>
+        </div>
+      </div>
+
+      <!-- Minimal Case Controls -->
+      <div class="controls-panel">
+        <div class="case-title-row">
+          <span style="font-size: 1.4rem;">📁</span>
+          <input type="text" id="detailCaseName" class="case-title-input" value="" onchange="updateCurrentCaseMeta()">
+          <span id="detailStatusBadge" class="case-status-badge status-review">審查中</span>
+        </div>
+
+        <div class="inputs-grid">
+          <!-- 接獲申訴日 -->
+          <!-- 接獲申訴日 -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>📥 接獲申訴日（起始日）</span>
+            </label>
+            <div class="date-input-wrapper">
+              <input type="text" id="detailComplaintDate" placeholder="例: 115.10.2 或 10/2" 
+                     onfocus="openDatePicker('complaint', this)"
+                     onclick="openDatePicker('complaint', this)"
+                     oninput="handleDateInputLive('complaint')"
+                     onkeydown="if(event.key==='Enter'){this.blur();closeDatePicker();}"
+                     onchange="handleDateInputChange('complaint')">
+              <button type="button" class="date-input-btn" title="開啟小日曆" onclick="toggleDatePicker('complaint', document.getElementById('detailComplaintDate'))">
+                <span>📅</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 案件狀態設定按鈕 -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>📌 案件狀態</span>
+            </label>
+            <div>
+              <button type="button" id="btnDecisionModal" class="btn-decision-card" onclick="openDecisionModal()">
+                <div class="decision-card-left">
+                  <span class="decision-icon">📌</span>
+                  <div class="decision-info">
+                    <span id="decisionCurrentText" class="decision-title">目前狀態：審查中（點擊設定）</span>
+                  </div>
+                </div>
+                <div class="decision-card-right">
+                  <span id="decisionStatusPill" class="decision-pill is-review">⏳ 審查中</span>
+                  <span class="decision-chevron">➔</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- THE GRAPHIC LONG ARROW TIMELINE (長箭頭圖案 ‧ 上下拉線 ‧ 單純寫事件) -->
+      <section class="arrow-timeline-hero">
+        <div class="arrow-hero-header">
+          <div class="header-left-spacer"></div>
+          <div class="arrow-hero-title">
+            <span>⏱️</span>
+            <span>時間軸</span>
+          </div>
+          <button type="button" id="btnCopyTimeline" class="btn-camera-copy" onclick="copyTimelineImageToClipboard()" title="複製時間軸圖片（點擊後直接 Ctrl+V 貼上）">
+            <span class="camera-icon">📷</span>
+          </button>
+        </div>
+
+        <!-- The Responsive SVG Long Arrow Graphic -->
+        <div class="svg-timeline-container">
+          <svg id="arrowTimelineSvg" class="svg-timeline" viewBox="0 0 1100 280" width="1100" height="280">
+            <!-- Dynamic elements generated by JS -->
+          </svg>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- VIEW 3: MULTI-CASE TIMELINE MAP (時間地圖：所有未完成案件時限線圖) -->
+    <div id="view-timeline-map" class="view-container">
+      <div class="detail-nav" style="margin-bottom: 1rem;">
+        <a class="back-btn" onclick="navigateTo('home')">
+          <span class="back-arrow">←</span>
+          <span>返回各案件清單</span>
+        </a>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button class="btn btn-outline btn-sm" onclick="window.print()">
+            <span>🖨️</span> 列印 / 另存 PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- 地圖面板本體 -->
+      <div class="timeline-map-card">
+        <div class="timeline-map-header-row">
+          <div class="map-title-block">
+            <div class="map-title-row">
+              <span class="map-icon">🗺️</span>
+              <h2 class="map-title">案件時限時間地圖</h2>
+              <span id="timelineMapCountBadge" class="map-count-badge">進行中 0 案</span>
+            </div>
+          </div>
+
+          <!-- 圖例 Legend -->
+          <div class="timeline-map-legend">
+            <div class="legend-chip">
+              <span class="legend-dot" style="background: #2563eb;"></span>
+              <span class="legend-text">通報系統（受理後 7 日）</span>
+            </div>
+            <div class="legend-chip">
+              <span class="legend-dot" style="background: #059669;"></span>
+              <span class="legend-text">成立調查小組（受理後 15 日）</span>
+            </div>
+            <div class="legend-chip">
+              <span class="legend-dot" style="background: #dc2626; box-shadow: 0 0 0 2px rgba(220,38,38,0.25);"></span>
+              <span class="legend-text" style="color: #b91c1c; font-weight: 700;">完成調查報告（法定 2 個月）</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 線圖渲染容器 (可橫向捲動，保持節點與文字舒適間距) -->
+        <div id="timelineMapScrollContainer" class="timeline-map-scroll-area">
+          <div id="timelineMapGraphWrap"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       MODAL: DETAILED CALCULATION BASIS (點進去才看見詳細計算依據)
+       ========================================================================= -->
+  <div id="detailModal" class="detail-modal-backdrop" onclick="closeDetailModal(event)">
+    <div class="detail-modal-card" onclick="event.stopPropagation()">
+      <div class="detail-modal-header">
+        <h3 id="modalEventTitle">
+          <span>⚖️</span>
+          <span>詳細計算依據</span>
+        </h3>
+        <button class="detail-modal-close" onclick="closeDetailModal()">✕</button>
+      </div>
+
+      <div class="detail-modal-body">
+        <div class="modal-date-hero">
+          <div>
+            <div id="modalDateRoc" class="modal-date-roc">民國 115 年 10 月 16 日</div>
+            <div id="modalDateSub" class="modal-date-sub">西元 2026-10-16 ｜ 星期五</div>
+          </div>
+          <div>
+            <span id="modalRulePill" class="modal-rule-pill">法定 10 個工作日</span>
+          </div>
+        </div>
+
+        <div id="modalLegalBox" class="modal-legal-box"></div>
+
+        <div id="modalHolidayAlert" class="modal-holiday-alert" style="display: none;"></div>
+
+        <div id="modalBreakdownSection" class="modal-breakdown-section">
+          <h4><span>📅</span> 期間每日工作日 / 休假日推算明細清單</h4>
+          <div style="overflow-x: auto; border: 1px solid var(--slate-200); border-radius: var(--radius-sm);">
+            <table class="breakdown-table">
+              <thead>
+                <tr>
+                  <th>序號</th>
+                  <th>日期 (民國)</th>
+                  <th>西元日期</th>
+                  <th>星期</th>
+                  <th>判定屬性</th>
+                  <th>人事行政總處備註</th>
+                </tr>
+              </thead>
+              <tbody id="modalBreakdownTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-modal-footer">
+        <button class="btn btn-primary btn-sm" onclick="closeDetailModal()">關閉視窗</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDAR PICKER MODAL -->
+  <div id="calendarModal" class="calendar-modal-backdrop" onclick="closeDatePicker(event)">
+    <div class="calendar-dialog" onclick="event.stopPropagation()">
+      <div class="calendar-header">
+        <div class="cal-title-box">
+          <div id="calTargetLabel" style="font-size: 0.8rem; color: #93c5fd; font-weight: 700; margin-bottom: 2px;">選擇日期</div>
+          <span id="calYearROC" class="cal-year-roc">民國 115 年 10 月</span>
+          <span id="calYearAD" class="cal-year-ad">西元 2026 年 10 月</span>
+        </div>
+        <div class="cal-nav-buttons">
+          <button type="button" class="cal-nav-btn" onclick="calPrevMonth()" title="上個月">&lt;</button>
+          <button type="button" class="cal-nav-btn" onclick="calNextMonth()" title="下個月">&gt;</button>
+        </div>
+      </div>
+
+      <!-- Quick Month Navigation Bar -->
+      <div class="cal-quick-months">
+        <button type="button" id="qBtn2026_10" class="cal-qmonth-btn" onclick="calJumpYearMonth(2026, 10)">115/10月</button>
+        <button type="button" id="qBtn2026_11" class="cal-qmonth-btn" onclick="calJumpYearMonth(2026, 11)">115/11月</button>
+        <button type="button" id="qBtn2026_12" class="cal-qmonth-btn" onclick="calJumpYearMonth(2026, 12)">115/12月</button>
+        <button type="button" id="qBtn2027_1" class="cal-qmonth-btn" onclick="calJumpYearMonth(2027, 1)">116/1月</button>
+        <button type="button" id="qBtn2027_2" class="cal-qmonth-btn" onclick="calJumpYearMonth(2027, 2)">116/2月</button>
+      </div>
+
+      <div class="calendar-body">
+        <div class="cal-weekdays">
+          <span class="weekend">日</span>
+          <span>一</span>
+          <span>二</span>
+          <span>三</span>
+          <span>四</span>
+          <span>五</span>
+          <span class="weekend">六</span>
+        </div>
+        <div id="calGrid" class="cal-grid"></div>
+      </div>
+
+      <div class="cal-footer">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="calSelectToday()">今天 (10/3)</button>
+          <button type="button" id="calClearBtn" class="btn btn-danger btn-sm" onclick="calClearDate()" style="display: none;">清除受理日（還原審查中）</button>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeDatePicker()">✕ 關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DECISION MODAL (受理與否 決策設定彈窗) -->
+  <div id="decisionModal" class="modal-backdrop" onclick="closeDecisionModal(event)">
+    <div class="modal-dialog decision-modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.35rem;">📌</span>
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--slate-900);">案件狀態設定</h3>
+        </div>
+        <button type="button" style="border: none; background: transparent; font-size: 1.25rem; cursor: pointer;" onclick="closeDecisionModal()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 1.25rem 1.5rem;">
+        <div style="font-weight: 700; color: var(--slate-700); margin-bottom: 0.85rem; font-size: 0.92rem;">請選擇案件目前狀態：</div>
+
+        <!-- 4 Options -->
+        <div class="decision-options-group">
+          <!-- Option 1: 審查中 -->
+          <div id="optReview" class="decision-option-card" onclick="selectDecisionOption('review')">
+            <div class="option-radio-circle"></div>
+            <div class="option-content">
+              <div class="option-title-row">
+                <span class="option-title">⏳ 審查中</span>
+                <span class="option-tag">法定 10 個工作日</span>
+              </div>
+              <div class="option-desc">案件尚在專責小組審查會程序中，進度條顯示「受理與否」審查期限。</div>
+            </div>
+          </div>
+
+          <!-- Option 2: 已受理 -->
+          <div id="optAccepted" class="decision-option-card" onclick="selectDecisionOption('accepted')">
+            <div class="option-radio-circle"></div>
+            <div class="option-content">
+              <div class="option-title-row">
+                <span class="option-title">✅ 已受理</span>
+                <span class="option-tag tag-success">正式立案進入調查</span>
+              </div>
+              <div class="option-desc">案件符合法定要件正式受理。進度條將去掉「受理與否」，新增「已受理」日，後續時限依該日重新起算。</div>
+              
+              <!-- 出現輸入日期框 (當已受理被點選時展開) -->
+              <div id="acceptedDateCollapse" class="accepted-date-collapse" style="display: none;" onclick="event.stopPropagation()">
+                <label class="collapse-date-label">
+                  <span>📅 請輸入或點選「已受理」日期：</span>
+                </label>
+                <div class="date-input-wrapper">
+                  <input type="text" id="modalAcceptedDateInput" placeholder="例: 10/8、115.10.8 或 2026-10-08" 
+                         onfocus="openDatePicker('accepted', this)" 
+                         onclick="openDatePicker('accepted', this)"
+                         oninput="handleModalAcceptedDateLive()"
+                         onkeydown="if(event.key==='Enter'){saveDecisionModal();closeDatePicker();}">
+                  <button type="button" class="date-input-btn" title="開啟小日曆" onclick="toggleDatePicker('accepted', document.getElementById('modalAcceptedDateInput'))">
+                    <span>📅</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option 3: 不予受理 -->
+          <div id="optRejected" class="decision-option-card" onclick="selectDecisionOption('rejected')">
+            <div class="option-radio-circle"></div>
+            <div class="option-content">
+              <div class="option-title-row">
+                <span class="option-title">❌ 不予受理</span>
+                <span class="option-tag tag-danger">不符要件結案</span>
+              </div>
+              <div class="option-desc">案件不屬職場霸凌要件或逾期申訴，決議不予受理結案。</div>
+
+              <!-- 出現輸入日期框 (當不予受理被點選時展開，選填) -->
+              <div id="rejectedDateCollapse" class="accepted-date-collapse" style="display: none;" onclick="event.stopPropagation()">
+                <label class="collapse-date-label">
+                  <span>📅 請輸入或點選「不予受理」日期（選填）：</span>
+                </label>
+                <div class="date-input-wrapper">
+                  <input type="text" id="modalRejectedDateInput" placeholder="例: 10/5、115.10.5 或 2026-10-05（選填）" 
+                         onfocus="openDatePicker('rejected', this)" 
+                         onclick="openDatePicker('rejected', this)"
+                         oninput="handleModalRejectedDateLive()"
+                         onkeydown="if(event.key==='Enter'){saveDecisionModal();closeDatePicker();}">
+                  <button type="button" class="date-input-btn" title="開啟小日曆" onclick="toggleDatePicker('rejected', document.getElementById('modalRejectedDateInput'))">
+                    <span>📅</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Option 4: 已結案 -->
+          <div id="optClosed" class="decision-option-card" onclick="selectDecisionOption('closed')">
+            <div class="option-radio-circle"></div>
+            <div class="option-content">
+              <div class="option-title-row">
+                <span class="option-title">🏁 已結案</span>
+                <span class="option-tag" style="background: #e2e8f0; color: #475569;">程序完成結案</span>
+              </div>
+              <div class="option-desc">案件調查與審議程序已全數完成，正式核定結案存查。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 1rem 1.5rem; background: var(--slate-50); border-top: 1px solid var(--slate-200); display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeDecisionModal()">取消</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveDecisionModal()">✔ 確定儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW CASE MODAL -->
+  <div id="newCaseModal" class="modal-backdrop" onclick="closeNewCaseModal(event)">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>新增職場霸凌申訴案</h3>
+        <button style="border: none; background: transparent; font-size: 1.25rem; cursor: pointer;" onclick="closeNewCaseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">案件名稱</label>
+          <input type="text" id="newCaseName" class="date-input-wrapper" style="padding: 0.65rem 0.85rem;" placeholder="例：某某申訴案（如陳OO申訴案）">
+        </div>
+        <div class="form-group">
+          <label class="form-label">接獲申訴日</label>
+          <div class="date-input-wrapper">
+            <input type="text" id="newCaseDate" placeholder="例: 115.10.1 或 10/1" 
+                   onfocus="openDatePicker('newCase', this)"
+                   onclick="openDatePicker('newCase', this)"
+                   oninput="handleNewCaseDateLive()"
+                   onkeydown="if(event.key==='Enter'){this.blur();closeDatePicker();}">
+            <button type="button" class="date-input-btn" title="開啟小日曆" onclick="toggleDatePicker('newCase', document.getElementById('newCaseDate'))">
+              <span>📅</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeNewCaseModal()">取消</button>
+        <button class="btn btn-primary" onclick="submitNewCase()">建立案件</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
-            brand: ['"Cinzel"', 'serif'],
+    // =========================================================================
+    // EMBEDDED DGPA CALENDAR DATABASE (2025, 2026, 2027)
+    // =========================================================================
+    const DGPA_CALENDAR = {"2025-01-01": [1, "開國紀念日"], "2025-01-02": [0, ""], "2025-01-03": [0, ""], "2025-01-04": [1, ""], "2025-01-05": [1, ""], "2025-01-06": [0, ""], "2025-01-07": [0, ""], "2025-01-08": [0, ""], "2025-01-09": [0, ""], "2025-01-10": [0, ""], "2025-01-11": [1, ""], "2025-01-12": [1, ""], "2025-01-13": [0, ""], "2025-01-14": [0, ""], "2025-01-15": [0, ""], "2025-01-16": [0, ""], "2025-01-17": [0, ""], "2025-01-18": [1, ""], "2025-01-19": [1, ""], "2025-01-20": [0, ""], "2025-01-21": [0, ""], "2025-01-22": [0, ""], "2025-01-23": [0, ""], "2025-01-24": [0, ""], "2025-01-25": [1, ""], "2025-01-26": [1, ""], "2025-01-27": [1, "小年夜"], "2025-01-28": [1, "農曆除夕"], "2025-01-29": [1, "春節"], "2025-01-30": [1, "春節"], "2025-01-31": [1, "春節"], "2025-02-01": [1, ""], "2025-02-02": [1, ""], "2025-02-03": [0, ""], "2025-02-04": [0, ""], "2025-02-05": [0, ""], "2025-02-06": [0, ""], "2025-02-07": [0, ""], "2025-02-08": [0, "補行上班"], "2025-02-09": [1, ""], "2025-02-10": [0, ""], "2025-02-11": [0, ""], "2025-02-12": [0, ""], "2025-02-13": [0, ""], "2025-02-14": [0, ""], "2025-02-15": [1, ""], "2025-02-16": [1, ""], "2025-02-17": [0, ""], "2025-02-18": [0, ""], "2025-02-19": [0, ""], "2025-02-20": [0, ""], "2025-02-21": [0, ""], "2025-02-22": [1, ""], "2025-02-23": [1, ""], "2025-02-24": [0, ""], "2025-02-25": [0, ""], "2025-02-26": [0, ""], "2025-02-27": [0, ""], "2025-02-28": [1, "和平紀念日"], "2025-03-01": [1, ""], "2025-03-02": [1, ""], "2025-03-03": [0, ""], "2025-03-04": [0, ""], "2025-03-05": [0, ""], "2025-03-06": [0, ""], "2025-03-07": [0, ""], "2025-03-08": [1, ""], "2025-03-09": [1, ""], "2025-03-10": [0, ""], "2025-03-11": [0, ""], "2025-03-12": [0, ""], "2025-03-13": [0, ""], "2025-03-14": [0, ""], "2025-03-15": [1, ""], "2025-03-16": [1, ""], "2025-03-17": [0, ""], "2025-03-18": [0, ""], "2025-03-19": [0, ""], "2025-03-20": [0, ""], "2025-03-21": [0, ""], "2025-03-22": [1, ""], "2025-03-23": [1, ""], "2025-03-24": [0, ""], "2025-03-25": [0, ""], "2025-03-26": [0, ""], "2025-03-27": [0, ""], "2025-03-28": [0, ""], "2025-03-29": [1, ""], "2025-03-30": [1, ""], "2025-03-31": [0, ""], "2025-04-01": [0, ""], "2025-04-02": [0, ""], "2025-04-03": [1, "補假"], "2025-04-04": [1, "兒童節及民族掃墓節"], "2025-04-05": [1, ""], "2025-04-06": [1, ""], "2025-04-07": [0, ""], "2025-04-08": [0, ""], "2025-04-09": [0, ""], "2025-04-10": [0, ""], "2025-04-11": [0, ""], "2025-04-12": [1, ""], "2025-04-13": [1, ""], "2025-04-14": [0, ""], "2025-04-15": [0, ""], "2025-04-16": [0, ""], "2025-04-17": [0, ""], "2025-04-18": [0, ""], "2025-04-19": [1, ""], "2025-04-20": [1, ""], "2025-04-21": [0, ""], "2025-04-22": [0, ""], "2025-04-23": [0, ""], "2025-04-24": [0, ""], "2025-04-25": [0, ""], "2025-04-26": [1, ""], "2025-04-27": [1, ""], "2025-04-28": [0, ""], "2025-04-29": [0, ""], "2025-04-30": [0, ""], "2025-05-01": [0, ""], "2025-05-02": [0, ""], "2025-05-03": [1, ""], "2025-05-04": [1, ""], "2025-05-05": [0, ""], "2025-05-06": [0, ""], "2025-05-07": [0, ""], "2025-05-08": [0, ""], "2025-05-09": [0, ""], "2025-05-10": [1, ""], "2025-05-11": [1, ""], "2025-05-12": [0, ""], "2025-05-13": [0, ""], "2025-05-14": [0, ""], "2025-05-15": [0, ""], "2025-05-16": [0, ""], "2025-05-17": [1, ""], "2025-05-18": [1, ""], "2025-05-19": [0, ""], "2025-05-20": [0, ""], "2025-05-21": [0, ""], "2025-05-22": [0, ""], "2025-05-23": [0, ""], "2025-05-24": [1, ""], "2025-05-25": [1, ""], "2025-05-26": [0, ""], "2025-05-27": [0, ""], "2025-05-28": [0, ""], "2025-05-29": [0, ""], "2025-05-30": [1, "補假"], "2025-05-31": [1, "端午節"], "2025-06-01": [1, ""], "2025-06-02": [0, ""], "2025-06-03": [0, ""], "2025-06-04": [0, ""], "2025-06-05": [0, ""], "2025-06-06": [0, ""], "2025-06-07": [1, ""], "2025-06-08": [1, ""], "2025-06-09": [0, ""], "2025-06-10": [0, ""], "2025-06-11": [0, ""], "2025-06-12": [0, ""], "2025-06-13": [0, ""], "2025-06-14": [1, ""], "2025-06-15": [1, ""], "2025-06-16": [0, ""], "2025-06-17": [0, ""], "2025-06-18": [0, ""], "2025-06-19": [0, ""], "2025-06-20": [0, ""], "2025-06-21": [1, ""], "2025-06-22": [1, ""], "2025-06-23": [0, ""], "2025-06-24": [0, ""], "2025-06-25": [0, ""], "2025-06-26": [0, ""], "2025-06-27": [0, ""], "2025-06-28": [1, ""], "2025-06-29": [1, ""], "2025-06-30": [0, ""], "2025-07-01": [0, ""], "2025-07-02": [0, ""], "2025-07-03": [0, ""], "2025-07-04": [0, ""], "2025-07-05": [1, ""], "2025-07-06": [1, ""], "2025-07-07": [0, ""], "2025-07-08": [0, ""], "2025-07-09": [0, ""], "2025-07-10": [0, ""], "2025-07-11": [0, ""], "2025-07-12": [1, ""], "2025-07-13": [1, ""], "2025-07-14": [0, ""], "2025-07-15": [0, ""], "2025-07-16": [0, ""], "2025-07-17": [0, ""], "2025-07-18": [0, ""], "2025-07-19": [1, ""], "2025-07-20": [1, ""], "2025-07-21": [0, ""], "2025-07-22": [0, ""], "2025-07-23": [0, ""], "2025-07-24": [0, ""], "2025-07-25": [0, ""], "2025-07-26": [1, ""], "2025-07-27": [1, ""], "2025-07-28": [0, ""], "2025-07-29": [0, ""], "2025-07-30": [0, ""], "2025-07-31": [0, ""], "2025-08-01": [0, ""], "2025-08-02": [1, ""], "2025-08-03": [1, ""], "2025-08-04": [0, ""], "2025-08-05": [0, ""], "2025-08-06": [0, ""], "2025-08-07": [0, ""], "2025-08-08": [0, ""], "2025-08-09": [1, ""], "2025-08-10": [1, ""], "2025-08-11": [0, ""], "2025-08-12": [0, ""], "2025-08-13": [0, ""], "2025-08-14": [0, ""], "2025-08-15": [0, ""], "2025-08-16": [1, ""], "2025-08-17": [1, ""], "2025-08-18": [0, ""], "2025-08-19": [0, ""], "2025-08-20": [0, ""], "2025-08-21": [0, ""], "2025-08-22": [0, ""], "2025-08-23": [1, ""], "2025-08-24": [1, ""], "2025-08-25": [0, ""], "2025-08-26": [0, ""], "2025-08-27": [0, ""], "2025-08-28": [0, ""], "2025-08-29": [0, ""], "2025-08-30": [1, ""], "2025-08-31": [1, ""], "2025-09-01": [0, ""], "2025-09-02": [0, ""], "2025-09-03": [0, ""], "2025-09-04": [0, ""], "2025-09-05": [0, ""], "2025-09-06": [1, ""], "2025-09-07": [1, ""], "2025-09-08": [0, ""], "2025-09-09": [0, ""], "2025-09-10": [0, ""], "2025-09-11": [0, ""], "2025-09-12": [0, ""], "2025-09-13": [1, ""], "2025-09-14": [1, ""], "2025-09-15": [0, ""], "2025-09-16": [0, ""], "2025-09-17": [0, ""], "2025-09-18": [0, ""], "2025-09-19": [0, ""], "2025-09-20": [1, ""], "2025-09-21": [1, ""], "2025-09-22": [0, ""], "2025-09-23": [0, ""], "2025-09-24": [0, ""], "2025-09-25": [0, ""], "2025-09-26": [0, ""], "2025-09-27": [1, ""], "2025-09-28": [1, ""], "2025-09-29": [0, ""], "2025-09-30": [0, ""], "2025-10-01": [0, ""], "2025-10-02": [0, ""], "2025-10-03": [0, ""], "2025-10-04": [1, ""], "2025-10-05": [1, ""], "2025-10-06": [1, "中秋節"], "2025-10-07": [0, ""], "2025-10-08": [0, ""], "2025-10-09": [0, ""], "2025-10-10": [1, "國慶日"], "2025-10-11": [1, ""], "2025-10-12": [1, ""], "2025-10-13": [0, ""], "2025-10-14": [0, ""], "2025-10-15": [0, ""], "2025-10-16": [0, ""], "2025-10-17": [0, ""], "2025-10-18": [1, ""], "2025-10-19": [1, ""], "2025-10-20": [0, ""], "2025-10-21": [0, ""], "2025-10-22": [0, ""], "2025-10-23": [0, ""], "2025-10-24": [0, ""], "2025-10-25": [1, ""], "2025-10-26": [1, ""], "2025-10-27": [0, ""], "2025-10-28": [0, ""], "2025-10-29": [0, ""], "2025-10-30": [0, ""], "2025-10-31": [0, ""], "2025-11-01": [1, ""], "2025-11-02": [1, ""], "2025-11-03": [0, ""], "2025-11-04": [0, ""], "2025-11-05": [0, ""], "2025-11-06": [0, ""], "2025-11-07": [0, ""], "2025-11-08": [1, ""], "2025-11-09": [1, ""], "2025-11-10": [0, ""], "2025-11-11": [0, ""], "2025-11-12": [0, ""], "2025-11-13": [0, ""], "2025-11-14": [0, ""], "2025-11-15": [1, ""], "2025-11-16": [1, ""], "2025-11-17": [0, ""], "2025-11-18": [0, ""], "2025-11-19": [0, ""], "2025-11-20": [0, ""], "2025-11-21": [0, ""], "2025-11-22": [1, ""], "2025-11-23": [1, ""], "2025-11-24": [0, ""], "2025-11-25": [0, ""], "2025-11-26": [0, ""], "2025-11-27": [0, ""], "2025-11-28": [0, ""], "2025-11-29": [1, ""], "2025-11-30": [1, ""], "2025-12-01": [0, ""], "2025-12-02": [0, ""], "2025-12-03": [0, ""], "2025-12-04": [0, ""], "2025-12-05": [0, ""], "2025-12-06": [1, ""], "2025-12-07": [1, ""], "2025-12-08": [0, ""], "2025-12-09": [0, ""], "2025-12-10": [0, ""], "2025-12-11": [0, ""], "2025-12-12": [0, ""], "2025-12-13": [1, ""], "2025-12-14": [1, ""], "2025-12-15": [0, ""], "2025-12-16": [0, ""], "2025-12-17": [0, ""], "2025-12-18": [0, ""], "2025-12-19": [0, ""], "2025-12-20": [1, ""], "2025-12-21": [1, ""], "2025-12-22": [0, ""], "2025-12-23": [0, ""], "2025-12-24": [0, ""], "2025-12-25": [0, ""], "2025-12-26": [0, ""], "2025-12-27": [1, ""], "2025-12-28": [1, ""], "2025-12-29": [0, ""], "2025-12-30": [0, ""], "2025-12-31": [0, ""], "2026-01-01": [1, "開國紀念日"], "2026-01-02": [0, ""], "2026-01-03": [1, ""], "2026-01-04": [1, ""], "2026-01-05": [0, ""], "2026-01-06": [0, ""], "2026-01-07": [0, ""], "2026-01-08": [0, ""], "2026-01-09": [0, ""], "2026-01-10": [1, ""], "2026-01-11": [1, ""], "2026-01-12": [0, ""], "2026-01-13": [0, ""], "2026-01-14": [0, ""], "2026-01-15": [0, ""], "2026-01-16": [0, ""], "2026-01-17": [1, ""], "2026-01-18": [1, ""], "2026-01-19": [0, ""], "2026-01-20": [0, ""], "2026-01-21": [0, ""], "2026-01-22": [0, ""], "2026-01-23": [0, ""], "2026-01-24": [1, ""], "2026-01-25": [1, ""], "2026-01-26": [0, ""], "2026-01-27": [0, ""], "2026-01-28": [0, ""], "2026-01-29": [0, ""], "2026-01-30": [0, ""], "2026-01-31": [1, ""], "2026-02-01": [1, ""], "2026-02-02": [0, ""], "2026-02-03": [0, ""], "2026-02-04": [0, ""], "2026-02-05": [0, ""], "2026-02-06": [0, ""], "2026-02-07": [1, ""], "2026-02-08": [1, ""], "2026-02-09": [0, ""], "2026-02-10": [0, ""], "2026-02-11": [0, ""], "2026-02-12": [0, ""], "2026-02-13": [0, ""], "2026-02-14": [1, ""], "2026-02-15": [1, "小年夜"], "2026-02-16": [1, "農曆除夕"], "2026-02-17": [1, "春節"], "2026-02-18": [1, "春節"], "2026-02-19": [1, "春節"], "2026-02-20": [1, "補假"], "2026-02-21": [1, ""], "2026-02-22": [1, ""], "2026-02-23": [0, ""], "2026-02-24": [0, ""], "2026-02-25": [0, ""], "2026-02-26": [0, ""], "2026-02-27": [1, "補假"], "2026-02-28": [1, "和平紀念日"], "2026-03-01": [1, ""], "2026-03-02": [0, ""], "2026-03-03": [0, ""], "2026-03-04": [0, ""], "2026-03-05": [0, ""], "2026-03-06": [0, ""], "2026-03-07": [1, ""], "2026-03-08": [1, ""], "2026-03-09": [0, ""], "2026-03-10": [0, ""], "2026-03-11": [0, ""], "2026-03-12": [0, ""], "2026-03-13": [0, ""], "2026-03-14": [1, ""], "2026-03-15": [1, ""], "2026-03-16": [0, ""], "2026-03-17": [0, ""], "2026-03-18": [0, ""], "2026-03-19": [0, ""], "2026-03-20": [0, ""], "2026-03-21": [1, ""], "2026-03-22": [1, ""], "2026-03-23": [0, ""], "2026-03-24": [0, ""], "2026-03-25": [0, ""], "2026-03-26": [0, ""], "2026-03-27": [0, ""], "2026-03-28": [1, ""], "2026-03-29": [1, ""], "2026-03-30": [0, ""], "2026-03-31": [0, ""], "2026-04-01": [0, ""], "2026-04-02": [0, ""], "2026-04-03": [1, "補假"], "2026-04-04": [1, "兒童節"], "2026-04-05": [1, "清明節"], "2026-04-06": [1, "補假"], "2026-04-07": [0, ""], "2026-04-08": [0, ""], "2026-04-09": [0, ""], "2026-04-10": [0, ""], "2026-04-11": [1, ""], "2026-04-12": [1, ""], "2026-04-13": [0, ""], "2026-04-14": [0, ""], "2026-04-15": [0, ""], "2026-04-16": [0, ""], "2026-04-17": [0, ""], "2026-04-18": [1, ""], "2026-04-19": [1, ""], "2026-04-20": [0, ""], "2026-04-21": [0, ""], "2026-04-22": [0, ""], "2026-04-23": [0, ""], "2026-04-24": [0, ""], "2026-04-25": [1, ""], "2026-04-26": [1, ""], "2026-04-27": [0, ""], "2026-04-28": [0, ""], "2026-04-29": [0, ""], "2026-04-30": [0, ""], "2026-05-01": [1, "勞動節"], "2026-05-02": [1, ""], "2026-05-03": [1, ""], "2026-05-04": [0, ""], "2026-05-05": [0, ""], "2026-05-06": [0, ""], "2026-05-07": [0, ""], "2026-05-08": [0, ""], "2026-05-09": [1, ""], "2026-05-10": [1, ""], "2026-05-11": [0, ""], "2026-05-12": [0, ""], "2026-05-13": [0, ""], "2026-05-14": [0, ""], "2026-05-15": [0, ""], "2026-05-16": [1, ""], "2026-05-17": [1, ""], "2026-05-18": [0, ""], "2026-05-19": [0, ""], "2026-05-20": [0, ""], "2026-05-21": [0, ""], "2026-05-22": [0, ""], "2026-05-23": [1, ""], "2026-05-24": [1, ""], "2026-05-25": [0, ""], "2026-05-26": [0, ""], "2026-05-27": [0, ""], "2026-05-28": [0, ""], "2026-05-29": [0, ""], "2026-05-30": [1, ""], "2026-05-31": [1, ""], "2026-06-01": [0, ""], "2026-06-02": [0, ""], "2026-06-03": [0, ""], "2026-06-04": [0, ""], "2026-06-05": [0, ""], "2026-06-06": [1, ""], "2026-06-07": [1, ""], "2026-06-08": [0, ""], "2026-06-09": [0, ""], "2026-06-10": [0, ""], "2026-06-11": [0, ""], "2026-06-12": [0, ""], "2026-06-13": [1, ""], "2026-06-14": [1, ""], "2026-06-15": [0, ""], "2026-06-16": [0, ""], "2026-06-17": [0, ""], "2026-06-18": [0, ""], "2026-06-19": [1, "端午節"], "2026-06-20": [1, ""], "2026-06-21": [1, ""], "2026-06-22": [0, ""], "2026-06-23": [0, ""], "2026-06-24": [0, ""], "2026-06-25": [0, ""], "2026-06-26": [0, ""], "2026-06-27": [1, ""], "2026-06-28": [1, ""], "2026-06-29": [0, ""], "2026-06-30": [0, ""], "2026-07-01": [0, ""], "2026-07-02": [0, ""], "2026-07-03": [0, ""], "2026-07-04": [1, ""], "2026-07-05": [1, ""], "2026-07-06": [0, ""], "2026-07-07": [0, ""], "2026-07-08": [0, ""], "2026-07-09": [0, ""], "2026-07-10": [0, ""], "2026-07-11": [1, ""], "2026-07-12": [1, ""], "2026-07-13": [0, ""], "2026-07-14": [0, ""], "2026-07-15": [0, ""], "2026-07-16": [0, ""], "2026-07-17": [0, ""], "2026-07-18": [1, ""], "2026-07-19": [1, ""], "2026-07-20": [0, ""], "2026-07-21": [0, ""], "2026-07-22": [0, ""], "2026-07-23": [0, ""], "2026-07-24": [0, ""], "2026-07-25": [1, ""], "2026-07-26": [1, ""], "2026-07-27": [0, ""], "2026-07-28": [0, ""], "2026-07-29": [0, ""], "2026-07-30": [0, ""], "2026-07-31": [0, ""], "2026-08-01": [1, ""], "2026-08-02": [1, ""], "2026-08-03": [0, ""], "2026-08-04": [0, ""], "2026-08-05": [0, ""], "2026-08-06": [0, ""], "2026-08-07": [0, ""], "2026-08-08": [1, ""], "2026-08-09": [1, ""], "2026-08-10": [0, ""], "2026-08-11": [0, ""], "2026-08-12": [0, ""], "2026-08-13": [0, ""], "2026-08-14": [0, ""], "2026-08-15": [1, ""], "2026-08-16": [1, ""], "2026-08-17": [0, ""], "2026-08-18": [0, ""], "2026-08-19": [0, ""], "2026-08-20": [0, ""], "2026-08-21": [0, ""], "2026-08-22": [1, ""], "2026-08-23": [1, ""], "2026-08-24": [0, ""], "2026-08-25": [0, ""], "2026-08-26": [0, ""], "2026-08-27": [0, ""], "2026-08-28": [0, ""], "2026-08-29": [1, ""], "2026-08-30": [1, ""], "2026-08-31": [0, ""], "2026-09-01": [0, ""], "2026-09-02": [0, ""], "2026-09-03": [0, ""], "2026-09-04": [0, ""], "2026-09-05": [1, ""], "2026-09-06": [1, ""], "2026-09-07": [0, ""], "2026-09-08": [0, ""], "2026-09-09": [0, ""], "2026-09-10": [0, ""], "2026-09-11": [0, ""], "2026-09-12": [1, ""], "2026-09-13": [1, ""], "2026-09-14": [0, ""], "2026-09-15": [0, ""], "2026-09-16": [0, ""], "2026-09-17": [0, ""], "2026-09-18": [0, ""], "2026-09-19": [1, ""], "2026-09-20": [1, ""], "2026-09-21": [0, ""], "2026-09-22": [0, ""], "2026-09-23": [0, ""], "2026-09-24": [0, ""], "2026-09-25": [1, "中秋節"], "2026-09-26": [1, ""], "2026-09-27": [1, ""], "2026-09-28": [1, "孔子誕辰紀念日/教師節"], "2026-09-29": [0, ""], "2026-09-30": [0, ""], "2026-10-01": [0, ""], "2026-10-02": [0, ""], "2026-10-03": [1, ""], "2026-10-04": [1, ""], "2026-10-05": [0, ""], "2026-10-06": [0, ""], "2026-10-07": [0, ""], "2026-10-08": [0, ""], "2026-10-09": [1, "補假"], "2026-10-10": [1, "國慶日"], "2026-10-11": [1, ""], "2026-10-12": [0, ""], "2026-10-13": [0, ""], "2026-10-14": [0, ""], "2026-10-15": [0, ""], "2026-10-16": [0, ""], "2026-10-17": [1, ""], "2026-10-18": [1, ""], "2026-10-19": [0, ""], "2026-10-20": [0, ""], "2026-10-21": [0, ""], "2026-10-22": [0, ""], "2026-10-23": [0, ""], "2026-10-24": [1, ""], "2026-10-25": [1, "臺灣光復暨金門古寧頭大捷紀念日"], "2026-10-26": [1, "補假"], "2026-10-27": [0, ""], "2026-10-28": [0, ""], "2026-10-29": [0, ""], "2026-10-30": [0, ""], "2026-10-31": [1, ""], "2026-11-01": [1, ""], "2026-11-02": [0, ""], "2026-11-03": [0, ""], "2026-11-04": [0, ""], "2026-11-05": [0, ""], "2026-11-06": [0, ""], "2026-11-07": [1, ""], "2026-11-08": [1, ""], "2026-11-09": [0, ""], "2026-11-10": [0, ""], "2026-11-11": [0, ""], "2026-11-12": [0, ""], "2026-11-13": [0, ""], "2026-11-14": [1, ""], "2026-11-15": [1, ""], "2026-11-16": [0, ""], "2026-11-17": [0, ""], "2026-11-18": [0, ""], "2026-11-19": [0, ""], "2026-11-20": [0, ""], "2026-11-21": [1, ""], "2026-11-22": [1, ""], "2026-11-23": [0, ""], "2026-11-24": [0, ""], "2026-11-25": [0, ""], "2026-11-26": [0, ""], "2026-11-27": [0, ""], "2026-11-28": [1, ""], "2026-11-29": [1, ""], "2026-11-30": [0, ""], "2026-12-01": [0, ""], "2026-12-02": [0, ""], "2026-12-03": [0, ""], "2026-12-04": [0, ""], "2026-12-05": [1, ""], "2026-12-06": [1, ""], "2026-12-07": [0, ""], "2026-12-08": [0, ""], "2026-12-09": [0, ""], "2026-12-10": [0, ""], "2026-12-11": [0, ""], "2026-12-12": [1, ""], "2026-12-13": [1, ""], "2026-12-14": [0, ""], "2026-12-15": [0, ""], "2026-12-16": [0, ""], "2026-12-17": [0, ""], "2026-12-18": [0, ""], "2026-12-19": [1, ""], "2026-12-20": [1, ""], "2026-12-21": [0, ""], "2026-12-22": [0, ""], "2026-12-23": [0, ""], "2026-12-24": [0, ""], "2026-12-25": [1, "行憲紀念日"], "2026-12-26": [1, ""], "2026-12-27": [1, ""], "2026-12-28": [0, ""], "2026-12-29": [0, ""], "2026-12-30": [0, ""], "2026-12-31": [0, ""], "2027-01-01": [1, "開國紀念日"], "2027-01-02": [1, ""], "2027-01-03": [1, ""], "2027-01-04": [0, ""], "2027-01-05": [0, ""], "2027-01-06": [0, ""], "2027-01-07": [0, ""], "2027-01-08": [0, ""], "2027-01-09": [1, ""], "2027-01-10": [1, ""], "2027-01-11": [0, ""], "2027-01-12": [0, ""], "2027-01-13": [0, ""], "2027-01-14": [0, ""], "2027-01-15": [0, ""], "2027-01-16": [1, ""], "2027-01-17": [1, ""], "2027-01-18": [0, ""], "2027-01-19": [0, ""], "2027-01-20": [0, ""], "2027-01-21": [0, ""], "2027-01-22": [0, ""], "2027-01-23": [1, ""], "2027-01-24": [1, ""], "2027-01-25": [0, ""], "2027-01-26": [0, ""], "2027-01-27": [0, ""], "2027-01-28": [0, ""], "2027-01-29": [0, ""], "2027-01-30": [1, ""], "2027-01-31": [1, ""], "2027-02-01": [0, ""], "2027-02-02": [0, ""], "2027-02-03": [0, ""], "2027-02-04": [1, "小年夜"], "2027-02-05": [1, "農曆除夕"], "2027-02-06": [1, "春節"], "2027-02-07": [1, "春節"], "2027-02-08": [1, "春節"], "2027-02-09": [1, "補假"], "2027-02-10": [1, "補假"], "2027-02-11": [0, ""], "2027-02-12": [0, ""], "2027-02-13": [1, ""], "2027-02-14": [1, ""], "2027-02-15": [0, ""], "2027-02-16": [0, ""], "2027-02-17": [0, ""], "2027-02-18": [0, ""], "2027-02-19": [0, ""], "2027-02-20": [1, ""], "2027-02-21": [1, ""], "2027-02-22": [0, ""], "2027-02-23": [0, ""], "2027-02-24": [0, ""], "2027-02-25": [0, ""], "2027-02-26": [0, ""], "2027-02-27": [1, ""], "2027-02-28": [1, "和平紀念日"], "2027-03-01": [1, "補假"], "2027-03-02": [0, ""], "2027-03-03": [0, ""], "2027-03-04": [0, ""], "2027-03-05": [0, ""], "2027-03-06": [1, ""], "2027-03-07": [1, ""], "2027-03-08": [0, ""], "2027-03-09": [0, ""], "2027-03-10": [0, ""], "2027-03-11": [0, ""], "2027-03-12": [0, ""], "2027-03-13": [1, ""], "2027-03-14": [1, ""], "2027-03-15": [0, ""], "2027-03-16": [0, ""], "2027-03-17": [0, ""], "2027-03-18": [0, ""], "2027-03-19": [0, ""], "2027-03-20": [1, ""], "2027-03-21": [1, ""], "2027-03-22": [0, ""], "2027-03-23": [0, ""], "2027-03-24": [0, ""], "2027-03-25": [0, ""], "2027-03-26": [0, ""], "2027-03-27": [1, ""], "2027-03-28": [1, ""], "2027-03-29": [0, ""], "2027-03-30": [0, ""], "2027-03-31": [0, ""], "2027-04-01": [0, ""], "2027-04-02": [0, ""], "2027-04-03": [1, ""], "2027-04-04": [1, "兒童節"], "2027-04-05": [1, "清明節"], "2027-04-06": [1, "補假"], "2027-04-07": [0, ""], "2027-04-08": [0, ""], "2027-04-09": [0, ""], "2027-04-10": [1, ""], "2027-04-11": [1, ""], "2027-04-12": [0, ""], "2027-04-13": [0, ""], "2027-04-14": [0, ""], "2027-04-15": [0, ""], "2027-04-16": [0, ""], "2027-04-17": [1, ""], "2027-04-18": [1, ""], "2027-04-19": [0, ""], "2027-04-20": [0, ""], "2027-04-21": [0, ""], "2027-04-22": [0, ""], "2027-04-23": [0, ""], "2027-04-24": [1, ""], "2027-04-25": [1, ""], "2027-04-26": [0, ""], "2027-04-27": [0, ""], "2027-04-28": [0, ""], "2027-04-29": [0, ""], "2027-04-30": [1, "補假"], "2027-05-01": [1, "勞動節"], "2027-05-02": [1, ""], "2027-05-03": [0, ""], "2027-05-04": [0, ""], "2027-05-05": [0, ""], "2027-05-06": [0, ""], "2027-05-07": [0, ""], "2027-05-08": [1, ""], "2027-05-09": [1, ""], "2027-05-10": [0, ""], "2027-05-11": [0, ""], "2027-05-12": [0, ""], "2027-05-13": [0, ""], "2027-05-14": [0, ""], "2027-05-15": [1, ""], "2027-05-16": [1, ""], "2027-05-17": [0, ""], "2027-05-18": [0, ""], "2027-05-19": [0, ""], "2027-05-20": [0, ""], "2027-05-21": [0, ""], "2027-05-22": [1, ""], "2027-05-23": [1, ""], "2027-05-24": [0, ""], "2027-05-25": [0, ""], "2027-05-26": [0, ""], "2027-05-27": [0, ""], "2027-05-28": [0, ""], "2027-05-29": [1, ""], "2027-05-30": [1, ""], "2027-05-31": [0, ""], "2027-06-01": [0, ""], "2027-06-02": [0, ""], "2027-06-03": [0, ""], "2027-06-04": [0, ""], "2027-06-05": [1, ""], "2027-06-06": [1, ""], "2027-06-07": [0, ""], "2027-06-08": [0, ""], "2027-06-09": [1, "端午節"], "2027-06-10": [0, ""], "2027-06-11": [0, ""], "2027-06-12": [1, ""], "2027-06-13": [1, ""], "2027-06-14": [0, ""], "2027-06-15": [0, ""], "2027-06-16": [0, ""], "2027-06-17": [0, ""], "2027-06-18": [0, ""], "2027-06-19": [1, ""], "2027-06-20": [1, ""], "2027-06-21": [0, ""], "2027-06-22": [0, ""], "2027-06-23": [0, ""], "2027-06-24": [0, ""], "2027-06-25": [0, ""], "2027-06-26": [1, ""], "2027-06-27": [1, ""], "2027-06-28": [0, ""], "2027-06-29": [0, ""], "2027-06-30": [0, ""], "2027-07-01": [0, ""], "2027-07-02": [0, ""], "2027-07-03": [1, ""], "2027-07-04": [1, ""], "2027-07-05": [0, ""], "2027-07-06": [0, ""], "2027-07-07": [0, ""], "2027-07-08": [0, ""], "2027-07-09": [0, ""], "2027-07-10": [1, ""], "2027-07-11": [1, ""], "2027-07-12": [0, ""], "2027-07-13": [0, ""], "2027-07-14": [0, ""], "2027-07-15": [0, ""], "2027-07-16": [0, ""], "2027-07-17": [1, ""], "2027-07-18": [1, ""], "2027-07-19": [0, ""], "2027-07-20": [0, ""], "2027-07-21": [0, ""], "2027-07-22": [0, ""], "2027-07-23": [0, ""], "2027-07-24": [1, ""], "2027-07-25": [1, ""], "2027-07-26": [0, ""], "2027-07-27": [0, ""], "2027-07-28": [0, ""], "2027-07-29": [0, ""], "2027-07-30": [0, ""], "2027-07-31": [1, ""], "2027-08-01": [1, ""], "2027-08-02": [0, ""], "2027-08-03": [0, ""], "2027-08-04": [0, ""], "2027-08-05": [0, ""], "2027-08-06": [0, ""], "2027-08-07": [1, ""], "2027-08-08": [1, ""], "2027-08-09": [0, ""], "2027-08-10": [0, ""], "2027-08-11": [0, ""], "2027-08-12": [0, ""], "2027-08-13": [0, ""], "2027-08-14": [1, ""], "2027-08-15": [1, ""], "2027-08-16": [0, ""], "2027-08-17": [0, ""], "2027-08-18": [0, ""], "2027-08-19": [0, ""], "2027-08-20": [0, ""], "2027-08-21": [1, ""], "2027-08-22": [1, ""], "2027-08-23": [0, ""], "2027-08-24": [0, ""], "2027-08-25": [0, ""], "2027-08-26": [0, ""], "2027-08-27": [0, ""], "2027-08-28": [1, ""], "2027-08-29": [1, ""], "2027-08-30": [0, ""], "2027-08-31": [0, ""], "2027-09-01": [0, ""], "2027-09-02": [0, ""], "2027-09-03": [0, ""], "2027-09-04": [1, ""], "2027-09-05": [1, ""], "2027-09-06": [0, ""], "2027-09-07": [0, ""], "2027-09-08": [0, ""], "2027-09-09": [0, ""], "2027-09-10": [0, ""], "2027-09-11": [1, ""], "2027-09-12": [1, ""], "2027-09-13": [0, ""], "2027-09-14": [0, ""], "2027-09-15": [1, "中秋節"], "2027-09-16": [0, ""], "2027-09-17": [0, ""], "2027-09-18": [1, ""], "2027-09-19": [1, ""], "2027-09-20": [0, ""], "2027-09-21": [0, ""], "2027-09-22": [0, ""], "2027-09-23": [0, ""], "2027-09-24": [0, ""], "2027-09-25": [1, ""], "2027-09-26": [1, ""], "2027-09-27": [0, ""], "2027-09-28": [1, "孔子誕辰紀念日/教師節"], "2027-09-29": [0, ""], "2027-09-30": [0, ""], "2027-10-01": [0, ""], "2027-10-02": [1, ""], "2027-10-03": [1, ""], "2027-10-04": [0, ""], "2027-10-05": [0, ""], "2027-10-06": [0, ""], "2027-10-07": [0, ""], "2027-10-08": [0, ""], "2027-10-09": [1, ""], "2027-10-10": [1, "國慶日"], "2027-10-11": [1, "補假"], "2027-10-12": [0, ""], "2027-10-13": [0, ""], "2027-10-14": [0, ""], "2027-10-15": [0, ""], "2027-10-16": [1, ""], "2027-10-17": [1, ""], "2027-10-18": [0, ""], "2027-10-19": [0, ""], "2027-10-20": [0, ""], "2027-10-21": [0, ""], "2027-10-22": [0, ""], "2027-10-23": [1, ""], "2027-10-24": [1, ""], "2027-10-25": [1, "臺灣光復暨金門古寧頭大捷紀念日"], "2027-10-26": [0, ""], "2027-10-27": [0, ""], "2027-10-28": [0, ""], "2027-10-29": [0, ""], "2027-10-30": [1, ""], "2027-10-31": [1, ""], "2027-11-01": [0, ""], "2027-11-02": [0, ""], "2027-11-03": [0, ""], "2027-11-04": [0, ""], "2027-11-05": [0, ""], "2027-11-06": [1, ""], "2027-11-07": [1, ""], "2027-11-08": [0, ""], "2027-11-09": [0, ""], "2027-11-10": [0, ""], "2027-11-11": [0, ""], "2027-11-12": [0, ""], "2027-11-13": [1, ""], "2027-11-14": [1, ""], "2027-11-15": [0, ""], "2027-11-16": [0, ""], "2027-11-17": [0, ""], "2027-11-18": [0, ""], "2027-11-19": [0, ""], "2027-11-20": [1, ""], "2027-11-21": [1, ""], "2027-11-22": [0, ""], "2027-11-23": [0, ""], "2027-11-24": [0, ""], "2027-11-25": [0, ""], "2027-11-26": [0, ""], "2027-11-27": [1, ""], "2027-11-28": [1, ""], "2027-11-29": [0, ""], "2027-11-30": [0, ""], "2027-12-01": [0, ""], "2027-12-02": [0, ""], "2027-12-03": [0, ""], "2027-12-04": [1, ""], "2027-12-05": [1, ""], "2027-12-06": [0, ""], "2027-12-07": [0, ""], "2027-12-08": [0, ""], "2027-12-09": [0, ""], "2027-12-10": [0, ""], "2027-12-11": [1, ""], "2027-12-12": [1, ""], "2027-12-13": [0, ""], "2027-12-14": [0, ""], "2027-12-15": [0, ""], "2027-12-16": [0, ""], "2027-12-17": [0, ""], "2027-12-18": [1, ""], "2027-12-19": [1, ""], "2027-12-20": [0, ""], "2027-12-21": [0, ""], "2027-12-22": [0, ""], "2027-12-23": [0, ""], "2027-12-24": [1, "補假"], "2027-12-25": [1, "行憲紀念日"], "2027-12-26": [1, ""], "2027-12-27": [0, ""], "2027-12-28": [0, ""], "2027-12-29": [0, ""], "2027-12-30": [0, ""], "2027-12-31": [1, "補假"]};
+
+    // State
+    let cases = [];
+    let currentCaseId = null;
+    let currentFilter = 'all';
+
+    // Calendar Picker State
+    let calTargetField = null;
+    let calCurrentYear = 2026;
+    let calCurrentMonth = 10;
+    let calSelectedDate = null;
+
+    // Actual Today (Context is 2026-10-03)
+    function getTodayDateStr() {
+      const now = new Date();
+      if (now.getFullYear() === 2026) {
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${now.getFullYear()}-${m}-${d}`;
+      }
+      return '2026-10-03';
+    }
+
+    // =========================================================================
+    // OPTION B: LOCAL FILE SYSTEM STORAGE (霸凌申訴案件.json) + DUAL PROTECTION
+    // =========================================================================
+    let localFileHandle = null;
+    const FS_DB_NAME = 'EventsReminderFSDB';
+    const FS_STORE_NAME = 'handles';
+
+    function openFSDatabase() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(FS_DB_NAME, 1);
+        req.onupgradeneeded = () => req.result.createObjectStore(FS_STORE_NAME);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function setStoredFileHandle(handle) {
+      try {
+        const db = await openFSDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(FS_STORE_NAME, 'readwrite');
+          tx.objectStore(FS_STORE_NAME).put(handle, 'caseFileHandle');
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn('IDB write failed:', e);
+      }
+    }
+
+    async function getStoredFileHandle() {
+      try {
+        const db = await openFSDatabase();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(FS_STORE_NAME, 'readonly');
+          const req = tx.objectStore(FS_STORE_NAME).get('caseFileHandle');
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function connectOrManageLocalFile() {
+      if (!('showOpenFilePicker' in window)) {
+        alert('您的瀏覽器未支援直接寫入本機檔案（建議使用 Google Chrome 或 Microsoft Edge）。\n系統目前已為您在瀏覽器本機快取中即時存檔。點擊確定即可將所有案件下載為「霸凌申訴案件.json」備份。');
+        downloadCasesJsonFile();
+        return;
+      }
+
+      // 若先前已連結過檔案（重開網頁後處於待授權狀態），一鍵喚醒權限即可，免去重複翻找檔案
+      if (localFileHandle) {
+        try {
+          const qPerm = await localFileHandle.queryPermission({ mode: 'readwrite' });
+          if (qPerm !== 'granted') {
+            const reqPerm = await localFileHandle.requestPermission({ mode: 'readwrite' });
+            if (reqPerm === 'granted') {
+              await attachFileHandle(localFileHandle, false);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Direct permission resume failed, opening picker:', e);
+        }
+      }
+
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          multiple: false,
+          types: [{
+            description: 'JSON 案件檔案 (霸凌申訴案件.json)',
+            accept: { 'application/json': ['.json'] }
+          }]
+        });
+
+        if (!handle) return;
+        await attachFileHandle(handle);
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: '霸凌申訴案件.json',
+            types: [{
+              description: 'JSON 案件檔案 (霸凌申訴案件.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          if (handle) {
+            await attachFileHandle(handle, true);
+          }
+        } catch (e) {
+          if (e.name !== 'AbortError') {
+            console.error('File picker error:', e);
           }
         }
       }
     }
-  </script>
-</head>
-<body class="flex flex-col h-screen overflow-hidden bg-slate-100">
 
-  <!-- 統一亮色頂部導覽列 -->
-  <header class="h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 shadow-sm">
-    <div class="flex items-center space-x-3">
-      <a href="index.html" class="flex items-center space-x-2 group">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
-          <i data-lucide="scale" class="w-4 h-4"></i>
-        </div>
-        <span class="font-brand text-sm font-bold tracking-wider text-slate-900 hidden sm:inline">LEXCRAFT</span>
-      </a>
-      <span class="text-slate-300">/</span>
-      <div class="flex items-center space-x-2">
-        <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
-          <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
-          <span>職場調查與法律程序時限管家 (Events Reminder)</span>
-        </span>
-        <span class="text-[10px] px-2 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 hidden md:inline font-medium">
-          法定期程精算・倒數提醒
-        </span>
-      </div>
-    </div>
+    async function attachFileHandle(handle, isNewlyCreated = false) {
+      localFileHandle = handle;
+      await setStoredFileHandle(handle);
 
-    <div class="flex items-center space-x-2">
-      <button onclick="reloadFrame()" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition" title="重新載入工具">
-        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
-      </button>
-      <button onclick="toggleFullscreen()" class="p-1.5 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition" title="全螢幕專注模式">
-        <i data-lucide="maximize" class="w-4 h-4"></i>
-      </button>
-      <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 transition flex items-center space-x-1 font-medium">
-        <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-        <span>返回市集</span>
-      </a>
-    </div>
-  </header>
+      const perm = await verifyFilePermission(handle);
+      if (!perm) {
+        updateFileStorageUI('prompt', handle.name);
+        return;
+      }
 
-  <!-- 嵌入的原生事件提醒 Web 應用程式 -->
-  <main class="flex-grow w-full h-[calc(100vh-3.5rem)] bg-slate-50 relative">
-    <iframe 
-      id="reminderFrame" 
-      src="events-reminder-app/index.html" 
-      class="w-full h-full border-none"
-      title="法律程序時限管家"
-    ></iframe>
-  </main>
+      if (isNewlyCreated) {
+        await writeToLocalFile(cases);
+      } else {
+        const file = await handle.getFile();
+        const text = await file.text();
+        if (text && text.trim()) {
+          try {
+            const loaded = JSON.parse(text);
+            if (Array.isArray(loaded) && loaded.length > 0) {
+              cases = loaded;
+              localStorage.setItem('dgpa_reminder_cases_v4', JSON.stringify(cases));
+              renderCaseCards();
+              if (currentCaseId) {
+                const cur = cases.find(c => c.id === currentCaseId);
+                if (cur) {
+                  renderArrowGraphicTimeline(cur);
+                  updateDecisionButtonView(cur);
+                }
+              }
+            } else {
+              await writeToLocalFile(cases);
+            }
+          } catch (e) {
+            console.warn('File parsed with fallback to current cases:', e);
+            await writeToLocalFile(cases);
+          }
+        } else {
+          await writeToLocalFile(cases);
+        }
+      }
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-    });
-
-    function reloadFrame() {
-      const f = document.getElementById('reminderFrame');
-      f.src = f.src;
+      updateFileStorageUI('linked', handle.name);
+      showSaveToast(`已成功連結實體檔案「${handle.name}」！所有案件均會自動寫入硬碟。`);
     }
 
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+    async function verifyFilePermission(handle) {
+      try {
+        const status = await handle.queryPermission({ mode: 'readwrite' });
+        if (status === 'granted') return true;
+        const req = await handle.requestPermission({ mode: 'readwrite' });
+        return req === 'granted';
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function writeToLocalFile(data) {
+      if (!localFileHandle) return false;
+      try {
+        const perm = await verifyFilePermission(localFileHandle);
+        if (!perm) {
+          updateFileStorageUI('prompt', localFileHandle.name);
+          return false;
+        }
+        const writable = await localFileHandle.createWritable();
+        await writable.write(JSON.stringify(data, null, 2));
+        await writable.close();
+        updateFileStorageUI('linked', localFileHandle.name);
+        return true;
+      } catch (err) {
+        console.error('Failed to write to local file:', err);
+        updateFileStorageUI('prompt', localFileHandle ? localFileHandle.name : '霸凌申訴案件.json');
+        return false;
+      }
+    }
+
+    function updateFileStorageUI(state, filename = '霸凌申訴案件.json') {
+      const btn = document.getElementById('btnFileStorageStatus');
+      const textEl = document.getElementById('storageStatusText');
+      if (!btn || !textEl) return;
+
+      if (state === 'linked') {
+        btn.className = 'storage-status-pill linked';
+        btn.title = `已連結紀錄檔（${filename}），修改資料時將自動即時儲存！點選可更換檔案。`;
+        textEl.innerHTML = `<span class="status-dot green"></span>已連結紀錄檔`;
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
+        // 尚未取得權限時（包括剛刷新網頁待使用者確認授權、或初次未連結）：
+        // 一律回歸「連結紀錄檔」，避免在未取得硬碟讀寫權限時誤導呈現「已連結」
+        btn.className = 'storage-status-pill';
+        if (state === 'prompt') {
+          btn.title = `已記住「${filename}」，點選此處確認授權即可直接連線！`;
+        } else {
+          btn.title = `點選連結硬碟中的案件紀錄檔`;
+        }
+        textEl.innerHTML = `連結紀錄檔`;
+      }
+    }
+
+    async function handleManualSaveCaseFile() {
+      // 情況 A：如之前已連結，按下去就再執行寫入一次
+      if (localFileHandle) {
+        try {
+          const perm = await verifyFilePermission(localFileHandle);
+          if (perm) {
+            const ok = await writeToLocalFile(cases);
+            if (ok) {
+              showSaveToast(`✓ 已成功儲存至「${localFileHandle.name}」！`);
+              updateFileStorageUI('linked', localFileHandle.name);
+              return;
+            }
+          }
+        } catch (e) {
+          console.warn('Manual save existing file error:', e);
+        }
+      }
+
+      // 情況 B：如之前未連結，則產生.json檔，並詢問使用者儲存何處，檔名可隨使用者喜好自行修改
+      if ('showSaveFilePicker' in window) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: '霸凌申訴案件.json',
+            types: [{
+              description: 'JSON 案件紀錄檔 (*.json)',
+              accept: { 'application/json': ['.json'] }
+            }]
+          });
+          if (handle) {
+            await attachFileHandle(handle, true);
+            showSaveToast(`✓ 已成功建立並儲存至「${handle.name}」，已啟用自動儲存！`);
+          }
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            console.error('Save file error:', err);
+            downloadCasesJsonFile();
+          }
+        }
+      } else {
+        downloadCasesJsonFile();
+      }
+    }
+
+    function showSaveToast(msg) {
+      const toast = document.getElementById('saveToast');
+      const text = document.getElementById('saveToastText');
+      if (!toast || !text) return;
+      text.innerText = msg;
+      toast.classList.add('visible');
+      if (window._saveToastTimer) clearTimeout(window._saveToastTimer);
+      window._saveToastTimer = setTimeout(() => {
+        toast.classList.remove('visible');
+      }, 2600);
+    }
+
+    function downloadCasesJsonFile() {
+      const jsonStr = JSON.stringify(cases, null, 2);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '霸凌申訴案件.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showSaveToast('已下載實體檔案「霸凌申訴案件.json」！');
+    }
+
+    async function initApp() {
+      // 1. Double protection: Load from LocalStorage first for instant rendering
+      const saved = localStorage.getItem('dgpa_reminder_cases_v4');
+      if (saved) {
+        try {
+          cases = JSON.parse(saved);
+        } catch(e) {
+          cases = [];
+        }
+      }
+      if (!Array.isArray(cases)) {
+        cases = [];
+      }
+      // 自動過濾早期系統預設的示範資料（使用者自行建立的真實案件均完整保留）
+      const prevLen = cases.length;
+      cases = cases.filter(c => c.id !== 'case_tsmc' && c.id !== 'case_oriental_space');
+      if (cases.length !== prevLen) {
+        localStorage.setItem('dgpa_reminder_cases_v4', JSON.stringify(cases));
+      }
+      renderCaseCards();
+
+      // 2. Option B: Check for stored File System Handle in IndexedDB
+      if ('showOpenFilePicker' in window) {
+        try {
+          const handle = await getStoredFileHandle();
+          if (handle) {
+            localFileHandle = handle;
+            const perm = await handle.queryPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+              const file = await handle.getFile();
+              const text = await file.text();
+              if (text && text.trim()) {
+                const loaded = JSON.parse(text);
+                if (Array.isArray(loaded) && loaded.length > 0) {
+                  cases = loaded;
+                  localStorage.setItem('dgpa_reminder_cases_v4', JSON.stringify(cases));
+                  renderCaseCards();
+                }
+              }
+              updateFileStorageUI('linked', handle.name);
+            } else {
+              updateFileStorageUI('prompt', handle.name);
+            }
+          } else {
+            updateFileStorageUI('unlinked', '霸凌申訴案件.json');
+          }
+        } catch (e) {
+          console.warn('IDB restore handle error:', e);
+          updateFileStorageUI('unlinked', '霸凌申訴案件.json');
         }
       }
     }
+
+    async function saveCases() {
+      // 1. Dual-layer safety: Save to LocalStorage immediately
+      localStorage.setItem('dgpa_reminder_cases_v4', JSON.stringify(cases));
+
+      // 2. Option B: Write to physical file 霸凌申訴案件.json
+      if (localFileHandle) {
+        const ok = await writeToLocalFile(cases);
+        if (ok) {
+          showSaveToast(`✓ 已自動存檔至「${localFileHandle.name}」`);
+        } else {
+          showSaveToast('✓ 已存至快取（實體檔等待授權）');
+        }
+      } else {
+        showSaveToast('✓ 已自動存檔');
+      }
+    }
+
+
+    // =========================================================================
+    // ENHANCED DATE PARSING & FORMATTING (SUPPORTS 10/8, 115.10.8, 2026-10-08...)
+    // =========================================================================
+    function parseFlexibleDate(str, defaultYear = 2026) {
+      if (!str) return null;
+      str = String(str).trim();
+      
+      // 8 digits: YYYYMMDD
+      if (/^20\d{6}$/.test(str)) {
+        return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`;
+      }
+      // 7 digits: YYYMMDD (ROC)
+      if (/^\d{7}$/.test(str)) {
+        const rocY = parseInt(str.slice(0, 3), 10);
+        return `${rocY + 1911}-${str.slice(3, 5)}-${str.slice(5, 7)}`;
+      }
+      // 4 digits: MMDD (current year)
+      if (/^\d{4}$/.test(str)) {
+        const m = parseInt(str.slice(0, 2), 10);
+        const d = parseInt(str.slice(2, 4), 10);
+        if (m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+          return `${defaultYear}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        }
+      }
+
+      let clean = str.replace(/民國/g, '').replace(/[年月日號]/g, '-').replace(/--+/g, '-').replace(/-$/, '');
+      let parts = clean.split(/[-/.\s]+/).filter(Boolean);
+      
+      // 3 parts: Y-M-D or ROC_Y-M-D
+      if (parts.length === 3) {
+        let p1 = parseInt(parts[0], 10);
+        let p2 = parseInt(parts[1], 10);
+        let p3 = parseInt(parts[2], 10);
+        if (p1 < 1900) {
+          p1 += 1911;
+        }
+        if (p2 >= 1 && p2 <= 12 && p3 >= 1 && p3 <= 31) {
+          return `${p1}-${String(p2).padStart(2, '0')}-${String(p3).padStart(2, '0')}`;
+        }
+      } 
+      // 2 parts: M-D (e.g. 10/8, 10-8, 10.8) -> uses defaultYear
+      else if (parts.length === 2) {
+        let p2 = parseInt(parts[0], 10);
+        let p3 = parseInt(parts[1], 10);
+        if (p2 >= 1 && p2 <= 12 && p3 >= 1 && p3 <= 31) {
+          return `${defaultYear}-${String(p2).padStart(2, '0')}-${String(p3).padStart(2, '0')}`;
+        }
+      }
+      return null;
+    }
+
+    function formatDateDisplay(isoStr) {
+      if (!isoStr) return '';
+      const [y, m, d] = isoStr.split('-').map(x => parseInt(x, 10));
+      const rocY = y - 1911;
+      const dt = new Date(`${isoStr}T00:00:00`);
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      const dayName = days[dt.getDay()];
+      return {
+        roc: `民國 ${rocY} 年 ${m} 月 ${d} 日`,
+        rocShort: `${rocY}/${m}/${d}`,
+        monthDayShort: `${m}/${d}`,
+        ad: isoStr,
+        dayName: `週${dayName}`,
+        fullDayName: `星期${dayName}`
+      };
+    }
+
+    // =========================================================================
+    // CALENDAR RULES & MILESTONE CALCULATIONS
+    // =========================================================================
+    function isWorkday(dateStr) {
+      if (DGPA_CALENDAR[dateStr]) {
+        return DGPA_CALENDAR[dateStr][0] === 0;
+      }
+      const dt = new Date(`${dateStr}T00:00:00`);
+      const day = dt.getDay();
+      return day !== 0 && day !== 6;
+    }
+
+    function getDayNote(dateStr) {
+      if (DGPA_CALENDAR[dateStr] && DGPA_CALENDAR[dateStr][1]) {
+        return DGPA_CALENDAR[dateStr][1];
+      }
+      const dt = new Date(`${dateStr}T00:00:00`);
+      const day = dt.getDay();
+      if (day === 0) return '週日例假';
+      if (day === 6) return '週六休息日';
+      return '';
+    }
+
+    function getNextDateStr(dateStr) {
+      const dt = new Date(`${dateStr}T00:00:00`);
+      dt.setDate(dt.getDate() + 1);
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const d = String(dt.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function addWorkingDays(startDateStr, n) {
+      let curr = getNextDateStr(startDateStr);
+      let count = 0;
+      const breakdown = [];
+      while (count < n) {
+        const work = isWorkday(curr);
+        const note = getDayNote(curr);
+        if (work) {
+          count++;
+          breakdown.push({ date: curr, isWork: true, count, note });
+          if (count === n) {
+            return { endDate: curr, breakdown };
+          }
+        } else {
+          breakdown.push({ date: curr, isWork: false, count: null, note });
+        }
+        curr = getNextDateStr(curr);
+      }
+      return { endDate: curr, breakdown };
+    }
+
+    function addCivilMonths(startDateStr, months) {
+      const [y, m, d] = startDateStr.split('-').map(x => parseInt(x, 10));
+      const totalM = m + months;
+      const targetY = y + Math.floor((totalM - 1) / 12);
+      const targetM = ((totalM - 1) % 12) + 1;
+      const maxDays = new Date(targetY, targetM, 0).getDate();
+      const targetD = Math.min(d, maxDays);
+      
+      const nominalDate = `${targetY}-${String(targetM).padStart(2, '0')}-${String(targetD).padStart(2, '0')}`;
+      
+      let curr = nominalDate;
+      const delayedReasons = [];
+      while (!isWorkday(curr)) {
+        delayedReasons.push({ date: curr, note: getDayNote(curr) });
+        curr = getNextDateStr(curr);
+      }
+      return {
+        nominalDate,
+        effectiveDate: curr,
+        delayedReasons
+      };
+    }
+
+    // =========================================================================
+    // MILESTONES CALCULATION (CRITICAL: STRICT RECALCULATION ON ACCEPTED DATE)
+    // =========================================================================
+    function calculateCaseMilestones(caseItem) {
+      const t0 = caseItem.complaintDate;
+      if (!t0) return null;
+
+      // 階段 1: 10 個工作日審查期限
+      const step1 = addWorkingDays(t0, 10);
+
+      // 若有鍵入受理日期，則後續時限「必須嚴格以該受理日為基準起算」，不得再以申訴日起算！
+      const hasActualAccepted = Boolean(caseItem.acceptedDate && String(caseItem.acceptedDate).trim().length > 0);
+      const acceptBaseDate = hasActualAccepted ? String(caseItem.acceptedDate).trim() : step1.endDate;
+
+      // 階段 2: 通報主管機關（受理後 7 個工作日）
+      const step2 = addWorkingDays(acceptBaseDate, 7);
+
+      // 階段 3: 成立調查小組（受理後 15 個工作日）
+      const step3 = addWorkingDays(acceptBaseDate, 15);
+
+      // 階段 4: 完成調查報告（成立調查小組起 2 個月日曆天）
+      const step4 = addCivilMonths(step3.endDate, 2);
+
+      // 階段 5: 展延完成（成立調查小組起 3 個月日曆天）
+      const step5 = addCivilMonths(step3.endDate, 3);
+
+      return {
+        complaintDate: t0,
+        hasActualAccepted,
+        acceptBaseDate,
+        step1,
+        step2,
+        step3,
+        step4,
+        step5
+      };
+    }
+
+    // =========================================================================
+    // NAVIGATION & VIEW SWITCHING
+    // =========================================================================
+    function navigateTo(viewName) {
+      closeDatePicker();
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`view-${viewName}`);
+      if (target) {
+        target.classList.add('active');
+      }
+      if (viewName === 'home') {
+        renderCaseCards();
+      } else if (viewName === 'timeline-map') {
+        renderTimelineMap();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================================
+    // MULTI-CASE TIMELINE MAP: RENDERING & SVG GRAPH
+    // (時間地圖：所有未完成案件時限線圖 ‧ 時間X軸 ‧ 案件名稱Y軸)
+    // =========================================================================
+    function escapeXml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    function addDaysToDateStr(dStr, days) {
+      const dt = new Date(`${dStr}T00:00:00`);
+      dt.setDate(dt.getDate() + days);
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, '0');
+      const d = String(dt.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function getDaysDiff(d1Str, d2Str) {
+      const ms1 = new Date(`${d1Str}T00:00:00`).getTime();
+      const ms2 = new Date(`${d2Str}T00:00:00`).getTime();
+      return Math.round((ms2 - ms1) / (1000 * 60 * 60 * 24));
+    }
+
+    function renderTimelineMap() {
+      const container = document.getElementById('timelineMapGraphWrap');
+      const badge = document.getElementById('timelineMapCountBadge');
+      if (!container) return;
+
+      // 1. 篩選未完成案件 (非已結案且非不予受理)
+      const unclosedCases = cases.filter(c => c.status !== 'closed' && c.status !== 'rejected');
+
+      const validCases = [];
+      const casesWithoutDate = [];
+      for (const c of unclosedCases) {
+        const ms = calculateCaseMilestones(c);
+        if (ms && ms.step2 && ms.step3 && ms.step4) {
+          validCases.push({
+            id: c.id,
+            name: c.name,
+            status: c.status,
+            complaintDate: c.complaintDate,
+            acceptedDate: c.acceptedDate,
+            milestones: ms,
+            t1: ms.step2.endDate,         // 1. 通報系統 (受理後 7 個工作日)
+            t2: ms.step3.endDate,         // 2. 成立調查小組 (受理後 15 個工作日)
+            t3: ms.step4.effectiveDate    // 3. 完成調查報告 (成立調查小組起 2 個月法定截止)
+          });
+        } else {
+          casesWithoutDate.push(c);
+        }
+      }
+
+      if (badge) {
+        badge.innerText = `進行中 ${validCases.length} 案`;
+      }
+
+      // 2. 排序：時間早的案件排前面 (升冪排序，一條線一條線排下來)
+      validCases.sort((a, b) => {
+        // 第一個時限點（通報系統時間）優先比對
+        if (a.t1 !== b.t1) return a.t1.localeCompare(b.t1);
+        // 若相同則比對接獲申訴日
+        const cA = a.complaintDate || '';
+        const cB = b.complaintDate || '';
+        if (cA !== cB) return cA.localeCompare(cB);
+        // 再相同比對報告截止日
+        return a.t3.localeCompare(b.t3);
+      });
+
+      // 3. 空狀態處理
+      if (validCases.length === 0) {
+        if (casesWithoutDate.length > 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 4.5rem 1.5rem;">
+              <div style="font-size: 3rem; margin-bottom: 0.75rem;">📅</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.5rem;">目前進行中案件尚未輸入「接獲申訴日」</h3>
+              <p style="color: var(--slate-500); font-size: 0.92rem; max-width: 520px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                共有 ${casesWithoutDate.length} 件進行中案件尚未填寫接獲申訴日起算日。請點擊案件設定申訴日後，系統將自動推算 3 個關鍵時限並繪製線圖。
+              </p>
+              <button class="btn btn-primary" onclick="openCaseDetail('${casesWithoutDate[0].id}')">
+                進入【${escapeXml(casesWithoutDate[0].name)}】設定申訴日
+              </button>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div style="text-align: center; padding: 5rem 1.5rem;">
+              <div style="font-size: 3.2rem; margin-bottom: 0.75rem;">🎉</div>
+              <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--slate-800); margin-bottom: 0.5rem;">目前無進行中之未完成案件</h3>
+              <p style="color: var(--slate-500); font-size: 0.92rem; max-width: 480px; margin: 0 auto 1.5rem; line-height: 1.6;">
+                所有案件皆已結案或不予受理。若有新接獲之職場霸凌申訴事件，請點選下方按鈕立案。
+              </p>
+              <button class="btn btn-primary" onclick="openNewCaseModal()">
+                <span>＋</span> 新增霸凌申訴案
+              </button>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // 4. 計算 X 軸全局日期跨度 (Min / Max Date)
+      const allDates = [];
+      validCases.forEach(item => {
+        allDates.push(item.t1, item.t2, item.t3);
+      });
+      const todayStr = getTodayDateStr();
+      allDates.push(todayStr);
+      allDates.sort();
+
+      const globalMinStr = allDates[0];
+      const globalMaxStr = allDates[allDates.length - 1];
+
+      // 緩衝期：起點往前 4 天，終點往後 7 天
+      let chartStart = addDaysToDateStr(globalMinStr, -4);
+      let chartEnd = addDaysToDateStr(globalMaxStr, 7);
+      let totalDays = getDaysDiff(chartStart, chartEnd);
+      if (totalDays < 20) {
+        chartEnd = addDaysToDateStr(chartStart, 20);
+        totalDays = 20;
+      }
+
+      // 5. 尺寸與佈局參數
+      const labelColWidth = 240; // 左側 Y 軸案件名稱欄位寬度
+      // 根據天數計算像素寬度（每天至少 16px，最多 34px，保證舒適可視）
+      const pixelsPerDay = Math.max(16, Math.min(34, 960 / totalDays));
+      const chartAreaWidth = Math.max(760, totalDays * pixelsPerDay);
+      const rightPadding = 75;
+      const totalSvgWidth = labelColWidth + chartAreaWidth + rightPadding;
+
+      const headerHeight = 65; // 頂部時間標尺高度
+      const rowHeight = 72;    // 每個案件行高
+      const totalSvgHeight = headerHeight + validCases.length * rowHeight + 25;
+
+      // 日期轉換至 X 軸座標
+      function dateToX(dStr) {
+        const diff = getDaysDiff(chartStart, dStr);
+        return labelColWidth + (diff / totalDays) * chartAreaWidth;
+      }
+
+      // 6. 產生 X 軸時間刻度 (依總天數動態選擇步長)
+      let tickStep = 7; // 預設每週一個刻度
+      if (totalDays <= 14) tickStep = 2;
+      else if (totalDays <= 35) tickStep = 5;
+      else if (totalDays <= 70) tickStep = 7;
+      else if (totalDays <= 120) tickStep = 10;
+      else tickStep = 14;
+
+      let gridLinesHtml = '';
+      let ticksHtml = '';
+
+      // 背景頂部標尺底色
+      ticksHtml += `
+        <rect x="0" y="0" width="${totalSvgWidth}" height="${headerHeight}" fill="#f8fafc" />
+        <line x1="0" y1="${headerHeight}" x2="${totalSvgWidth}" y2="${headerHeight}" stroke="#cbd5e1" stroke-width="1.5" />
+        <line x1="${labelColWidth}" y1="0" x2="${labelColWidth}" y2="${totalSvgHeight}" stroke="#cbd5e1" stroke-width="1.5" />
+        <text x="20" y="38" font-size="13" font-weight="800" fill="#334155">案件名稱（Y 軸）</text>
+        <text x="${labelColWidth + 15}" y="24" font-size="11" font-weight="700" fill="#64748b">時間軸刻度（X 軸）</text>
+      `;
+
+      let curDay = 0;
+      while (curDay <= totalDays) {
+        const curDateStr = addDaysToDateStr(chartStart, curDay);
+        const xPos = dateToX(curDateStr);
+        const dDisp = formatDateDisplay(curDateStr);
+
+        // 垂直格線
+        gridLinesHtml += `
+          <line x1="${xPos}" y1="${headerHeight}" x2="${xPos}" y2="${totalSvgHeight - 15}" stroke="#f1f5f9" stroke-width="1" />
+        `;
+
+        // 頂部刻度項目 (支援懸停放大效果)
+        ticksHtml += `
+          <g class="map-x-tick" data-grid-day="${curDay}">
+            <title>${dDisp.roc} (${dDisp.fullDayName}) ｜ 西元 ${dDisp.ad}</title>
+            <!-- 懸停時高亮底色背景膠囊 -->
+            <rect x="${xPos - 36}" y="6" width="72" height="52" rx="8" class="tick-hover-pill" />
+            <!-- 刻度標記線 -->
+            <line x1="${xPos}" y1="${headerHeight - 8}" x2="${xPos}" y2="${headerHeight}" stroke="#94a3b8" stroke-width="1.5" class="tick-mark" />
+            <!-- 日期文字 (民國年/月/日) -->
+            <text x="${xPos}" y="35" text-anchor="middle" class="map-tick-text-main">${dDisp.rocShort}</text>
+            <!-- 星期文字 -->
+            <text x="${xPos}" y="50" text-anchor="middle" class="map-tick-text-sub">${dDisp.dayName}</text>
+          </g>
+        `;
+
+        curDay += tickStep;
+      }
+
+      // 今日標記線 (Today Line)
+      let todayLineHtml = '';
+      if (todayStr >= chartStart && todayStr <= chartEnd) {
+        const todayX = dateToX(todayStr);
+        const todayDisp = formatDateDisplay(todayStr);
+        todayLineHtml = `
+          <g>
+            <line x1="${todayX}" y1="${headerHeight - 16}" x2="${todayX}" y2="${totalSvgHeight - 15}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,4" />
+            <rect x="${todayX - 32}" y="6" width="64" height="22" rx="11" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.2" />
+            <text x="${todayX}" y="21" text-anchor="middle" font-size="11" font-weight="800" fill="#b45309">今日</text>
+            <title>目前系統日期：${todayDisp.roc} (${todayDisp.dayName})</title>
+          </g>
+        `;
+      }
+
+      // 7. 產生各案件行（Y 軸、橫向線條、三個節點）
+      let rowsHtml = '';
+      validCases.forEach((item, index) => {
+        const rowTop = headerHeight + index * rowHeight;
+        const centerY = rowTop + rowHeight / 2;
+        const isEven = (index % 2 === 0);
+        const rowBg = isEven ? '#ffffff' : '#f8fafc';
+
+        // 狀態文字與顏色
+        let statusText = '審查中';
+        let statusBadgeFill = '#fef3c7';
+        let statusBadgeColor = '#b45309';
+        if (item.status === 'accepted') {
+          statusText = '已受理';
+          statusBadgeFill = '#dcfce7';
+          statusBadgeColor = '#15803d';
+        }
+
+        const compRoc = formatDateDisplay(item.complaintDate).rocShort || '';
+        const x1 = dateToX(item.t1);
+        const x2 = dateToX(item.t2);
+        const x3 = dateToX(item.t3);
+
+        const d1Disp = formatDateDisplay(item.t1);
+        const d2Disp = formatDateDisplay(item.t2);
+        const d3Disp = formatDateDisplay(item.t3);
+
+        // 截斷過長名稱
+        const displayName = item.name.length > 14 ? (item.name.slice(0, 13) + '…') : item.name;
+
+        rowsHtml += `
+          <!-- Row ${index + 1}: ${escapeXml(item.name)} -->
+          <g class="map-row-group">
+            <!-- Row Background Highlight -->
+            <rect x="0" y="${rowTop}" width="${totalSvgWidth}" height="${rowHeight}" fill="${rowBg}" class="map-row-highlight" onclick="openCaseDetail('${item.id}')">
+              <title>點擊開啟【${escapeXml(item.name)}】詳細時限時間軸</title>
+            </rect>
+            <!-- 左側高亮指示條 (hover 時顯現主色藍條) -->
+            <rect x="0" y="${rowTop}" width="4" height="${rowHeight}" class="map-row-left-bar" />
+            <line x1="0" y1="${rowTop + rowHeight}" x2="${totalSvgWidth}" y2="${rowTop + rowHeight}" stroke="#e2e8f0" stroke-width="1" />
+
+            <!-- Y-Axis: Case Info (支援懸停變大效果) -->
+            <g class="map-case-label" onclick="openCaseDetail('${item.id}')">
+              <title>點擊開啟【${escapeXml(item.name)}】詳細時限時間軸</title>
+              <text x="18" y="${centerY - 8}" class="map-y-case-name">${escapeXml(displayName)}</text>
+              
+              <!-- 狀態小徽章背景與文字 -->
+              <rect x="18" y="${centerY + 4}" width="46" height="18" rx="9" fill="${statusBadgeFill}" />
+              <text x="41" y="${centerY + 16.5}" font-size="10" font-weight="700" fill="${statusBadgeColor}" text-anchor="middle">${statusText}</text>
+              
+              <!-- 申訴日 -->
+              <text x="70" y="${centerY + 17}" class="map-y-case-meta">申訴:${compRoc}</text>
+            </g>
+
+            <!-- Case Track Line (橫向線：從通報系統連到完成調查報告) -->
+            <line x1="${x1}" y1="${centerY}" x2="${x3}" y2="${centerY}" stroke="#cbd5e1" stroke-width="4.5" stroke-linecap="round" />
+            <line x1="${x1}" y1="${centerY}" x2="${x2}" y2="${centerY}" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" opacity="0.85" />
+            <line x1="${x2}" y1="${centerY}" x2="${x3}" y2="${centerY}" stroke="#10b981" stroke-width="3" stroke-linecap="round" opacity="0.85" />
+
+            <!-- 節點 1: 通報系統 (藍色點) -->
+            <g class="map-node-group" onclick="openCaseDetail('${item.id}')">
+              <title>【${escapeXml(item.name)}】通報系統時限：${d1Disp.roc} (${d1Disp.fullDayName}) ｜ 法定受理後 7 個工作日</title>
+              <!-- 標籤文字 (放置於點上方，上下行距 12px 分明不重疊) -->
+              <text x="${x1}" y="${centerY - 22}" text-anchor="middle" class="map-node-label-title" fill="#1d4ed8">通報系統</text>
+              <text x="${x1}" y="${centerY - 10}" text-anchor="middle" class="map-node-label-date" fill="#2563eb">${d1Disp.rocShort}</text>
+              <!-- 圓點 -->
+              <circle cx="${x1}" cy="${centerY}" r="7" fill="#2563eb" stroke="#ffffff" stroke-width="2.5" class="node-core" />
+            </g>
+
+            <!-- 節點 2: 成立調查小組 (綠色點) -->
+            <g class="map-node-group" onclick="openCaseDetail('${item.id}')">
+              <title>【${escapeXml(item.name)}】成立調查小組時限：${d2Disp.roc} (${d2Disp.fullDayName}) ｜ 法定受理後 15 個工作日</title>
+              <!-- 標籤文字 (錯位放置於點下方，上下行距 12px 分明不重疊) -->
+              <circle cx="${x2}" cy="${centerY}" r="7" fill="#059669" stroke="#ffffff" stroke-width="2.5" class="node-core" />
+              <text x="${x2}" y="${centerY + 19}" text-anchor="middle" class="map-node-label-title" fill="#065f46">成立調查小組</text>
+              <text x="${x2}" y="${centerY + 31}" text-anchor="middle" class="map-node-label-date" fill="#059669">${d2Disp.rocShort}</text>
+            </g>
+
+            <!-- 節點 3: 完成調查報告 (紅色點 - 使用者特別規定) -->
+            <g class="map-node-group" onclick="openCaseDetail('${item.id}')">
+              <title>【${escapeXml(item.name)}】完成調查報告截止：${d3Disp.roc} (${d3Disp.fullDayName}) ｜ 法定成立調查小組起 2 個月日曆天</title>
+              <!-- 標籤文字 (放置於點上方，上下行距 12px 分明不重疊) -->
+              <text x="${x3}" y="${centerY - 22}" text-anchor="middle" class="map-node-label-title" fill="#b91c1c">完成調查報告</text>
+              <text x="${x3}" y="${centerY - 10}" text-anchor="middle" class="map-node-label-date" fill="#dc2626">${d3Disp.rocShort}</text>
+              <!-- 外層醒目光暈 -->
+              <circle cx="${x3}" cy="${centerY}" r="12" fill="rgba(220, 38, 38, 0.16)" />
+              <!-- 紅色核心圓點 -->
+              <circle cx="${x3}" cy="${centerY}" r="8.5" fill="#dc2626" stroke="#ffffff" stroke-width="2.5" class="node-core" />
+            </g>
+
+          </g>
+        `;
+      });
+
+      // 8. 組裝完整 SVG
+      const svgContent = `
+        <svg class="timeline-map-svg" viewBox="0 0 ${totalSvgWidth} ${totalSvgHeight}" width="${totalSvgWidth}" height="${totalSvgHeight}" xmlns="http://www.w3.org/2000/svg">
+          <!-- 垂直格線 -->
+          ${gridLinesHtml}
+          <!-- 頂部時間標尺 -->
+          ${ticksHtml}
+          <!-- 各案件行與節點 -->
+          ${rowsHtml}
+          <!-- 今日垂直指示線 -->
+          ${todayLineHtml}
+        </svg>
+      `;
+
+      container.innerHTML = svgContent;
+
+      // 自動讓捲軸平滑捲動到適中位置 (例如今日或第一個時限點)
+      if (todayStr >= chartStart && todayStr <= chartEnd) {
+        const todayX = dateToX(todayStr);
+        const scrollContainer = document.getElementById('timelineMapScrollContainer');
+        if (scrollContainer) {
+          const targetScroll = Math.max(0, todayX - (scrollContainer.clientWidth / 2));
+          scrollContainer.scrollLeft = targetScroll;
+        }
+      }
+    }
+
+    // =========================================================================
+    // CASE LIST VIEW: FILTER & SORT (預設編輯排序 ‧ 可切換報告截止日排序)
+    // =========================================================================
+    let currentSort = 'edit'; // 'edit' (預設：最近修改), 'report_deadline' (截止排序), 或 'name' (名稱排序)
+
+    function setFilter(filterType, btnEl) {
+      currentFilter = filterType;
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      renderCaseCards();
+    }
+
+    function toggleCaseSort() {
+      if (currentSort === 'edit') {
+        currentSort = 'report_deadline';
+      } else if (currentSort === 'report_deadline') {
+        currentSort = 'name';
+      } else {
+        currentSort = 'edit';
+      }
+      updateSortButtonUI();
+      renderCaseCards();
+    }
+
+    function updateSortButtonUI() {
+      const btn = document.getElementById('btnToggleSort');
+      const icon = document.getElementById('sortBtnIcon');
+      const text = document.getElementById('sortBtnText');
+      if (!btn || !icon || !text) return;
+
+      if (currentSort === 'report_deadline') {
+        btn.classList.add('active');
+        btn.title = '目前依「報告截止日（由近到遠）」排序，點擊切換為「名稱排序」';
+        icon.innerText = '⏳';
+        text.innerText = '截止排序';
+      } else if (currentSort === 'name') {
+        btn.classList.add('active');
+        btn.title = '目前依「案件名稱（A-Z / 筆畫）」排序，點擊切換為「編輯排序」';
+        icon.innerText = '🔤';
+        text.innerText = '名稱排序';
+      } else {
+        btn.classList.remove('active');
+        btn.title = '目前依「最近編輯」排序，點擊切換為「截止排序」';
+        icon.innerText = '🕒';
+        text.innerText = '編輯排序';
+      }
+    }
+
+    function getCaseReportDeadline(c) {
+      if (c.status === 'rejected') return '9999-99-99';
+      const ms = calculateCaseMilestones(c);
+      return (ms && ms.step4 && ms.step4.effectiveDate) ? ms.step4.effectiveDate : '9999-99-99';
+    }
+
+    function renderCaseCards() {
+      const grid = document.getElementById('casesGrid');
+      const search = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+
+      const filtered = cases.filter(c => {
+        if (currentFilter === 'all') {
+          // 首頁「全部」不顯示已結案
+          if (c.status === 'closed') return false;
+        } else if (currentFilter === 'closed') {
+          // 「已結案」只顯示已結案案件
+          if (c.status !== 'closed') return false;
+        } else {
+          if (c.status !== currentFilter) return false;
+        }
+        if (search && !c.name.toLowerCase().includes(search)) return false;
+        return true;
+      });
+
+      // Apply Sorting
+      if (currentSort === 'report_deadline') {
+        // 依照報告截止日排序, 由近到遠
+        filtered.sort((a, b) => {
+          const dA = getCaseReportDeadline(a);
+          const dB = getCaseReportDeadline(b);
+          if (dA !== dB) {
+            return dA.localeCompare(dB);
+          }
+          const tA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+          const tB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+          return tB - tA;
+        });
+      } else if (currentSort === 'name') {
+        // 依照案件名稱排序 (繁體中文筆畫/注音順序)
+        filtered.sort((a, b) => {
+          const nameA = a.name || '';
+          const nameB = b.name || '';
+          const comp = nameA.localeCompare(nameB, 'zh-Hant');
+          if (comp !== 0) return comp;
+          const tA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+          const tB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+          return tB - tA;
+        });
+      } else {
+        // 預設為編輯排序，最近修改的放最近
+        filtered.sort((a, b) => {
+          const tA = new Date(a.updatedAt || a.createdAt || 0).getTime();
+          const tB = new Date(b.updatedAt || b.createdAt || 0).getTime();
+          return tB - tA;
+        });
+      }
+
+      if (filtered.length === 0) {
+        let emptyTitle = '目前尚無符合的案件';
+        let emptyDesc = '您可以點擊上方「新增霸凌申訴案」建立新案件。';
+        if (currentFilter === 'closed') {
+          emptyTitle = '目前尚無已結案的案件';
+          emptyDesc = '當案件程序完成並設定為「已結案」後，將會在此處歸檔顯示。';
+        }
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; background: white; border-radius: var(--radius); border: 1px dashed var(--slate-300);">
+            <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📂</div>
+            <h4 style="font-size: 1.15rem; color: var(--slate-700);">${emptyTitle}</h4>
+            <p style="color: var(--slate-500); font-size: 0.9rem; margin-top: 0.25rem;">${emptyDesc}</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const ms = calculateCaseMilestones(item);
+        const cDate = formatDateDisplay(item.complaintDate);
+        const isClosed = (item.status === 'closed');
+        
+        let statusBadge = '<span class="case-status-badge status-review">⏳ 審查中</span>';
+        if (item.status === 'accepted') {
+          statusBadge = '<span class="case-status-badge status-accepted">✅ 已受理</span>';
+        } else if (item.status === 'rejected') {
+          statusBadge = '<span class="case-status-badge status-rejected">❌ 不予受理</span>';
+        } else if (item.status === 'closed') {
+          statusBadge = '<span class="case-status-badge status-closed">🏁 已結案</span>';
+        }
+
+        let nextDeadlineHtml = '';
+        if (item.status === 'closed') {
+          nextDeadlineHtml = `
+            <div class="case-meta-row">
+              <span class="meta-label">案件狀態</span>
+              <span class="meta-value" style="color: var(--slate-600); font-weight: 700;">調查完成 ‧ 結案存查</span>
+            </div>
+          `;
+        } else if (ms) {
+          if (item.status === 'rejected') {
+            nextDeadlineHtml = `<div class="case-meta-row"><span class="meta-label">案件狀態</span><span class="meta-value" style="color: var(--danger);">不予受理結案</span></div>`;
+          } else if (item.status === 'review' && !item.acceptedDate) {
+            const d1 = formatDateDisplay(ms.step1.endDate);
+            const d4 = formatDateDisplay(ms.step4.effectiveDate);
+            nextDeadlineHtml = `
+              <div class="case-meta-row">
+                <span class="meta-label">審查截止日</span>
+                <span class="meta-value" style="color: var(--primary);">${d1.roc}</span>
+              </div>
+              <div class="case-meta-row">
+                <span class="meta-label">法定報告截止</span>
+                <span class="meta-value" style="color: var(--slate-700); font-weight: 700;">${d4.rocShort}</span>
+              </div>
+            `;
+          } else {
+            const accDate = formatDateDisplay(ms.acceptBaseDate);
+            const d3 = formatDateDisplay(ms.step3.endDate);
+            const d4 = formatDateDisplay(ms.step4.effectiveDate);
+            nextDeadlineHtml = `
+              <div class="case-meta-row">
+                <span class="meta-label">實際受理日</span>
+                <span class="meta-value" style="color: var(--success); font-weight: 700;">${accDate.rocShort}</span>
+              </div>
+              <div class="case-meta-row">
+                <span class="meta-label">成立小組截止</span>
+                <span class="meta-value">${d3.rocShort}</span>
+              </div>
+              <div class="case-meta-row">
+                <span class="meta-label">法定報告截止</span>
+                <span class="meta-value" style="color: var(--primary); font-weight: 700;">${d4.rocShort}</span>
+              </div>
+            `;
+          }
+        }
+
+        return `
+          <div class="case-card ${isClosed ? 'case-closed' : ''}" onclick="openCaseDetail('${item.id}')">
+            <div>
+              <div class="case-card-header">
+                <h3 class="case-name">${item.name}</h3>
+                ${statusBadge}
+              </div>
+              <div class="case-card-body">
+                <div class="case-meta-row">
+                  <span class="meta-label">接獲申訴日</span>
+                  <span class="meta-value">${cDate.roc}</span>
+                </div>
+                ${nextDeadlineHtml}
+              </div>
+            </div>
+            <div class="case-card-footer">
+              <span class="enter-timeline-hint">查看長箭頭時間軸 <span>➔</span></span>
+              <span style="font-size: 0.75rem; color: var(--slate-400);">點擊開啟</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // CASE DETAIL & THE GRAPHIC LONG ARROW TIMELINE
+    // =========================================================================
+    function openCaseDetail(caseId) {
+      currentCaseId = caseId;
+      const c = cases.find(x => x.id === caseId);
+      if (!c) return;
+
+      document.getElementById('detailCaseName').value = c.name;
+      document.getElementById('detailComplaintDate').value = c.complaintDate;
+      
+      updateDecisionButtonView(c);
+      renderArrowGraphicTimeline(c);
+
+      navigateTo('detail');
+    }
+
+    function updateDecisionButtonView(c) {
+      if (!c) return;
+      const textEl = document.getElementById('decisionCurrentText');
+      const pillEl = document.getElementById('decisionStatusPill');
+      const badgeEl = document.getElementById('detailStatusBadge');
+      const detailContainer = document.getElementById('view-detail');
+
+      // 檢查是否已結案，並切換全部頁面灰色
+      if (c.status === 'closed') {
+        if (detailContainer) detailContainer.classList.add('case-closed');
+        if (pillEl) {
+          pillEl.className = 'decision-pill is-closed';
+          pillEl.innerText = '🏁 已結案';
+        }
+        if (textEl) {
+          textEl.className = 'decision-title is-closed';
+          textEl.innerText = '目前狀態：已結案（點擊設定）';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'case-status-badge status-closed';
+          badgeEl.innerText = '🏁 已結案';
+        }
+        return;
+      }
+
+      // 非結案狀態：移除灰色濾鏡
+      if (detailContainer) detailContainer.classList.remove('case-closed');
+
+      if (c.status === 'accepted' && c.acceptedDate) {
+        if (pillEl) {
+          pillEl.className = 'decision-pill is-accepted';
+          pillEl.innerText = '✅ 已受理';
+        }
+        if (textEl) {
+          textEl.className = 'decision-title is-accepted';
+          textEl.innerText = '目前狀態：已受理（點擊設定）';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'case-status-badge status-accepted';
+          badgeEl.innerText = '✅ 已受理';
+        }
+      } else if (c.status === 'rejected') {
+        if (pillEl) {
+          pillEl.className = 'decision-pill is-rejected';
+          pillEl.innerText = '❌ 不予受理';
+        }
+        if (textEl) {
+          textEl.className = 'decision-title is-rejected';
+          textEl.innerText = '目前狀態：不予受理（點擊設定）';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'case-status-badge status-rejected';
+          badgeEl.innerText = '❌ 不予受理';
+        }
+      } else {
+        if (pillEl) {
+          pillEl.className = 'decision-pill is-review';
+          pillEl.innerText = '⏳ 審查中';
+        }
+        if (textEl) {
+          textEl.className = 'decision-title is-review';
+          textEl.innerText = '目前狀態：審查中（點擊設定）';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'case-status-badge status-review';
+          badgeEl.innerText = '⏳ 審查中';
+        }
+      }
+    }
+
+    let modalSelectedStatus = 'review';
+
+    function openDecisionModal() {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+
+      // 如未設定，預設停在第 1 個選項（審查中）；如之前有選過，點進去停在該設定處
+      modalSelectedStatus = (c.status && ['review', 'accepted', 'rejected', 'closed'].includes(c.status)) ? c.status : 'review';
+      selectDecisionOption(modalSelectedStatus, false);
+
+      const inputAcc = document.getElementById('modalAcceptedDateInput');
+      if (inputAcc) {
+        inputAcc.value = c.acceptedDate || '';
+      }
+      const inputRej = document.getElementById('modalRejectedDateInput');
+      if (inputRej) {
+        inputRej.value = c.rejectedDate || '';
+      }
+
+      document.getElementById('decisionModal').classList.add('active');
+    }
+
+    function closeDecisionModal(e) {
+      if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+      document.getElementById('decisionModal').classList.remove('active');
+      closeDatePicker();
+    }
+
+    function selectDecisionOption(status, focusInput = true) {
+      modalSelectedStatus = status;
+
+      // Update card selected classes (4 options)
+      ['review', 'accepted', 'rejected', 'closed'].forEach(s => {
+        const idName = `opt${s.charAt(0).toUpperCase() + s.slice(1)}`;
+        const el = document.getElementById(idName);
+        if (el) {
+          if (s === status) el.classList.add('selected');
+          else el.classList.remove('selected');
+        }
+      });
+
+      // Toggle collapse area for accepted date
+      const collapseAcc = document.getElementById('acceptedDateCollapse');
+      if (collapseAcc) {
+        if (status === 'accepted') {
+          collapseAcc.style.display = 'block';
+          const c = cases.find(x => x.id === currentCaseId);
+          const inputEl = document.getElementById('modalAcceptedDateInput');
+          if (inputEl && !inputEl.value) {
+            inputEl.value = (c && c.acceptedDate) ? c.acceptedDate : '2026-10-08';
+          }
+          if (focusInput && inputEl) {
+            setTimeout(() => {
+              inputEl.focus();
+              inputEl.select();
+            }, 80);
+          }
+        } else {
+          collapseAcc.style.display = 'none';
+        }
+      }
+
+      // Toggle collapse area for rejected date (選填)
+      const collapseRej = document.getElementById('rejectedDateCollapse');
+      if (collapseRej) {
+        if (status === 'rejected') {
+          collapseRej.style.display = 'block';
+          const c = cases.find(x => x.id === currentCaseId);
+          const inputEl = document.getElementById('modalRejectedDateInput');
+          if (inputEl && !inputEl.value && c && c.rejectedDate) {
+            inputEl.value = c.rejectedDate;
+          }
+        } else {
+          collapseRej.style.display = 'none';
+        }
+      }
+    }
+
+    function saveDecisionModal() {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+
+      if (modalSelectedStatus === 'review') {
+        c.status = 'review';
+        c.acceptedDate = '';
+        c.rejectedDate = '';
+      } else if (modalSelectedStatus === 'accepted') {
+        const inputEl = document.getElementById('modalAcceptedDateInput');
+        const raw = inputEl ? inputEl.value.trim() : '';
+        const defYear = c.complaintDate ? parseInt(c.complaintDate.slice(0, 4), 10) : 2026;
+        const parsed = parseFlexibleDate(raw || '2026-10-08', defYear);
+        if (!parsed) {
+          alert('請輸入有效之受理日期格式（例: 10/8、115.10.8 或 2026-10-08）');
+          if (inputEl) inputEl.focus();
+          return;
+        }
+        c.status = 'accepted';
+        c.acceptedDate = parsed;
+        c.rejectedDate = '';
+      } else if (modalSelectedStatus === 'rejected') {
+        c.status = 'rejected';
+        c.acceptedDate = '';
+        const inputEl = document.getElementById('modalRejectedDateInput');
+        const raw = inputEl ? inputEl.value.trim() : '';
+        if (raw) {
+          const defYear = c.complaintDate ? parseInt(c.complaintDate.slice(0, 4), 10) : 2026;
+          const parsed = parseFlexibleDate(raw, defYear);
+          c.rejectedDate = parsed || '';
+        } else {
+          c.rejectedDate = '';
+        }
+      } else if (modalSelectedStatus === 'closed') {
+        c.status = 'closed';
+      }
+
+      c.updatedAt = new Date().toISOString();
+      saveCases();
+      updateDecisionButtonView(c);
+      renderArrowGraphicTimeline(c);
+      renderCaseCards();
+      closeDecisionModal();
+      closeDatePicker();
+    }
+
+    function updateCurrentCaseMeta() {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+      c.name = document.getElementById('detailCaseName').value.trim() || '未命名案件';
+      c.updatedAt = new Date().toISOString();
+      saveCases();
+      renderCaseCards();
+    }
+
+    function handleDateInputLive(field) {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+
+      if (field === 'complaint') {
+        const raw = document.getElementById('detailComplaintDate').value.trim();
+        const defYear = c.complaintDate ? parseInt(c.complaintDate.slice(0, 4), 10) : 2026;
+        const parsed = parseFlexibleDate(raw, defYear);
+        if (parsed) {
+          c.complaintDate = parsed;
+          c.updatedAt = new Date().toISOString();
+          saveCases();
+          renderArrowGraphicTimeline(c);
+          renderCaseCards();
+          calSyncWithDate(parsed);
+        }
+      }
+    }
+
+    function handleModalAcceptedDateLive() {
+      const inputEl = document.getElementById('modalAcceptedDateInput');
+      if (!inputEl) return;
+      const raw = inputEl.value.trim();
+      const c = cases.find(x => x.id === currentCaseId);
+      const defYear = c && c.complaintDate ? parseInt(c.complaintDate.slice(0, 4), 10) : 2026;
+      const parsed = parseFlexibleDate(raw, defYear);
+      if (parsed) {
+        calSyncWithDate(parsed);
+      }
+    }
+
+    function handleModalRejectedDateLive() {
+      const inputEl = document.getElementById('modalRejectedDateInput');
+      if (!inputEl) return;
+      const raw = inputEl.value.trim();
+      const c = cases.find(x => x.id === currentCaseId);
+      const defYear = c && c.complaintDate ? parseInt(c.complaintDate.slice(0, 4), 10) : 2026;
+      const parsed = parseFlexibleDate(raw, defYear);
+      if (parsed) {
+        calSyncWithDate(parsed);
+      }
+    }
+
+    function handleNewCaseDateLive() {
+      const inputEl = document.getElementById('newCaseDate');
+      if (!inputEl) return;
+      const raw = inputEl.value.trim();
+      const parsed = parseFlexibleDate(raw);
+      if (parsed) {
+        calSyncWithDate(parsed);
+      }
+    }
+
+    function calSyncWithDate(dateStr) {
+      const modal = document.getElementById('calendarModal');
+      if (!modal || !modal.classList.contains('active')) return;
+      const [y, m, d] = dateStr.split('-').map(x => parseInt(x, 10));
+      calCurrentYear = y;
+      calCurrentMonth = m;
+      calSelectedDate = dateStr;
+      renderCalendarModal();
+    }
+
+    function handleDateInputChange(field) {
+      const c = cases.find(x => x.id === currentCaseId);
+      if (!c) return;
+
+      if (field === 'complaint') {
+        const raw = document.getElementById('detailComplaintDate').value.trim();
+        const parsed = parseFlexibleDate(raw);
+        if (parsed) {
+          c.complaintDate = parsed;
+          c.updatedAt = new Date().toISOString();
+          document.getElementById('detailComplaintDate').value = parsed;
+        } else {
+          alert('無法辨識接獲申訴日格式，請輸入如 115.10.1、10/1 或 2026-10-01。');
+          document.getElementById('detailComplaintDate').value = c.complaintDate;
+        }
+      }
+
+      saveCases();
+      renderArrowGraphicTimeline(c);
+      renderCaseCards();
+    }
+
+    // =========================================================================
+    // RENDER THE GRAPHIC LONG ARROW TIMELINE (SVG)
+    // 箭頭是一條圖案的長箭頭，上有時間點，上或下拉出一條細線寫事件（單純寫事件）
+    // =========================================================================
+    function renderArrowGraphicTimeline(c) {
+      const svg = document.getElementById('arrowTimelineSvg');
+      const ms = calculateCaseMilestones(c);
+      if (!ms) return;
+
+      const todayStr = getTodayDateStr();
+      const todayInfo = formatDateDisplay(todayStr);
+
+      const isRejected = (c.status === 'rejected');
+
+      // Define milestone events
+      let events = [];
+
+      if (isRejected) {
+        // 不予受理：依使用者指示「不予受理，就不會有後面的時間軸，所以，時間軸就顯示目前有輸入過的時間，和今天的時間就可以了，一般而言，是申訴日和今天。」
+        events.push({
+          key: 'complaint',
+          title: '接獲申訴',
+          dateStr: ms.complaintDate,
+          isUp: true,
+          rule: '案件起算點（始日不計入）'
+        });
+
+        // 若有鍵入不予受理日，則列入
+        if (c.rejectedDate && String(c.rejectedDate).trim().length > 0) {
+          events.push({
+            key: 'rejected',
+            title: '不予受理',
+            dateStr: String(c.rejectedDate).trim(),
+            isUp: false,
+            rule: '經審查決議不予受理結案'
+          });
+        }
+
+        // 今天
+        events.push({
+          key: 'today',
+          title: '今天',
+          dateStr: todayStr,
+          isUp: false,
+          rule: '今日現況時間點'
+        });
+
+        // 依日期先後順序排序
+        events.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+
+        // 重新分配上下交錯細線
+        events.forEach((ev, idx) => {
+          ev.isUp = (idx % 2 === 0);
+        });
+
+      } else {
+        // 審查中 或 已受理
+        events.push({
+          key: 'complaint',
+          title: '接獲申訴',
+          dateStr: ms.complaintDate,
+          isUp: true,
+          rule: '案件起算點（始日不計入）'
+        });
+
+        // 第二節點：依使用者指示：
+        // 「下方的進度條必須將「受理與否」去掉，新增「已受理」日，之後就依此日計算。」
+        if (c.status === 'accepted' && ms.hasActualAccepted) {
+          events.push({
+            key: 'accepted',
+            title: '已受理',
+            dateStr: ms.acceptBaseDate,
+            isUp: false,
+            rule: `已於實際受理日（${formatDateDisplay(ms.acceptBaseDate).rocShort}）正式立案`
+          });
+        } else {
+          events.push({
+            key: 'review',
+            title: '受理與否',
+            dateStr: ms.step1.endDate,
+            isUp: false,
+            rule: '法定 10 個工作日審查期限'
+          });
+        }
+
+        events.push(
+          {
+            key: 'notice',
+            title: '通報系統',
+            dateStr: ms.step2.endDate,
+            isUp: true,
+            rule: ms.hasActualAccepted ? '已受理日起算 7 個工作日' : '受理後 7 個工作日'
+          },
+          {
+            key: 'committee',
+            title: '成立調查小組',
+            dateStr: ms.step3.endDate,
+            isUp: false,
+            rule: ms.hasActualAccepted ? '已受理日起算 15 個工作日' : '受理後 15 個工作日'
+          },
+          {
+            key: 'report',
+            title: '完成調查報告',
+            dateStr: ms.step4.effectiveDate,
+            isUp: true,
+            rule: '成立小組後 2 個月（日曆天）'
+          },
+          {
+            key: 'extended',
+            title: '展延完成',
+            dateStr: ms.step5.effectiveDate,
+            isUp: false,
+            rule: '得展延 1 個月（累計 3 個月）'
+          }
+        );
+      }
+
+      // Coordinate layout
+      // SVG viewBox="0 0 1100 280"
+      const arrowY = 140;
+      const startX = 45;
+      const endX = 1060;
+
+      const n = events.length;
+      if (isRejected) {
+        // 不予受理案件：通常為 2 個節點（申訴日與今天）或 3 個節點，均勻優雅配置
+        if (n === 2) {
+          events[0].x = 240;
+          events[1].x = 580;
+        } else if (n === 3) {
+          events[0].x = 180;
+          events[1].x = 440;
+          events[2].x = 700;
+        } else {
+          const firstX = 160;
+          const lastX = 760;
+          const stepWidth = (lastX - firstX) / (n - 1);
+          events.forEach((ev, idx) => {
+            ev.x = firstX + idx * stepWidth;
+          });
+        }
+      } else {
+        const firstX = 80;
+        const lastX = 840;
+        const stepWidth = (n > 1) ? ((lastX - firstX) / (n - 1)) : 0;
+        events.forEach((ev, idx) => {
+          ev.x = (n > 1) ? (firstX + idx * stepWidth) : (startX + 140);
+        });
+      }
+
+      // Accurately determine "Today" position for non-rejected cases
+      let todayX = null;
+      let todayFound = false;
+
+      if (!isRejected) {
+        if (todayStr < events[0].dateStr) {
+          todayX = Math.max(startX + 25, events[0].x - 40);
+          todayFound = true;
+        } else if (todayStr > events[n - 1].dateStr) {
+          todayX = Math.min(events[n - 1].x + 40, endX - 60);
+          todayFound = true;
+        } else {
+          for (let i = 0; i < n - 1; i++) {
+            const d1 = events[i].dateStr;
+            const d2 = events[i + 1].dateStr;
+            if (todayStr >= d1 && todayStr <= d2) {
+              const t1 = new Date(d1).getTime();
+              const t2 = new Date(d2).getTime();
+              const tt = new Date(todayStr).getTime();
+              const ratio = (t2 === t1) ? 0 : (tt - t1) / (t2 - t1);
+              todayX = events[i].x + ratio * (events[i + 1].x - events[i].x);
+              todayFound = true;
+              break;
+            }
+          }
+        }
+        if (!todayFound || todayX === null) {
+          todayX = 145;
+        }
+      }
+
+      // Build SVG Markup
+      let svgHtml = `
+        <defs>
+          <marker id="arrowHead" markerUnits="userSpaceOnUse" markerWidth="26" markerHeight="26" refX="22" refY="13" orient="auto">
+            <path d="M 3 3 L 23 13 L 3 23 Z" fill="#334155" />
+          </marker>
+        </defs>
+
+        <rect x="0" y="0" width="1100" height="280" fill="transparent" />
+
+        <!-- 1. The Main Long Horizontal Arrow -->
+        <line x1="${startX}" y1="${arrowY}" x2="${endX}" y2="${arrowY}" 
+              stroke="#334155" stroke-width="4.5" stroke-linecap="round" marker-end="url(#arrowHead)" />
+      `;
+
+      // 2. Render each milestone event (Dots on arrow, thin lines up or down, clean text)
+      events.forEach((ev, idx) => {
+        const dInfo = formatDateDisplay(ev.dateStr);
+        const isUp = ev.isUp;
+        const lineEndY = isUp ? 68 : 212;
+        const textY = isUp ? 48 : 242;
+        const dateY = isUp ? (arrowY + 22) : (arrowY - 14);
+
+        const isAcceptedNode = (ev.key === 'accepted');
+        const isRejectedNode = (ev.key === 'rejected');
+        const isTodayNode = (ev.key === 'today');
+
+        let dotFill = '#2563eb';
+        let boxStroke = '#cbd5e1';
+        let titleColor = '#0f172a';
+        let dateColor = '#475569';
+        let boxFill = '#ffffff';
+
+        if (isAcceptedNode) {
+          dotFill = '#059669';
+          boxStroke = '#10b981';
+          titleColor = '#065f46';
+          dateColor = '#047857';
+        } else if (isRejectedNode) {
+          dotFill = '#dc2626';
+          boxStroke = '#f87171';
+          titleColor = '#991b1b';
+          dateColor = '#b91c1c';
+          boxFill = '#fef2f2';
+        } else if (isTodayNode) {
+          dotFill = '#dc2626';
+          boxStroke = '#f87171';
+          titleColor = '#b91c1c';
+          dateColor = '#dc2626';
+          boxFill = '#fff1f2';
+        }
+
+        let dotExtraSvg = '';
+        if (isTodayNode) {
+          dotExtraSvg = `
+            <circle cx="${ev.x}" cy="${arrowY}" r="12" fill="rgba(220, 38, 38, 0.2)">
+              <animate attributeName="r" values="8;15;8" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+            </circle>
+          `;
+        }
+
+        const displayTitle = isTodayNode ? '📍 今天' : (isRejectedNode ? '❌ 不予受理' : ev.title);
+
+        svgHtml += `
+          <g class="event-label-group" onclick="openMilestoneDetailModal('${ev.key}')">
+            ${dotExtraSvg}
+            <!-- Thin connector line (上或下拉出一條細線) -->
+            <line x1="${ev.x}" y1="${arrowY}" x2="${ev.x}" y2="${lineEndY}" 
+                  stroke="${(isTodayNode || isRejectedNode) ? '#f87171' : '#94a3b8'}" stroke-width="1.8" stroke-dasharray="3,2" />
+
+            <!-- Milestone circle on the arrow -->
+            <circle class="milestone-dot" cx="${ev.x}" cy="${arrowY}" r="${(isAcceptedNode || isTodayNode || isRejectedNode) ? '7.5' : '6.5'}" 
+                    fill="${dotFill}" stroke="#ffffff" stroke-width="${(isAcceptedNode || isTodayNode || isRejectedNode) ? '3' : '2.5'}" />
+
+            <!-- Date on the arrow line -->
+            <text x="${ev.x}" y="${dateY}" text-anchor="middle" 
+                  fill="${dateColor}" font-size="13.5" font-weight="700" font-family="sans-serif">
+              ${dInfo.monthDayShort}
+            </text>
+
+            <!-- Event pill background box -->
+            <rect class="event-box" x="${ev.x - 54}" y="${isUp ? (textY - 24) : (textY - 18)}" 
+                  width="108" height="34" rx="8" ry="8" 
+                  fill="${boxFill}" stroke="${boxStroke}" stroke-width="${(isAcceptedNode || isTodayNode || isRejectedNode) ? '2.2' : '1.2'}" 
+                  filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.06))" />
+
+            <!-- Event Name (單純寫事件) -->
+            <text class="event-text" x="${ev.x}" y="${isUp ? (textY - 2) : (textY + 4)}" 
+                  text-anchor="middle" fill="${titleColor}" font-size="14.5" font-weight="800" font-family="sans-serif">
+              ${displayTitle}
+            </text>
+          </g>
+        `;
+      });
+
+      // 3. Mark "今天" (Today) accurately on the timeline for non-rejected cases
+      if (!isRejected) {
+        const todayShort = todayInfo.monthDayShort;
+        svgHtml += `
+          <!-- TODAY INDICATOR (Accurate Position) -->
+          <g>
+            <!-- Pulsing ring around today dot -->
+            <circle cx="${todayX}" cy="${arrowY}" r="11" fill="rgba(220, 38, 38, 0.2)">
+              <animate attributeName="r" values="7;14;7" dur="2s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite" />
+            </circle>
+
+            <!-- Today Dot on the line -->
+            <circle cx="${todayX}" cy="${arrowY}" r="5.5" fill="#dc2626" stroke="#ffffff" stroke-width="2" />
+
+            <!-- Today vertical indicator pointer -->
+            <line x1="${todayX}" y1="${arrowY - 32}" x2="${todayX}" y2="${arrowY - 6}" 
+                  stroke="#dc2626" stroke-width="2" />
+            
+            <!-- Today Flag / Tag Badge -->
+            <rect x="${todayX - 44}" y="${arrowY - 56}" width="88" height="24" rx="6" ry="6" 
+                  fill="#dc2626" filter="drop-shadow(0px 2px 4px rgba(220,38,38,0.3))" />
+            <polygon points="${todayX - 5},${arrowY - 32} ${todayX + 5},${arrowY - 32} ${todayX},${arrowY - 26}" fill="#dc2626" />
+
+            <text x="${todayX}" y="${arrowY - 40}" text-anchor="middle" 
+                  fill="#ffffff" font-size="12" font-weight="800" font-family="sans-serif">
+              📍 今天 ${todayShort}
+            </text>
+          </g>
+        `;
+      }
+
+      svg.innerHTML = svgHtml;
+
+    }
+
+    // =========================================================================
+    // COPY TIMELINE IMAGE TO CLIPBOARD (相機圖示 ‧ 一鍵複製照片 ‧ 直接 Ctrl+V 貼上)
+    // =========================================================================
+    async function copyTimelineImageToClipboard() {
+      const btn = document.getElementById('btnCopyTimeline');
+      const svg = document.getElementById('arrowTimelineSvg');
+      if (!svg) return;
+
+      const c = cases.find(x => x.id === currentCaseId);
+      const caseName = (c && c.name) ? c.name : '職場霸凌申訴案';
+
+      try {
+        if (btn) btn.classList.add('copied');
+
+        const viewBox = svg.viewBox.baseVal;
+        const width = (viewBox && viewBox.width) ? viewBox.width : 1100;
+        const height = (viewBox && viewBox.height) ? viewBox.height : 280;
+
+        const svgClone = svg.cloneNode(true);
+        if (!svgClone.getAttribute('xmlns')) {
+          svgClone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        }
+
+        const styleEl = document.createElement('style');
+        styleEl.textContent = `
+          text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif; }
+          .event-box { rx: 8px; ry: 8px; }
+          .event-text { font-size: 14.5px; font-weight: 800; }
+        `;
+        svgClone.insertBefore(styleEl, svgClone.firstChild);
+
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svgClone);
+        const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+
+        const img = new Image();
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = () => reject(new Error('SVG 影像載入失敗'));
+          img.src = svgDataUrl;
+        });
+
+        const scale = 2;
+        const padX = 40;
+        const padY = 30;
+        const canvas = document.createElement('canvas');
+        canvas.width = (width + padX * 2) * scale;
+        canvas.height = (height + padY * 2) * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width + padX * 2, height + padY * 2);
+
+        ctx.drawImage(img, padX, padY, width, height);
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert('產生圖片失敗，請重試');
+            if (btn) btn.classList.remove('copied');
+            return;
+          }
+
+          let copied = false;
+          if (navigator.clipboard && window.ClipboardItem) {
+            try {
+              await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': blob })
+              ]);
+              copied = true;
+              showSaveToast('📷 已複製時間軸圖片！可直接按 Ctrl+V 貼上');
+            } catch (clipErr) {
+              console.warn('Clipboard write failed, fallback to download:', clipErr);
+            }
+          }
+
+          if (!copied) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${caseName}_時間軸.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showSaveToast(`📷 時間軸已下載為「${caseName}_時間軸.png」！`);
+          }
+
+          setTimeout(() => {
+            if (btn) btn.classList.remove('copied');
+          }, 1500);
+        }, 'image/png');
+
+      } catch (err) {
+        console.error('Error copying timeline image:', err);
+        alert('複製時間軸圖片時發生錯誤：' + err.message);
+        if (btn) btn.classList.remove('copied');
+      }
+    }
+
+    // =========================================================================
+    // MODAL: DETAILED CALCULATION BASIS (點進去才看見詳細計算依據)
+    // =========================================================================
+    function openMilestoneDetailModal(milestoneKey) {
+      const c = cases.find(x => x.id === currentCaseId);
+      const ms = calculateCaseMilestones(c);
+      if (!ms) return;
+
+      const titleEl = document.getElementById('modalEventTitle');
+      const dateRocEl = document.getElementById('modalDateRoc');
+      const dateSubEl = document.getElementById('modalDateSub');
+      const rulePillEl = document.getElementById('modalRulePill');
+      const legalBoxEl = document.getElementById('modalLegalBox');
+      const holidayAlertEl = document.getElementById('modalHolidayAlert');
+      const tbodyEl = document.getElementById('modalBreakdownTbody');
+      const breakdownSection = document.getElementById('modalBreakdownSection');
+
+      let targetDate = '';
+      let titleText = '';
+      let ruleText = '';
+      let legalHtml = '';
+      let holidayNotices = [];
+      let breakdownList = [];
+
+      if (milestoneKey === 'complaint') {
+        targetDate = ms.complaintDate;
+        titleText = '📥 第 1 階段：接獲申訴（起始基準日）';
+        ruleText = '案件起始日 ‧ 始日不計入';
+        legalHtml = `
+          <b>【法定依據與起算規定】</b><br>
+          機關或單位接獲申訴書之日。依《民法》第 120 條第 2 項規定：「以日、星期、月或年定期間者，其始日不算入。」<br>
+          因此，受理審查之 10 個工作日期間，自接獲申訴日之<b>次一工作日起算</b>。
+        `;
+        breakdownSection.style.display = 'none';
+      } else if (milestoneKey === 'review' || milestoneKey === 'accepted') {
+        if (ms.hasActualAccepted || milestoneKey === 'accepted') {
+          targetDate = ms.acceptBaseDate;
+          titleText = '⚖️ 第 2 階段：案件已受理日';
+          ruleText = '實際已受理日 ‧ 後續起算基準';
+          legalHtml = `
+            <b>【實際受理與後續時限重算基準】</b><br>
+            本案接獲申訴日為 <b>${formatDateDisplay(ms.complaintDate).roc}</b>，原法定受理審查期限為 10 個工作日內（至 ${formatDateDisplay(ms.step1.endDate).roc} 止）。<br>
+            <b>本案已於【${formatDateDisplay(ms.acceptBaseDate).roc}】正式決定受理。</b><br>
+            依職場霸凌申訴作業規定，後續之「通報系統（受理後 7 個工作日）」、「成立調查小組（受理後 15 個工作日）」等程序，均<b>嚴格以此「已受理日」（${formatDateDisplay(ms.acceptBaseDate).rocShort}）之次一工作日起算</b>。
+          `;
+          holidayNotices = [];
+          breakdownSection.style.display = 'none';
+        } else {
+          targetDate = ms.step1.endDate;
+          titleText = '⚖️ 第 2 階段：受理與否審查決定期限';
+          ruleText = '法定 10 個工作日';
+          legalHtml = `
+            <b>【法定依據與起算規定】</b><br>
+            依職場霸凌申訴處理作業規範，機關接獲申訴之日起 <b>10 個工作日內</b>應召開專責小組或審查會決定是否受理，並以書面通知申訴人。<br>
+            若尚未填寫實際受理日，後續通報與調查小組程序暫以此法定最晚受理期限（${formatDateDisplay(ms.step1.endDate).roc}）為起算基準。
+          `;
+          holidayNotices = ms.step1.breakdown.filter(b => !b.isWork && b.note && !b.note.includes('週六') && !b.note.includes('週日'));
+          breakdownList = ms.step1.breakdown;
+          breakdownSection.style.display = 'block';
+        }
+      } else if (milestoneKey === 'rejected') {
+        targetDate = (c && c.rejectedDate) ? c.rejectedDate : ms.complaintDate;
+        titleText = '🚫 不予受理決議';
+        ruleText = '審查不予受理 ‧ 結案';
+        legalHtml = `
+          <b>【不予受理結案】</b><br>
+          本案經審查決議不予受理結案，程序終結。<br>
+          接獲申訴日為 <b>${formatDateDisplay(ms.complaintDate).roc}</b>${(c && c.rejectedDate) ? `，決議不予受理日為 <b>${formatDateDisplay(c.rejectedDate).roc}</b>` : ''}。
+        `;
+        breakdownSection.style.display = 'none';
+      } else if (milestoneKey === 'today') {
+        const todayStr = getTodayDateStr();
+        targetDate = todayStr;
+        titleText = '📍 今日進度現況';
+        ruleText = '今日現況時間點';
+        legalHtml = `
+          <b>【今日案件進度現況】</b><br>
+          目前系統時間為 <b>${formatDateDisplay(todayStr).roc}（${formatDateDisplay(todayStr).fullDayName}）</b>。<br>
+          本案接獲申訴日為 <b>${formatDateDisplay(ms.complaintDate).roc}</b>，目前程序狀態為<b>不予受理結案</b>。
+        `;
+        breakdownSection.style.display = 'none';
+      } else if (milestoneKey === 'notice') {
+        targetDate = ms.step2.endDate;
+        titleText = '📢 第 3 階段：通報主管機關系統期限';
+        ruleText = '受理後 7 個工作日';
+        legalHtml = `
+          <b>【法定依據與起算規定】</b><br>
+          自受理決定基準日（<b>${formatDateDisplay(ms.acceptBaseDate).roc}</b>）之次一工作日起算 <b>7 個工作日內</b>，應依規定登錄主管機關專屬通報系統進行列管通報。<br>
+          ${ms.hasActualAccepted ? '<b>本階段已精確以您鍵入之實際受理日起算！</b>' : '（目前以法定最晚受理審查期限為起算基準）'}
+        `;
+        holidayNotices = ms.step2.breakdown.filter(b => !b.isWork && b.note && !b.note.includes('週六') && !b.note.includes('週日'));
+        breakdownList = ms.step2.breakdown;
+        breakdownSection.style.display = 'block';
+      } else if (milestoneKey === 'committee') {
+        targetDate = ms.step3.endDate;
+        titleText = '👥 第 4 階段：成立調查小組（指派調查人）期限';
+        ruleText = '受理後 15 個工作日';
+        legalHtml = `
+          <b>【法定依據與起算規定】</b><br>
+          自受理決定基準日（<b>${formatDateDisplay(ms.acceptBaseDate).roc}</b>）之次一工作日起算 <b>15 個工作日內</b>，應遴選具性平或霸凌調查專業之公正外部人士組成調查小組。<br>
+          ${ms.hasActualAccepted ? '<b>本階段已精確以您鍵入之實際受理日起算！</b>' : '（目前以法定最晚受理審查期限為起算基準）'}<br>
+          此日期亦為後續「2 個月完成調查報告」之起算點。
+        `;
+        holidayNotices = ms.step3.breakdown.filter(b => !b.isWork && b.note && !b.note.includes('週六') && !b.note.includes('週日'));
+        breakdownList = ms.step3.breakdown;
+        breakdownSection.style.display = 'block';
+      } else if (milestoneKey === 'report') {
+        targetDate = ms.step4.effectiveDate;
+        titleText = '📄 第 5 階段：完成調查報告（法定基本期限）';
+        ruleText = '成立後 2 個月（日曆天）';
+        legalHtml = `
+          <b>【法定依據與起算規定】</b><br>
+          依規定調查小組應於成立之日（${formatDateDisplay(ms.step3.endDate).roc}）起 <b>2 個月內</b>完成調查報告。本期間按<b>日曆天</b>計算。<br>
+          <b>【民法順延規定】</b>依《民法》第 121 條第 2 項及第 122 條：「於一定期日或期間內，應為意思表示或給付者，其期日或其期間之末日，為星期日、紀念日或其他休息日時，以其休息日之次日代之。」<br>
+          若滿期日逢週休或國定假日，依法順延至次一工作日。
+        `;
+        if (ms.step4.delayedReasons.length > 0) {
+          holidayNotices = [{ note: `原滿期日 ${formatDateDisplay(ms.step4.nominalDate).rocShort} 適逢休假（${ms.step4.delayedReasons.map(r => r.note || '例假日').join('、')}），依民法第 122 條順延至次一工作日 ${formatDateDisplay(ms.step4.effectiveDate).rocShort}。` }];
+        }
+        breakdownSection.style.display = 'none';
+      } else if (milestoneKey === 'extended') {
+        targetDate = ms.step5.effectiveDate;
+        titleText = '⏳ 第 6 階段：調查報告展延上限';
+        ruleText = '得展延 1 個月（累計 3 個月日曆天）';
+        legalHtml = `
+          <b>【法定依據與起算規定】</b><br>
+          調查期間必要時得延長 1 個月，並應以書面通知雙方當事人。累計調查期間不得逾 3 個月。<br>
+          <b>【連假順延效果】</b>若展延屆滿日適逢春節等國定連假，依《民法》第 122 條規定，順延至連假結束後首個上班日。
+        `;
+        if (ms.step5.delayedReasons.length > 0) {
+          holidayNotices = [{ note: `原展延滿期日 ${formatDateDisplay(ms.step5.nominalDate).rocShort} 適逢假期（${ms.step5.delayedReasons.map(r => r.note || '連假/補假').join('、')}），依民法第 122 條順延至連假結束後首個上班日 ${formatDateDisplay(ms.step5.effectiveDate).rocShort}。` }];
+        }
+        breakdownSection.style.display = 'none';
+      }
+
+      const dInfo = formatDateDisplay(targetDate);
+      titleEl.innerHTML = titleText;
+      dateRocEl.innerText = dInfo.roc;
+      dateSubEl.innerText = `西元 ${dInfo.ad} ｜ ${dInfo.fullDayName}`;
+      rulePillEl.innerText = ruleText;
+      legalBoxEl.innerHTML = legalHtml;
+
+      if (holidayNotices.length > 0) {
+        holidayAlertEl.style.display = 'flex';
+        holidayAlertEl.innerHTML = `<span>⚠️</span><span><b>遇國定假日/補假排除或順延：</b>${holidayNotices.map(h => h.note).join('； ')}</span>`;
+      } else {
+        holidayAlertEl.style.display = 'none';
+      }
+
+      if (breakdownList.length > 0) {
+        tbodyEl.innerHTML = breakdownList.map((item, idx) => {
+          const di = formatDateDisplay(item.date);
+          const tagClass = item.isWork ? 'tag-workday' : (item.note && !item.note.includes('週') ? 'tag-holiday' : 'tag-weekend');
+          const propText = item.isWork ? `★ 第 ${item.count} 工作日` : '非工作日 (排除)';
+          return `
+            <tr>
+              <td>${idx + 1}</td>
+              <td style="font-weight: 600;">${di.roc}</td>
+              <td>${di.ad}</td>
+              <td>${di.fullDayName}</td>
+              <td class="${tagClass}">${propText}</td>
+              <td style="color: var(--slate-600);">${item.note || '-'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('detailModal').classList.add('active');
+    }
+
+    function closeDetailModal(e) {
+      if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+      document.getElementById('detailModal').classList.remove('active');
+    }
+
+    // =========================================================================
+    // CALENDAR PICKER (OFFLINE READY, TAIWAN ROC & HOLIDAYS)
+    // =========================================================================
+    let calAnchorEl = null;
+
+    function positionCalendarDialog(anchorEl) {
+      const dialog = document.querySelector('.calendar-dialog');
+      if (!dialog || !anchorEl) return;
+
+      const rect = anchorEl.getBoundingClientRect();
+      const dialogWidth = 350;
+      const dialogHeight = 360;
+
+      let left = rect.left;
+      if (left + dialogWidth > window.innerWidth - 14) {
+        left = window.innerWidth - dialogWidth - 14;
+      }
+      if (left < 10) left = 10;
+
+      let top = rect.bottom + 6;
+      if (top + dialogHeight > window.innerHeight && rect.top > dialogHeight + 10) {
+        top = rect.top - dialogHeight - 6;
+      }
+
+      dialog.style.position = 'fixed';
+      dialog.style.top = `${Math.max(8, Math.round(top))}px`;
+      dialog.style.left = `${Math.max(8, Math.round(left))}px`;
+      dialog.style.width = `${dialogWidth}px`;
+    }
+
+    function openDatePicker(field, anchorEl) {
+      calTargetField = field;
+      calAnchorEl = anchorEl || null;
+      const c = cases.find(x => x.id === currentCaseId);
+      
+      const labelEl = document.getElementById('calTargetLabel');
+      const clearBtn = document.getElementById('calClearBtn');
+
+      let initialDateStr = '2026-10-01';
+      let targetInput = null;
+
+      if (field === 'complaint') {
+        if (labelEl) labelEl.innerText = '選擇：接獲申訴日';
+        if (clearBtn) clearBtn.style.display = 'none';
+        targetInput = document.getElementById('detailComplaintDate');
+        const raw = targetInput ? targetInput.value.trim() : '';
+        initialDateStr = parseFlexibleDate(raw) || (c ? c.complaintDate : '2026-10-01');
+      } else if (field === 'accepted') {
+        if (labelEl) labelEl.innerText = '選擇：實際受理日';
+        targetInput = document.getElementById('modalAcceptedDateInput');
+        const existingVal = targetInput ? targetInput.value.trim() : (c && c.acceptedDate ? c.acceptedDate : '');
+        if (clearBtn) clearBtn.style.display = existingVal ? 'inline-block' : 'none';
+        initialDateStr = parseFlexibleDate(existingVal) || (c ? c.complaintDate : '2026-10-01');
+      } else if (field === 'rejected') {
+        if (labelEl) labelEl.innerText = '選擇：不予受理日（選填）';
+        targetInput = document.getElementById('modalRejectedDateInput');
+        const existingVal = targetInput ? targetInput.value.trim() : (c && c.rejectedDate ? c.rejectedDate : '');
+        if (clearBtn) clearBtn.style.display = existingVal ? 'inline-block' : 'none';
+        initialDateStr = parseFlexibleDate(existingVal) || (c ? c.complaintDate : '2026-10-01');
+      } else if (field === 'newCase') {
+        if (labelEl) labelEl.innerText = '選擇：接獲申訴日';
+        if (clearBtn) clearBtn.style.display = 'none';
+        targetInput = document.getElementById('newCaseDate');
+        const raw = targetInput ? targetInput.value : '';
+        initialDateStr = parseFlexibleDate(raw) || '2026-10-01';
+      }
+
+      const parsed = parseFlexibleDate(initialDateStr) || '2026-10-01';
+      const [y, m, d] = parsed.split('-').map(x => parseInt(x, 10));
+      calCurrentYear = y;
+      calCurrentMonth = m;
+      calSelectedDate = parsed;
+
+      renderCalendarModal();
+
+      const modal = document.getElementById('calendarModal');
+      modal.classList.add('active');
+
+      const anchor = anchorEl || targetInput;
+      if (anchor) {
+        calAnchorEl = anchor;
+        positionCalendarDialog(anchor);
+      }
+    }
+
+    function toggleDatePicker(field, anchorEl) {
+      const modal = document.getElementById('calendarModal');
+      if (modal && modal.classList.contains('active') && calTargetField === field) {
+        closeDatePicker();
+      } else {
+        openDatePicker(field, anchorEl);
+      }
+    }
+
+    function closeDatePicker() {
+      const modal = document.getElementById('calendarModal');
+      if (modal) modal.classList.remove('active');
+      calAnchorEl = null;
+    }
+
+    function calPrevMonth() {
+      calCurrentMonth--;
+      if (calCurrentMonth < 1) {
+        calCurrentMonth = 12;
+        calCurrentYear--;
+      }
+      renderCalendarModal();
+    }
+
+    function calNextMonth() {
+      calCurrentMonth++;
+      if (calCurrentMonth > 12) {
+        calCurrentMonth = 1;
+        calCurrentYear++;
+      }
+      renderCalendarModal();
+    }
+
+    function calJumpYearMonth(y, m) {
+      calCurrentYear = y;
+      calCurrentMonth = m;
+      renderCalendarModal();
+    }
+
+    function calSelectToday() {
+      const today = getTodayDateStr();
+      calPickDate(today);
+    }
+
+    function calClearDate() {
+      if (calTargetField === 'accepted') {
+        const inputEl = document.getElementById('modalAcceptedDateInput');
+        if (inputEl) inputEl.value = '';
+        selectDecisionOption('review', false);
+      } else if (calTargetField === 'rejected') {
+        const inputEl = document.getElementById('modalRejectedDateInput');
+        if (inputEl) inputEl.value = '';
+      }
+      closeDatePicker();
+    }
+
+    function calPickDate(dateStr) {
+      calSelectedDate = dateStr;
+      if (calTargetField === 'complaint') {
+        const inp = document.getElementById('detailComplaintDate');
+        if (inp) {
+          inp.value = dateStr;
+          handleDateInputChange('complaint');
+        }
+      } else if (calTargetField === 'accepted') {
+        const inputEl = document.getElementById('modalAcceptedDateInput');
+        if (inputEl) inputEl.value = dateStr;
+        selectDecisionOption('accepted', false);
+      } else if (calTargetField === 'rejected') {
+        const inputEl = document.getElementById('modalRejectedDateInput');
+        if (inputEl) inputEl.value = dateStr;
+        selectDecisionOption('rejected', false);
+      } else if (calTargetField === 'newCase') {
+        const el = document.getElementById('newCaseDate');
+        if (el) el.value = dateStr;
+      }
+      closeDatePicker();
+    }
+
+    function renderCalendarModal() {
+      const rocY = calCurrentYear - 1911;
+      document.getElementById('calYearROC').innerText = `民國 ${rocY} 年 ${calCurrentMonth} 月`;
+      document.getElementById('calYearAD').innerText = `西元 ${calCurrentYear} 年 ${calCurrentMonth} 月`;
+
+      // Update quick month active states
+      document.querySelectorAll('.cal-qmonth-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(`qBtn${calCurrentYear}_${calCurrentMonth}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const grid = document.getElementById('calGrid');
+      const firstDayIndex = new Date(calCurrentYear, calCurrentMonth - 1, 1).getDay();
+      const totalDays = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+
+      let html = '';
+      for (let i = 0; i < firstDayIndex; i++) {
+        html += '<div class="cal-day-cell empty"></div>';
+      }
+
+      const todayStr = getTodayDateStr();
+
+      for (let day = 1; day <= totalDays; day++) {
+        const mStr = String(calCurrentMonth).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dateStr = `${calCurrentYear}-${mStr}-${dStr}`;
+        const dt = new Date(`${dateStr}T00:00:00`);
+        const dayOfWeek = dt.getDay();
+        const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+        const work = isWorkday(dateStr);
+        const isHoliday = !work;
+        const note = getDayNote(dateStr);
+
+        let cellClasses = ['cal-day-cell'];
+        if (dateStr === calSelectedDate) cellClasses.push('selected');
+        if (dateStr === todayStr) cellClasses.push('today');
+        if (isHoliday) cellClasses.push('is-holiday');
+        else if (isWeekend) cellClasses.push('is-weekend');
+
+        html += `
+          <div class="${cellClasses.join(' ')}" onclick="calPickDate('${dateStr}')" title="${note ? `${dateStr}: ${note}` : dateStr}">
+            <span>${day}</span>
+            ${isHoliday ? '<span class="holiday-dot"></span>' : ''}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    // Global outside click listener to close floating calendar
+    document.addEventListener('mousedown', function(e) {
+      const modal = document.getElementById('calendarModal');
+      if (!modal || !modal.classList.contains('active')) return;
+      if (e.target.closest('.calendar-dialog')) return;
+      if (e.target.closest('.date-input-wrapper')) return;
+      closeDatePicker();
+    });
+
+    window.addEventListener('resize', () => {
+      const modal = document.getElementById('calendarModal');
+      if (modal && modal.classList.contains('active') && calAnchorEl) {
+        positionCalendarDialog(calAnchorEl);
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      const modal = document.getElementById('calendarModal');
+      if (modal && modal.classList.contains('active') && calAnchorEl) {
+        positionCalendarDialog(calAnchorEl);
+      }
+    }, true);
+
+    // =========================================================================
+    // NEW CASE MODAL
+    // =========================================================================
+    function openNewCaseModal() {
+      document.getElementById('newCaseName').value = '';
+      document.getElementById('newCaseDate').value = '2026-10-01';
+      document.getElementById('newCaseModal').classList.add('active');
+    }
+
+    function closeNewCaseModal(e) {
+      if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+      document.getElementById('newCaseModal').classList.remove('active');
+      closeDatePicker();
+    }
+
+    function submitNewCase() {
+      const name = document.getElementById('newCaseName').value.trim() || '未命名申訴案';
+      const rawDate = document.getElementById('newCaseDate').value;
+      const parsed = parseFlexibleDate(rawDate) || '2026-10-01';
+
+      const newCase = {
+        id: 'case_' + Date.now(),
+        name,
+        complaintDate: parsed,
+        status: 'review',
+        acceptedDate: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      cases.unshift(newCase);
+      saveCases();
+      closeNewCaseModal();
+      openCaseDetail(newCase.id);
+    }
+
+    function deleteCurrentCase() {
+      if (!confirm('確定要刪除此職場霸凌申訴案件記錄嗎？')) return;
+      cases = cases.filter(c => c.id !== currentCaseId);
+      saveCases();
+      navigateTo('home');
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
   </script>
+
+  <!-- Save Indicator Toast -->
+  <div id="saveToast" class="save-indicator-toast">
+    <span>✓</span>
+    <span id="saveToastText">已自動存檔</span>
+  </div>
 </body>
 </html>

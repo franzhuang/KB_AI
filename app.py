@@ -42,6 +42,15 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if os.path.exists(DE_ID_WEB_DIR):
     app.mount("/deid-static", StaticFiles(directory=DE_ID_WEB_DIR), name="deid-static")
 
+DE_ID_APP_DIR = os.path.join(BASE_DIR, "de-id-app")
+if os.path.exists(DE_ID_APP_DIR):
+    app.mount("/de-id-app", StaticFiles(directory=DE_ID_APP_DIR), name="de-id-app")
+
+EVENTS_REMINDER_APP_DIR = os.path.join(BASE_DIR, "events-reminder-app")
+if os.path.exists(EVENTS_REMINDER_APP_DIR):
+    app.mount("/events-reminder-app", StaticFiles(directory=EVENTS_REMINDER_APP_DIR), name="events-reminder-app")
+
+
 # 讀寫資料庫輔助函式
 def load_db() -> Dict[str, Any]:
     if not os.path.exists(DB_FILE):
