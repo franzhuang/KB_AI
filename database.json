@@ -1,0 +1,350 @@
+{
+  "categories": [
+    {
+      "id": "doc-drafting",
+      "name": "文書撰擬與函件格式",
+      "icon": "file-text",
+      "desc": "存證信函、支付命令、起訴答辯狀等書狀自動排版與生成",
+      "count": 4
+    },
+    {
+      "id": "privacy-evidence",
+      "name": "案卷隱私與證據處置",
+      "icon": "shield-check",
+      "desc": "個資去識別化、卷證 OCR 識別提取、PDF 騎縫章與防偽浮水印",
+      "count": 5
+    },
+    {
+      "id": "timeline-schedule",
+      "name": "程序管轄與時限排程",
+      "icon": "clock",
+      "desc": "訴訟上訴在途期間、調查程序時限提醒、強制執行消滅時效警報",
+      "count": 3
+    },
+    {
+      "id": "case-research",
+      "name": "判決檢索與實務爭點",
+      "icon": "search",
+      "desc": "判決書 AI 主文與爭點萃取、同類量刑比對、民刑裁判要旨對照",
+      "count": 4
+    },
+    {
+      "id": "contract-review",
+      "name": "契約審查與法規遵循",
+      "icon": "check-circle",
+      "desc": "商務合約紅線風險標註、勞基法合規檢核、營業秘密條款審查",
+      "count": 3
+    },
+    {
+      "id": "cost-calc",
+      "name": "費用試算與執行工具",
+      "icon": "calculator",
+      "desc": "司法院裁判費級距即時試算、民法法定遲延利息精算、執行規費核算",
+      "count": 3
+    }
+  ],
+  "tools": [
+    {
+      "id": "tool-70e5e2b5",
+      "name": "民事再抗告在途期間與例假日順延試算器",
+      "category_id": "timeline-schedule",
+      "category_name": "程序管轄與時限排程",
+      "author": "張大千 律師",
+      "author_title": "最高法院登錄律師",
+      "description": "精確依照民事訴訟法扣除在途期間，遇到星期例假日自動順延至次工作日，預防上訴期間逾期之實用小工具。",
+      "tags": [
+        "在途期間",
+        "再抗告",
+        "期間計算",
+        "例假日順延"
+      ],
+      "rating": 5.0,
+      "rating_count": 1,
+      "url": "/tools/timeline-calc",
+      "is_integrated": false,
+      "tool_type": "web",
+      "code_or_prompt": "",
+      "created_at": "2026-10-18T14:01:17.786722Z"
+    },
+    {
+      "id": "tool-legal-letter",
+      "name": "郵局存證信函標準排版生成器",
+      "category_id": "doc-drafting",
+      "category_name": "文書撰擬與函件格式",
+      "author": "司法AI研究組 (整合原生引擎)",
+      "author_title": "執業律師 / 開源貢獻者",
+      "description": "嚴格遵循中華郵政存證信函官方標準格式（每頁10行、每行20格、滿頁200字）。自動計算行格、切分分頁，支援一鍵匯出標準 ODT 與 PDF 格式。",
+      "tags": [
+        "存證信函",
+        "文書排版",
+        "郵局規格",
+        "ODT匯出",
+        "PDF生成"
+      ],
+      "rating": 5.0,
+      "rating_count": 3,
+      "url": "/tools/legal-letter",
+      "is_integrated": true,
+      "internal_route": "legal-letter",
+      "created_at": "2026-10-15T10:00:00Z"
+    },
+    {
+      "id": "tool-deid",
+      "name": "案卷個資去識別化系統 (De-ID & Re-ID)",
+      "category_id": "privacy-evidence",
+      "category_name": "案卷隱私與證據處置",
+      "author": "隱私合規小組",
+      "author_title": "法學博士 / 科技法務長",
+      "description": "律師與法官專用機敏卷證遮蔽引擎。支援身分證字號、姓名、住址、車牌、金融帳號自動遮蔽與雙向對照還原代碼表，純本地運算確保當事人隱私。",
+      "tags": [
+        "個資去識別化",
+        "卷證遮蔽",
+        "反向還原",
+        "隱私合規",
+        "離線隱私"
+      ],
+      "rating": 4.92,
+      "rating_count": 118,
+      "url": "/tools/de-id",
+      "is_integrated": true,
+      "internal_route": "de-id",
+      "created_at": "2026-10-16T14:30:00Z"
+    },
+    {
+      "id": "tool-event-reminder",
+      "name": "職場調查與法律程序時限管家",
+      "category_id": "timeline-schedule",
+      "category_name": "程序管轄與時限排程",
+      "author": "勞資程序法務組",
+      "author_title": "勞動法專門律師",
+      "description": "精準控管法規調查程序時效、申訴處理期限、訴訟抗告日數。自動扣除例假日與在途期間，提供階段倒數計時與時效警示看板。",
+      "tags": [
+        "時限管理",
+        "程序法",
+        "霸凌調查",
+        "時效警報",
+        "排程追蹤"
+      ],
+      "rating": 4.88,
+      "rating_count": 96,
+      "url": "/tools/event-reminder",
+      "is_integrated": true,
+      "internal_route": "event-reminder",
+      "created_at": "2026-10-16T18:00:00Z"
+    },
+    {
+      "id": "tool-pdf-watermark",
+      "name": "卷證 PDF 騎縫章與防偽浮水印添加器",
+      "category_id": "privacy-evidence",
+      "category_name": "案卷隱私與證據處置",
+      "author": "陳冠宇 律師",
+      "author_title": "冠宇法律事務所 所長",
+      "description": "提供律師事務所整卷專用 PDF 批次加蓋數位騎縫章、事務所浮水印、機密閱卷標記與頁碼編排，防止當事人或對造未授權複印外流。",
+      "tags": [
+        "PDF加浮水印",
+        "騎縫章",
+        "卷證防偽",
+        "浮水印",
+        "律師閱卷"
+      ],
+      "rating": 4.85,
+      "rating_count": 87,
+      "url": "/tools/pdf-watermark",
+      "is_integrated": true,
+      "internal_route": "pdf-watermark",
+      "created_at": "2026-10-17T09:15:00Z"
+    },
+    {
+      "id": "tool-legal-ocr",
+      "name": "裁判書與訴訟證據手寫 OCR 智能萃取",
+      "category_id": "privacy-evidence",
+      "category_name": "案卷隱私與證據處置",
+      "author": "張法官 (技術研究)",
+      "author_title": "地方法院法官 / AI裁判研究",
+      "description": "針對模糊裁判掃描檔、早期手寫借據、當事人 Line 截圖對話進行光學字元辨識 (OCR)，支援表格還原與段落智能排版修正。",
+      "tags": [
+        "ocr",
+        "文字辨識",
+        "借據手寫",
+        "Line對話整理",
+        "掃描檔提取"
+      ],
+      "rating": 4.82,
+      "rating_count": 75,
+      "url": "/tools/legal-ocr",
+      "is_integrated": true,
+      "internal_route": "legal-ocr",
+      "created_at": "2026-10-17T11:20:00Z"
+    },
+    {
+      "id": "tool-court-fee-calc",
+      "name": "民事訴訟裁判費與執行費即時試算器",
+      "category_id": "cost-calc",
+      "category_name": "費用試算與執行工具",
+      "author": "蔡明哲 律師",
+      "author_title": "金融訴訟特聘律師",
+      "description": "依民事訴訟法第77條之13及司法院最新級距標準，精確計算第一審、第二審、第三審上訴裁判費及強制執行聲請費用，自動產出繳款分析單。",
+      "tags": [
+        "裁判費計算",
+        "訴訟規費",
+        "執行費",
+        "利息試算",
+        "司法院標準"
+      ],
+      "rating": 4.79,
+      "rating_count": 64,
+      "url": "/tools/fee-calc",
+      "is_integrated": true,
+      "internal_route": "fee-calc",
+      "created_at": "2026-10-17T16:00:00Z"
+    },
+    {
+      "id": "tool-judgment-extractor",
+      "name": "判決書爭點萃取與判決主文結構化 AI",
+      "category_id": "case-research",
+      "category_name": "判決檢索與實務爭點",
+      "author": "法學數據實驗室",
+      "author_title": "司法科技研發小組",
+      "description": "上傳長篇判決書（數萬字），秒速提煉：原告主張、被告答辯、法院心證判斷要旨、核心爭點與法律依據，支援一鍵輸出心智圖格式。",
+      "tags": [
+        "判決爭點",
+        "主文摘要",
+        "法學研究",
+        "裁判比對",
+        "心證分析"
+      ],
+      "rating": 4.76,
+      "rating_count": 59,
+      "url": "/tools/judgment-extractor",
+      "is_integrated": true,
+      "internal_route": "judgment-extractor",
+      "created_at": "2026-10-18T08:00:00Z"
+    },
+    {
+      "id": "tool-contract-redline",
+      "name": "商務合約紅線風險與霸王條款審查 AI",
+      "category_id": "contract-review",
+      "category_name": "契約審查與法規遵循",
+      "author": "全球跨國法務組",
+      "author_title": "資深國際企業法務長",
+      "description": "針對買賣、委任、承攬、股權轉讓合約自動進行紅線標註（Redline），標出違約金過高、管轄約定不利、不可抗力條款陷阱。",
+      "tags": [
+        "合約審查",
+        "紅線比對",
+        "風險評估",
+        "霸王條款",
+        "履約爭議"
+      ],
+      "rating": 4.73,
+      "rating_count": 52,
+      "url": "/tools/contract-redline",
+      "is_integrated": true,
+      "internal_route": "contract-redline",
+      "created_at": "2026-10-18T10:30:00Z"
+    }
+  ],
+  "reviews": {
+    "tool-legal-letter": [
+      {
+        "id": "r-298f4c",
+        "author": "高檢署特約法務顧問",
+        "rating": 5,
+        "content": "實測匯出 ODT 與標準 200 字格式完全吻合，替我們節省了大量助理重複排版的時間，五星好評推薦！",
+        "created_at": "2026-10-18T14:01:25.400532Z"
+      },
+      {
+        "id": "r-1",
+        "author": "黃律師 (台北律師公會)",
+        "rating": 5,
+        "content": "完全命中郵局每頁200字的規格！以前用 Word 排版存證信函常常在換頁處字數爆掉，這個小工具直接幫我精算行格，輸出 ODT 格式非常精準，太實用了！",
+        "created_at": "2026-10-16T11:20:00Z"
+      },
+      {
+        "id": "r-2",
+        "author": "郭法務長",
+        "rating": 5,
+        "content": "內建的多副本處理與字級微調非常細膩，公司催款跟終止租約函件現在都用這套處理，節省大量行政助理時間。",
+        "created_at": "2026-10-17T15:10:00Z"
+      }
+    ],
+    "tool-deid": [
+      {
+        "id": "r-3",
+        "author": "李律師 (刑事法專委)",
+        "rating": 5,
+        "content": "純前端本地運算最符合律師倫理規範，完全不必擔心把卷證上傳到未知伺服器。而且還能反向還原代碼表，非常強大！",
+        "created_at": "2026-10-17T09:40:00Z"
+      }
+    ],
+    "tool-pdf-watermark": [
+      {
+        "id": "r-4",
+        "author": "周律師",
+        "rating": 5,
+        "content": "騎縫章加蓋功能超棒，給當事人看閱卷副本時加上專屬浮水印，避免爭議。",
+        "created_at": "2026-10-17T14:00:00Z"
+      }
+    ],
+    "tool-70e5e2b5": [
+      {
+        "id": "r-bdce21",
+        "author": "張大千 律師",
+        "rating": 5,
+        "content": "作者自發發布！歡迎全台司法同儕測試與交流指導。",
+        "created_at": "2026-10-18T14:01:17.786752Z"
+      }
+    ]
+  },
+  "messages": [
+    {
+      "id": "msg-1",
+      "author": "林律師 (管理員)",
+      "badge": "公會特聘",
+      "channel": "general",
+      "content": "歡迎各位司法先進蒞臨 LexCraft 司法智作！本平台專門為律師、法官、法務同仁打造，歡迎交流各類自行開發的實用小工具！",
+      "time": "14:20"
+    },
+    {
+      "id": "msg-2",
+      "author": "張法官",
+      "badge": "司法學術",
+      "channel": "prompts",
+      "content": "大家在起草答辯狀時，有沒有嘗試過結合司法院裁判要旨庫的 Few-Shot Prompt？效果相當驚人，爭點架構條理分明。",
+      "time": "15:05"
+    },
+    {
+      "id": "msg-3",
+      "author": "陳律師",
+      "badge": "科技律師",
+      "channel": "tools",
+      "content": "我剛剛使用了存證信函生成器，真的幫了大忙！另外我正在開發一個自動比對民事再抗告期間的計算模組，稍後上傳分享給各位！",
+      "time": "15:42"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann-1",
+      "title": "【重磅更新】司法智作平台全新改版上線：支援 AI 智慧意圖搜尋與小工具評分機制",
+      "date": "2026-10-18",
+      "tag": "平台升級",
+      "important": true,
+      "content": "為落實司法科技交流，首頁全面導入極簡雙模智慧搜尋框（即時前綴搜尋＋司法語意AI分析），各分類均開放執業律師自由上傳自製工具，並依同行評分自動優選排序。"
+    },
+    {
+      "id": "ann-2",
+      "title": "【實務指引】律師公會生成式 AI 使用指引與當事人個資保護實務要點宣導",
+      "date": "2026-10-15",
+      "tag": "倫理指引",
+      "important": false,
+      "content": "提醒會員使用各類 AI 輔助文書處理時，強烈建議搭配本平台內建之「個資去識別化系統 (De-ID)」，確保當事人身分證號、病歷與金融隱私不致外洩。"
+    },
+    {
+      "id": "ann-3",
+      "title": "【社群徵集】2026 司法小工具創作評比開跑，最高評分工具將獲推薦公會年會展示",
+      "date": "2026-10-10",
+      "tag": "社群活動",
+      "important": false,
+      "content": "歡迎各位律師、法官與書記官上傳日常辦案自製的 Excel 巨集、Python 腳本或 Web 小工具，共同促進司法流程現代化。"
+    }
+  ]
+}

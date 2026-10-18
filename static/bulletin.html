@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>司法科技公告與倫理指引 | 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    .light-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04);
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center space-x-3 group">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+          <span class="text-[10px] tracking-widest text-slate-500 -mt-1 font-serif">司法AI工具交換所</span>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center space-x-2 text-sm font-medium text-slate-600">
+        <a href="/" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>首頁總覽</span>
+        </a>
+        <a href="/tools" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-blue-600"></i>
+          <span>AI 工具市集</span>
+        </a>
+        <a href="/chat" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
+          <span>司法交流室</span>
+        </a>
+        <a href="/bulletin" class="px-3 py-1.5 rounded-lg text-amber-800 bg-amber-50 border border-amber-200 flex items-center space-x-1.5 font-semibold">
+          <i data-lucide="bell" class="w-4 h-4 text-amber-600"></i>
+          <span>司法公告欄</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主內容區 -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 flex-grow w-full">
+    
+    <div class="mb-8">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-xs text-amber-800 font-serif mb-2">
+        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span>司法科技倫理與平台公告</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
+        官方公告與司法 AI 倫理指南
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">
+        掌握法務科技最新法規動向、生成式 AI 使用指引與社群自製工具評選公告。
+      </p>
+    </div>
+
+    <!-- 公告列表 -->
+    <div id="announcementList" class="space-y-4">
+      <!-- 動態載入公告 -->
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-200 py-8 mt-12 bg-white text-slate-500 text-xs font-serif text-center">
+    <div class="max-w-7xl mx-auto px-4">
+      <span>司法AI工具交換所 • 恪守律師法與個人資料保護法規範</span>
+    </div>
+  </footer>
+
+  <script src="/static/static-store.js"></script>
+  <script src="static-store.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadAnnouncements();
+    });
+
+    async function loadAnnouncements() {
+      try {
+        const res = await fetch('/api/announcements');
+        if (!res.ok) throw new Error("API Unavailable");
+        const list = await res.json();
+        renderAnnouncementsList(list);
+      } catch (err) {
+        if (typeof STATIC_DB !== 'undefined') {
+          renderAnnouncementsList(STATIC_DB.announcements);
+        }
+      }
+    }
+
+    function renderAnnouncementsList(list) {
+      const container = document.getElementById('announcementList');
+      container.innerHTML = '';
+
+        list.forEach(ann => {
+          const card = document.createElement('div');
+          card.className = `light-card p-6 rounded-2xl border transition ${
+            ann.important ? 'border-amber-200 bg-amber-50/30' : 'border-slate-200'
+          }`;
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-bold ${
+                  ann.important ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-600'
+                }">
+                  ${escapeHtml(ann.tag)}
+                </span>
+                <span class="text-xs text-slate-400 font-sans">${ann.date}</span>
+              </div>
+              ${ann.important ? '<span class="text-[11px] text-amber-700 font-semibold flex items-center space-x-1"><i data-lucide="pin" class="w-3.5 h-3.5 text-amber-600"></i><span>置頂重要</span></span>' : ''}
+            </div>
+
+            <h3 class="text-base sm:text-lg font-serif font-bold text-slate-900 mb-2">
+              ${escapeHtml(ann.title)}
+            </h3>
+
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+              ${escapeHtml(ann.content)}
+            </p>
+          `;
+          container.appendChild(card);
+        });
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>

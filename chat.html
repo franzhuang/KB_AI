@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>司法專業 AI 創作交流室 | 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    .light-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="h-16 bg-white/85 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between shrink-0">
+    <div class="flex items-center space-x-3">
+      <a href="/" class="flex items-center space-x-2 group">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+          <i data-lucide="scale" class="w-4 h-4"></i>
+        </div>
+        <span class="font-brand text-sm font-bold tracking-wider text-slate-900 hidden sm:inline">LEXCRAFT</span>
+      </a>
+      <span class="text-slate-300">/</span>
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-slate-900 flex items-center space-x-1.5">
+          <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
+          <span>司法專業同儕交流聊天室</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- 導航按鈕 -->
+    <div class="flex items-center space-x-2">
+      <a href="/" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+        <span>首頁</span>
+      </a>
+      <a href="/tools" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+        <span>工具市集</span>
+      </a>
+      <a href="/bulletin" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+        <span>公告欄</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 聊天工作區 -->
+  <main class="flex-grow flex h-[calc(100vh-4rem)] overflow-hidden">
+    
+    <!-- 左側頻道 (Sidebar) -->
+    <div class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 p-3 space-y-4">
+      <div>
+        <div class="text-[11px] font-serif font-bold uppercase tracking-wider text-slate-400 px-2 mb-2 flex items-center justify-between">
+          <span>討論主題頻道</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+        <div class="space-y-1">
+          <button onclick="switchChannel('general')" id="chan-general" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-900 font-bold">
+            <span>💬</span>
+            <span># 綜合法律交流</span>
+          </button>
+          <button onclick="switchChannel('prompts')" id="chan-prompts" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <span>⚖️</span>
+            <span># AI文書與Prompt技巧</span>
+          </button>
+          <button onclick="switchChannel('tools')" id="chan-tools" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <span>🛠️</span>
+            <span># 自行打造工具分享</span>
+          </button>
+          <button onclick="switchChannel('privacy')" id="chan-privacy" class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <span>🛡️</span>
+            <span># 個資合規與倫理</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 發言人身分切換 -->
+      <div class="mt-auto p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+        <label class="block text-slate-500 text-[10px] uppercase font-bold mb-1">我的發言身分徽章</label>
+        <select id="userBadgeSelect" class="w-full bg-white border border-slate-300 rounded-lg px-2 py-1.5 text-slate-900 text-xs focus:outline-none focus:border-amber-500">
+          <option value="執業律師">執業律師 (全聯會認證)</option>
+          <option value="司法官">法官 / 司法研究員</option>
+          <option value="法務長">企業法務長 / In-house</option>
+          <option value="公會理事">律師公會理事 / 專委</option>
+        </select>
+        <input type="text" id="userNameInput" value="張律師" class="w-full mt-2 px-2 py-1 rounded bg-white border border-slate-300 text-slate-900 text-xs" placeholder="發言稱謂">
+      </div>
+    </div>
+
+    <!-- 右側對話窗口 -->
+    <div class="flex-grow flex flex-col h-full bg-slate-50">
+      
+      <div class="h-12 border-b border-slate-200 bg-white px-6 flex items-center justify-between text-xs text-slate-500">
+        <div class="flex items-center space-x-2">
+          <span class="font-bold text-slate-900 text-sm" id="channelHeaderTitle"># 綜合法律交流</span>
+          <span>• 司法實務同行互助討論</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="text-emerald-700 font-medium text-[11px]">42 位律師/司法官在線</span>
+        </div>
+      </div>
+
+      <!-- 訊息清單 -->
+      <div id="messagesContainer" class="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
+        <!-- 動態載入訊息 -->
+      </div>
+
+      <!-- 底部輸入框 -->
+      <div class="p-4 border-t border-slate-200 bg-white">
+        <form onsubmit="handleSendMessage(event)" class="flex items-center space-x-2">
+          <input 
+            type="text" 
+            id="chatInput" 
+            placeholder="在 # 綜合法律交流 中發言... (支援分享 Prompt 提示詞或工具建議)" 
+            class="flex-grow bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 focus:bg-white"
+          >
+          <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition flex items-center space-x-1.5 shrink-0 shadow-sm">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span>發送</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/static/static-store.js"></script>
+  <script src="static-store.js"></script>
+  <script>
+    let activeChannel = 'general';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadMessages();
+      setInterval(loadMessages, 5000);
+    });
+
+    function switchChannel(channelKey) {
+      activeChannel = channelKey;
+      ['general', 'prompts', 'tools', 'privacy'].forEach(k => {
+        const btn = document.getElementById(`chan-${k}`);
+        if (k === channelKey) {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-900 font-bold";
+        } else {
+          btn.className = "w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex items-center space-x-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+        }
+      });
+
+      const titles = {
+        'general': '# 綜合法律交流',
+        'prompts': '# AI文書與Prompt技巧',
+        'tools': '# 自行打造工具分享',
+        'privacy': '# 個資合規與倫理'
+      };
+      document.getElementById('channelHeaderTitle').innerText = titles[channelKey] || channelKey;
+      loadMessages();
+    }
+
+    async function loadMessages() {
+      try {
+        const res = await fetch(`/api/chat/messages?channel=${activeChannel}`);
+        if (!res.ok) throw new Error("API Unavailable");
+        const messages = await res.json();
+        renderMessagesList(messages);
+      } catch (err) {
+        if (typeof STATIC_DB !== 'undefined') {
+          const msgs = (STATIC_DB.messages || []).filter(m => m.channel === activeChannel || activeChannel === 'general');
+          renderMessagesList(msgs);
+        }
+      }
+    }
+
+    function renderMessagesList(messages) {
+      const container = document.getElementById('messagesContainer');
+      container.innerHTML = '';
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = '';
+
+        if (messages.length === 0) {
+          container.innerHTML = `
+            <div class="py-12 text-center text-slate-400">
+              <i data-lucide="message-square" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i>
+              <p class="text-xs">本頻道尚無新訊息，歡迎在此拋出首個提問或分享您的 AI 工具經驗！</p>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        messages.forEach(msg => {
+          const item = document.createElement('div');
+          item.className = "flex items-start space-x-3";
+          
+          item.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-xs font-bold text-slate-700 shrink-0">
+              ${escapeHtml(msg.author.charAt(0))}
+            </div>
+            <div class="space-y-1 max-w-2xl">
+              <div class="flex items-center space-x-2">
+                <span class="text-xs font-bold text-slate-900">${escapeHtml(msg.author)}</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200 font-medium">${escapeHtml(msg.badge || '執業律師')}</span>
+                <span class="text-[10px] text-slate-400">${msg.time}</span>
+              </div>
+              <div class="p-3 rounded-2xl rounded-tl-sm bg-white border border-slate-200 text-xs text-slate-800 leading-relaxed shadow-sm">
+                ${escapeHtml(msg.content)}
+              </div>
+            </div>
+          `;
+          container.appendChild(item);
+        });
+
+        container.scrollTop = container.scrollHeight;
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const payload = {
+        author: document.getElementById('userNameInput').value.trim() || '王律師',
+        badge: document.getElementById('userBadgeSelect').value,
+        channel: activeChannel,
+        content: text
+      };
+
+      input.value = '';
+
+      try {
+        const res = await fetch('/api/chat/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("API Unavailable");
+        loadMessages();
+      } catch (err) {
+        if (typeof STATIC_DB !== 'undefined') {
+          STATIC_DB.messages = STATIC_DB.messages || [];
+          STATIC_DB.messages.push({
+            id: 'msg-mock-' + Date.now(),
+            author: payload.author,
+            badge: payload.badge,
+            channel: payload.channel,
+            content: payload.content,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          });
+          loadMessages();
+        }
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>

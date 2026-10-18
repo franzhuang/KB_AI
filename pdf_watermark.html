@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卷證 PDF 騎縫章與防偽浮水印添加器 | 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+    .light-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04);
+    }
+    .preview-sheet {
+      background: #ffffff;
+      color: #1e293b;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 1 / 1.414;
+      box-shadow: 0 10px 25px -4px rgba(0,0,0,0.12);
+      border: 1px solid #cbd5e1;
+    }
+    .seal-stamp {
+      border: 2px solid #dc2626;
+      color: #dc2626;
+      border-radius: 9999px;
+      font-weight: bold;
+      font-family: 'Noto Serif TC', serif;
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+      transform: rotate(-15deg);
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="/" class="flex items-center space-x-3 group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+            <span class="text-[10px] tracking-widest text-slate-500 -mt-1 font-serif">司法AI工具交換所</span>
+          </div>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 font-medium">
+          卷證 PDF 騎縫章與防偽浮水印添加器
+        </span>
+      </div>
+
+      <a href="/tools" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>返回工具市集</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 主工作台 -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+    
+    <div class="light-card p-4 rounded-2xl mb-6 flex items-center justify-between border-amber-200 bg-gradient-to-r from-amber-50/40 to-white">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+          <i data-lucide="stamp" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-serif font-bold text-slate-900 flex items-center space-x-2">
+            <span>卷證防偽浮水印與電子騎縫章工坊</span>
+            <span class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-semibold">律師閱卷專用</span>
+          </h1>
+          <p class="text-xs text-slate-500 mt-0.5">
+            提供事務所閱卷整卷防拷貝、對角斜角浮水印、頁緣防偽騎縫章批次加蓋，杜絕案卷私自轉載。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- 左欄：參數設定 -->
+      <div class="lg:col-span-5 space-y-4">
+        
+        <div class="light-card p-5 rounded-2xl space-y-3.5">
+          <h2 class="text-xs font-serif font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="sliders" class="w-4 h-4 text-amber-600"></i>
+            <span>防偽浮水印設定</span>
+          </h2>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-slate-700 mb-1 font-medium">主要浮水印文字 (例如事務所名稱)</label>
+              <input type="text" id="watermarkMainText" value="冠宇聯合法律事務所 ‧ 閱卷專用" oninput="updateWatermarkPreview()" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+            </div>
+
+            <div>
+              <label class="block text-slate-700 mb-1 font-medium">案號或附註 (例如限制提示)</label>
+              <input type="text" id="watermarkSubText" value="115年度重訴字第88號 ‧ 未經許可不得複印外流" oninput="updateWatermarkPreview()" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-slate-700 mb-1 font-medium">浮水印透明度</label>
+                <input type="range" id="opacityRange" min="0.05" max="0.5" step="0.05" value="0.15" oninput="updateWatermarkPreview()" class="w-full">
+              </div>
+              <div>
+                <label class="block text-slate-700 mb-1 font-medium">旋轉角度 (度)</label>
+                <input type="number" id="rotateAngle" value="-30" oninput="updateWatermarkPreview()" class="w-full px-2 py-1 rounded bg-slate-50 border border-slate-300 text-slate-900 text-xs">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="light-card p-5 rounded-2xl space-y-3.5">
+          <h2 class="text-xs font-serif font-bold text-red-700 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="shield" class="w-4 h-4 text-red-600"></i>
+            <span>跨頁騎縫章 (Seal)</span>
+          </h2>
+
+          <div class="space-y-3 text-xs">
+            <label class="flex items-center space-x-2 cursor-pointer">
+              <input type="checkbox" id="enableSeal" checked onchange="updateWatermarkPreview()" class="rounded border-slate-300 text-red-600">
+              <span class="text-slate-800 font-medium">加蓋右側頁緣電子騎縫章 (跨頁防抽換)</span>
+            </label>
+
+            <div>
+              <label class="block text-slate-700 mb-1 font-medium">騎縫章文字</label>
+              <input type="text" id="sealText" value="陳冠宇律師印" oninput="updateWatermarkPreview()" class="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white">
+            </div>
+          </div>
+        </div>
+
+        <div class="light-card p-5 rounded-2xl space-y-3 border-amber-200">
+          <label class="block text-xs font-bold text-slate-800">選擇欲加蓋之 PDF 卷證檔案</label>
+          <div class="border-2 border-dashed border-slate-300 hover:border-amber-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-50">
+            <i data-lucide="file-up" class="w-8 h-8 mx-auto mb-2 text-amber-600"></i>
+            <span class="text-xs text-slate-600 font-medium">點擊或拖曳 PDF 卷證至此</span>
+            <input type="file" id="pdfFileInput" accept="application/pdf" class="hidden">
+          </div>
+          <button onclick="simulateProcess()" class="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition flex items-center justify-center space-x-1.5 shadow-sm">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>執行批次防偽加蓋與下載</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- 右欄：A4 擬真即時預覽 -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="light-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+            <span class="text-xs font-serif font-bold text-slate-900 flex items-center space-x-1.5">
+              <i data-lucide="eye" class="w-4 h-4 text-amber-600"></i>
+              <span>卷證閱卷 A4 紙張動態預覽</span>
+            </span>
+            <span class="text-[11px] text-slate-500">雙重防偽層已啟動</span>
+          </div>
+
+          <div class="max-w-md mx-auto p-2">
+            <div id="a4Sheet" class="preview-sheet p-8 rounded-lg shadow-md relative">
+              <div class="space-y-3 text-[11px] leading-relaxed text-slate-700 opacity-60">
+                <div class="text-center font-bold text-sm text-slate-900 border-b pb-2 mb-3">臺灣臺北地方法院民事判決（摘錄卷證）</div>
+                <p>原　　　告　某某商業銀行股份有限公司</p>
+                <p>被　　　告　甲○○</p>
+                <p>上列當事人間請求給付借款事件，本院於民國114年11月10日言詞辯論終結，判決如下：</p>
+                <p class="font-bold">主　　文</p>
+                <p>被告應給付原告新臺幣壹佰萬元，及自民國114年5月1日起至清償日止，按年息百分之五計算之利息。訴訟費用由被告負擔。</p>
+                <p class="font-bold">事實及理由</p>
+                <p>一、原告主張略以：被告向原告借款尚未清償...經查借據合約明確...</p>
+              </div>
+
+              <!-- 動態浮水印層 -->
+              <div id="watermarkLayer" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none text-center font-bold" style="transform: rotate(-30deg);">
+                <div id="previewMainText" class="text-xl text-slate-900 tracking-wider">冠宇聯合法律事務所 ‧ 閱卷專用</div>
+                <div id="previewSubText" class="text-xs text-slate-700 mt-1">115年度重訴字第88號 ‧ 未經許可不得複印外流</div>
+              </div>
+
+              <!-- 右邊界騎縫章 -->
+              <div id="sealStampLayer" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 seal-stamp px-2 py-4 text-xs bg-red-50/40">
+                陳冠宇律師印
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      updateWatermarkPreview();
+    });
+
+    function updateWatermarkPreview() {
+      const mainText = document.getElementById('watermarkMainText').value;
+      const subText = document.getElementById('watermarkSubText').value;
+      const opacity = document.getElementById('opacityRange').value;
+      const angle = document.getElementById('rotateAngle').value;
+      const enableSeal = document.getElementById('enableSeal').checked;
+      const sealText = document.getElementById('sealText').value;
+
+      document.getElementById('previewMainText').innerText = mainText;
+      document.getElementById('previewSubText').innerText = subText;
+      
+      const layer = document.getElementById('watermarkLayer');
+      layer.style.opacity = opacity;
+      layer.style.transform = `rotate(${angle}deg)`;
+
+      const seal = document.getElementById('sealStampLayer');
+      if (enableSeal) {
+        seal.classList.remove('hidden');
+        seal.innerText = sealText;
+      } else {
+        seal.classList.add('hidden');
+      }
+    }
+
+    function simulateProcess() {
+      alert('🔒 卷證防偽處理成功！浮水印與騎縫印記已嵌入。檔案正在匯出下載...');
+    }
+  </script>
+</body>
+</html>

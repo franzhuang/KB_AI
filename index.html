@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>司法AI工具交換所 | LexCraft</title>
+  <!-- Tailwind CSS & Lucide Icons & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          },
+          colors: {
+            legal: {
+              50: '#f8fafc',
+              100: '#f1f5f9',
+              200: '#e2e8f0',
+              300: '#cbd5e1',
+              400: '#94a3b8',
+              500: '#64748b',
+              600: '#475569',
+              700: '#334155',
+              800: '#1e293b',
+              900: '#0f172a',
+              gold: '#b45309',
+              goldLight: '#d97706',
+              navy: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #1e293b;
+      background-image: 
+        radial-gradient(at 50% 0%, rgba(219, 234, 254, 0.45) 0px, transparent 65%),
+        radial-gradient(at 80% 20%, rgba(254, 243, 199, 0.35) 0px, transparent 50%),
+        radial-gradient(at 20% 80%, rgba(224, 231, 255, 0.3) 0px, transparent 50%);
+      min-height: 100vh;
+    }
+    .light-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+    .light-card:hover {
+      box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.08);
+    }
+    .search-box {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 10px 30px -5px rgba(30, 58, 138, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    }
+    .search-box:focus-within {
+      border-color: #b45309;
+      box-shadow: 0 12px 35px -5px rgba(180, 83, 9, 0.15), 0 0 0 3px rgba(217, 119, 6, 0.1);
+    }
+    .title-gradient {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #b45309 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-200 selection:text-amber-900">
+
+  <!-- 頂部亮色高質感簡約導航列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="/" class="flex items-center space-x-3 group">
+        <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm group-hover:border-amber-500 transition-all">
+          <i data-lucide="scale" class="w-5 h-5"></i>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center space-x-2">
+            <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200 font-medium">黃耀平律師建置</span>
+          </div>
+          <span class="text-[10px] tracking-widest text-slate-500 -mt-0.5 font-serif">司法AI工具交換所</span>
+        </div>
+      </a>
+
+      <!-- 主導覽選單 -->
+      <nav class="hidden md:flex items-center space-x-1 lg:space-x-2 text-sm font-medium text-slate-600">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-amber-800 bg-amber-50 border border-amber-200 flex items-center space-x-1.5 font-semibold">
+          <i data-lucide="compass" class="w-4 h-4 text-amber-600"></i>
+          <span>首頁總覽</span>
+        </a>
+        <a href="/tools" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-blue-600"></i>
+          <span>AI 工具市集</span>
+        </a>
+        <a href="/chat" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="messages-square" class="w-4 h-4 text-emerald-600"></i>
+          <span>司法交流室</span>
+        </a>
+        <a href="/bulletin" class="px-3 py-1.5 rounded-lg hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1.5">
+          <i data-lucide="bell" class="w-4 h-4 text-purple-600"></i>
+          <span>司法公告欄</span>
+        </a>
+      </nav>
+
+      <!-- 右側動作 -->
+      <div class="flex items-center space-x-3">
+        <button onclick="openUploadModal()" class="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 hover:bg-amber-700 text-white shadow-sm transition-all">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>發布自製工具</span>
+        </button>
+        <div class="flex items-center space-x-2 pl-2 border-l border-slate-200 text-xs text-slate-600">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-medium text-slate-800">黃耀平律師</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主內容區：首屏完美垂直置中 (Vertical Centered Hero) -->
+  <main class="flex-grow flex flex-col">
+    
+    <!-- 第一屏：標題與搜尋框（微偏上方黃金視覺中心） -->
+    <section class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 sm:px-6 relative py-12">
+      
+      <!-- 向上微調區塊 -->
+      <div class="w-full max-w-3xl flex flex-col items-center -translate-y-8 sm:-translate-y-14 transition-transform">
+        
+        <!-- 標題：純粹乾淨主標題 -->
+        <div class="text-center max-w-2xl mx-auto mb-9">
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight title-gradient">
+            司法AI工具交換所
+          </h1>
+        </div>
+
+        <!-- 核心主體：極簡雙模智慧搜尋框 -->
+        <div class="w-full relative z-30">
+          
+          <!-- 搜尋卡片 -->
+          <div class="search-box rounded-2xl p-2 transition-all duration-300 relative">
+          
+          <!-- 輸入欄 -->
+          <div class="flex items-center px-3 py-2">
+            <div class="text-amber-600 mr-3 flex items-center">
+              <i data-lucide="search" class="w-6 h-6"></i>
+            </div>
+            <input 
+              type="text" 
+              id="searchInput"
+              placeholder="搜尋AI工具" 
+              class="w-full bg-transparent text-slate-900 placeholder-slate-400 text-base sm:text-lg focus:outline-none font-sans"
+              autocomplete="off"
+              oninput="handleSearchInput(this.value)"
+              onkeydown="handleSearchKeydown(event)"
+            />
+            <button 
+              id="clearBtn"
+              onclick="clearSearch()"
+              class="hidden text-slate-400 hover:text-slate-600 p-1 mr-1 transition"
+              title="清除輸入"
+            >
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            
+            <!-- 模式切換按鈕 (即時極速 / AI 語意) -->
+            <div class="flex items-center bg-slate-100 rounded-xl p-1 border border-slate-200 text-xs shrink-0 ml-2">
+              <button 
+                id="modeFastBtn"
+                onclick="setSearchMode('fast')" 
+                class="px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-amber-900 bg-white shadow-sm border border-slate-200 font-semibold"
+                title="毫秒級前綴與關鍵字即時下拉推薦"
+              >
+                <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span class="hidden sm:inline">即時極速</span>
+              </button>
+              <button 
+                id="modeAiBtn"
+                onclick="setSearchMode('ai')" 
+                class="px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-slate-500 hover:text-slate-900"
+                title="司法實務情境深度理解與工具診斷"
+              >
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span class="hidden sm:inline">司法 AI</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 即時搜尋下拉彈出清單 (Instant Dropdown) -->
+          <div 
+            id="searchDropdown" 
+            class="hidden absolute left-0 right-0 top-full mt-2.5 rounded-2xl bg-white border border-slate-200 shadow-xl p-3 z-50 max-h-[480px] overflow-y-auto custom-scrollbar"
+          >
+            <!-- AI 語意診斷提示區 -->
+            <div id="aiInsightBox" class="hidden mb-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-start space-x-2.5">
+              <div class="p-1 rounded bg-blue-100 text-blue-700 shrink-0 mt-0.5">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+              </div>
+              <div class="leading-relaxed">
+                <span class="font-semibold text-blue-950">司法 AI 診斷：</span>
+                <span id="aiInsightText">正在分析案情需求與對應之司法工具...</span>
+              </div>
+            </div>
+
+            <!-- 搜尋結果標題與計數 -->
+            <div class="flex items-center justify-between px-2 py-1.5 text-xs text-slate-500 border-b border-slate-100 mb-1.5">
+              <span class="flex items-center space-x-1.5">
+                <i data-lucide="arrow-down-right" class="w-3.5 h-3.5 text-amber-600"></i>
+                <span id="dropdownTitle">站內推薦小工具 (同行評分最高置頂)</span>
+              </span>
+              <span id="resultsCountBadge" class="text-[11px] bg-slate-100 px-2 py-0.5 rounded-full text-slate-600 font-medium">0 項符合</span>
+            </div>
+
+            <!-- 結果清單容器 -->
+            <div id="dropdownResultsList" class="space-y-1.5">
+              <!-- 動態注入工具卡片 -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 向下滾動引導指示 (置於視窗底部) -->
+      <a href="#categoriesSection" class="absolute bottom-6 flex flex-col items-center space-y-1 text-slate-400 hover:text-amber-700 transition group text-[11px] font-serif">
+        <span>向下瀏覽 AI 創作分門別類</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 group-hover:translate-y-0.5 transition animate-bounce"></i>
+      </a>
+
+    </section>
+
+    <!-- 第二區塊：AI 創作工具分類庫 (位於下方，向下滾動才顯現) -->
+    <section id="categoriesSection" class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 border-t border-slate-200/60">
+      <div class="flex items-center justify-between mb-6 px-1">
+        <h2 class="text-xl sm:text-2xl font-serif font-bold text-slate-900 flex items-center space-x-2">
+          <span>AI 創作分門別類</span>
+        </h2>
+        <a href="/tools" class="text-xs font-semibold text-amber-700 hover:text-amber-800 flex items-center space-x-1 group">
+          <span>查看全部工具</span>
+          <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-0.5 transition"></i>
+        </a>
+      </div>
+
+      <!-- 分類網格 (6大專業分類，極簡卡片) -->
+      <div id="categoryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <!-- 動態載入分類卡片 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部 Footer -->
+  <footer class="border-t border-slate-200 py-6 mt-12 bg-white text-slate-500 text-xs font-serif text-center">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="scale" class="w-4 h-4 text-amber-600"></i>
+        <span class="text-slate-700 font-semibold">司法AI工具交換所</span>
+        <span>• 由 <strong>黃耀平律師</strong> 建置</span>
+      </div>
+      <div>
+        <span>純本地演算法與安全端點架構 • 恪遵律師倫理與當事人個資保護</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 上傳工具彈窗 Modal -->
+  <div id="uploadModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xl rounded-2xl border border-slate-200 shadow-2xl overflow-hidden p-6 relative">
+      <button onclick="closeUploadModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="flex items-center space-x-2 text-amber-700 mb-4">
+        <i data-lucide="sparkles" class="w-5 h-5 text-amber-600"></i>
+        <h3 class="text-lg font-serif font-bold text-slate-900">上傳我的司法 AI 工具</h3>
+      </div>
+      <form id="uploadToolForm" onsubmit="handleUploadSubmit(event)" class="space-y-4 text-xs sm:text-sm">
+        <div>
+          <label class="block text-slate-700 mb-1 font-medium">工具名稱 *</label>
+          <input type="text" id="toolName" required placeholder="例如：民事再抗告在途期間精算器" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-700 mb-1 font-medium">所屬分類 *</label>
+            <select id="toolCategory" required class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <option value="doc-drafting">文書撰擬與函件格式</option>
+              <option value="privacy-evidence">案卷隱私與證據處置</option>
+              <option value="timeline-schedule">程序管轄與時限排程</option>
+              <option value="case-research">判決檢索與實務爭點</option>
+              <option value="contract-review">契約審查與法規遵循</option>
+              <option value="cost-calc">費用試算與執行工具</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-700 mb-1 font-medium">作者 / 事務所 *</label>
+            <input type="text" id="toolAuthor" required placeholder="例如：王律師 (群義法律事務所)" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-slate-700 mb-1 font-medium">工具簡介與解決之司法痛點 *</label>
+          <textarea id="toolDesc" rows="3" required placeholder="說明本工具之適用情境、使用規則或能為同行省去多少時間..." class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-slate-700 mb-1 font-medium">功能標籤 (以逗號分開)</label>
+          <input type="text" id="toolTags" placeholder="例如：在途期間, 訴訟法, 抗告, 時效" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+        </div>
+        <div>
+          <label class="block text-slate-700 mb-1 font-medium">工具型態與連結/程式碼</label>
+          <input type="text" id="toolUrl" placeholder="網頁連結、Prompt 模版網址或自訂路徑 (選填)" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+        </div>
+        <div class="pt-2 flex items-center justify-end space-x-3">
+          <button type="button" onclick="closeUploadModal()" class="px-4 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold transition flex items-center space-x-1.5 shadow-sm">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>確認上傳發布</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 引入 GitHub Pages 靜態展示引擎相容腳本 -->
+  <script src="/static/static-store.js"></script>
+  <script src="static-store.js"></script>
+  <script>
+    let currentSearchMode = 'fast';
+    let searchDebounceTimer = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      loadCategories();
+      document.addEventListener('click', (e) => {
+        const inputArea = document.querySelector('.search-box');
+        if (inputArea && !inputArea.contains(e.target)) {
+          hideDropdown();
+        }
+      });
+    });
+
+    function setSearchMode(mode) {
+      currentSearchMode = mode;
+      const fastBtn = document.getElementById('modeFastBtn');
+      const aiBtn = document.getElementById('modeAiBtn');
+      
+      if (mode === 'fast') {
+        fastBtn.className = "px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-amber-900 bg-white shadow-sm border border-slate-200 font-semibold";
+        aiBtn.className = "px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-slate-500 hover:text-slate-900";
+        document.getElementById('dropdownTitle').innerText = "站內推薦小工具 (同行評分最高置頂)";
+      } else {
+        aiBtn.className = "px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-blue-950 bg-white shadow-sm border border-slate-200 font-semibold";
+        fastBtn.className = "px-2.5 py-1 rounded-lg font-medium transition flex items-center space-x-1 text-slate-500 hover:text-slate-900";
+        document.getElementById('dropdownTitle').innerText = "司法 AI 語意情境推論與匹配小工具";
+      }
+
+      const inputVal = document.getElementById('searchInput').value;
+      if (inputVal.trim()) {
+        executeSearch(inputVal);
+      }
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('searchInput');
+      input.value = '';
+      document.getElementById('clearBtn').classList.add('hidden');
+      hideDropdown();
+    }
+
+    function handleSearchInput(val) {
+      const clearBtn = document.getElementById('clearBtn');
+      if (val.trim()) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+        hideDropdown();
+        return;
+      }
+
+      clearTimeout(searchDebounceTimer);
+      const delay = currentSearchMode === 'fast' ? 30 : 250;
+      searchDebounceTimer = setTimeout(() => {
+        executeSearch(val);
+      }, delay);
+    }
+
+    function handleSearchKeydown(event) {
+      if (event.key === 'Enter') {
+        const val = event.target.value.trim();
+        if (val) executeSearch(val);
+      }
+    }
+
+    async function executeSearch(query) {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&mode=${currentSearchMode}`);
+        if (!res.ok) throw new Error("API Unavailable");
+        const data = await res.json();
+        renderDropdownResults(data);
+      } catch (err) {
+        // GitHub Pages 純靜態離線演算法備援
+        if (typeof staticSearch === 'function') {
+          const data = staticSearch(query, currentSearchMode);
+          renderDropdownResults(data);
+        }
+      }
+    }
+
+    function renderDropdownResults(data) {
+      const dropdown = document.getElementById('searchDropdown');
+      const list = document.getElementById('dropdownResultsList');
+      const countBadge = document.getElementById('resultsCountBadge');
+      const aiBox = document.getElementById('aiInsightBox');
+      const aiText = document.getElementById('aiInsightText');
+
+      list.innerHTML = '';
+      countBadge.innerText = `${data.results.length} 項符合`;
+
+      if (data.ai_insight) {
+        aiBox.classList.remove('hidden');
+        aiText.innerText = data.ai_insight;
+      } else {
+        aiBox.classList.add('hidden');
+      }
+
+      if (data.results.length === 0) {
+        list.innerHTML = `
+          <div class="py-8 text-center text-slate-500">
+            <i data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2 text-slate-400"></i>
+            <p class="text-sm font-medium">尚無完全符合「${escapeHtml(data.query)}」的小工具</p>
+            <p class="text-xs text-slate-400 mt-1">您可以點擊右上角「發布自製工具」，成為該領域首位貢獻者！</p>
+          </div>
+        `;
+      } else {
+        data.results.forEach((tool, index) => {
+          const stars = '★'.repeat(Math.round(tool.rating)) + '☆'.repeat(5 - Math.round(tool.rating));
+          const isTop = index === 0;
+
+          const card = document.createElement('div');
+          card.className = `p-3 rounded-xl transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 border ${
+            isTop ? 'bg-amber-50/80 border-amber-200 shadow-sm' : 'bg-slate-50/70 hover:bg-slate-100/80 border-slate-200'
+          }`;
+
+          card.innerHTML = `
+            <div class="flex-grow min-w-0">
+              <div class="flex items-center space-x-2 mb-1 flex-wrap">
+                <span class="font-bold text-slate-900 text-sm hover:text-amber-800 transition flex items-center space-x-1.5">
+                  <span>${escapeHtml(tool.name)}</span>
+                  ${isTop ? '<span class="text-[10px] px-1.5 py-0.2 rounded bg-amber-600 text-white font-bold uppercase">最高分推薦</span>' : ''}
+                </span>
+                <span class="text-[11px] text-amber-600 font-serif flex items-center space-x-1">
+                  <span>${stars}</span>
+                  <span class="font-bold">${tool.rating.toFixed(2)}</span>
+                  <span class="text-slate-400">(${tool.rating_count} 評)</span>
+                </span>
+              </div>
+              <p class="text-xs text-slate-600 line-clamp-1 mb-1.5">${escapeHtml(tool.description)}</p>
+              <div class="flex items-center space-x-2 text-[11px] text-slate-500">
+                <span class="text-slate-600 flex items-center space-x-1 font-medium">
+                  <i data-lucide="user" class="w-3 h-3 text-slate-400"></i>
+                  <span>${escapeHtml(tool.author)}</span>
+                </span>
+                <span>•</span>
+                <span class="px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-600">${escapeHtml(tool.category_name)}</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 shrink-0 pt-2 sm:pt-0">
+              <a 
+                href="${tool.url}" 
+                class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition flex items-center space-x-1 shadow-sm"
+              >
+                <span>立即開啟</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          `;
+          list.appendChild(card);
+        });
+      }
+
+      dropdown.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function hideDropdown() {
+      const dropdown = document.getElementById('searchDropdown');
+      if (dropdown) dropdown.classList.add('hidden');
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        if (!res.ok) throw new Error("API Unavailable");
+        const categories = await res.json();
+        renderCategoriesList(categories);
+      } catch (err) {
+        if (typeof STATIC_DB !== 'undefined') {
+          renderCategoriesList(STATIC_DB.categories);
+        }
+      }
+    }
+
+    function renderCategoriesList(categories) {
+      const grid = document.getElementById('categoryGrid');
+      grid.innerHTML = '';
+      categories.forEach(cat => {
+        const card = document.createElement('a');
+        card.href = `tools.html?category=${cat.id}`;
+        card.className = "group light-card p-4 rounded-xl hover:border-amber-400 hover:shadow-md transition-all duration-200 flex items-center justify-between";
+        
+        card.innerHTML = `
+          <div class="flex items-center space-x-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-amber-100 transition">
+              <i data-lucide="${cat.icon || 'folder'}" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <h3 class="text-sm sm:text-base font-serif font-bold text-slate-900 group-hover:text-amber-800 transition truncate">
+                ${escapeHtml(cat.name)}
+              </h3>
+              <span class="text-[11px] text-slate-400 font-sans">
+                ${cat.count} 款小工具
+              </span>
+            </div>
+          </div>
+          <div class="w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-amber-700 group-hover:bg-amber-50 transition shrink-0 ml-2">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function openUploadModal() {
+      document.getElementById('uploadModal').classList.remove('hidden');
+    }
+    function closeUploadModal() {
+      document.getElementById('uploadModal').classList.add('hidden');
+    }
+
+    async function handleUploadSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('toolName').value.trim(),
+        category_id: document.getElementById('toolCategory').value,
+        author: document.getElementById('toolAuthor').value.trim(),
+        description: document.getElementById('toolDesc').value.trim(),
+        tags: document.getElementById('toolTags').value.split(',').map(s => s.trim()).filter(Boolean),
+        url: document.getElementById('toolUrl').value.trim() || 'tools.html',
+        tool_type: 'web'
+      };
+
+      try {
+        const res = await fetch('/api/tools', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          alert('🎉 恭喜！工具已成功發布至市集，同行已可立即搜尋並進行星級評分！');
+          closeUploadModal();
+          document.getElementById('uploadToolForm').reset();
+          loadCategories();
+        } else {
+          throw new Error('API Unavailable');
+        }
+      } catch (err) {
+        // GitHub Pages 純前端展示模式模擬發布
+        if (typeof STATIC_DB !== 'undefined') {
+          const catMap = {
+            'doc-drafting': '文書撰擬與函件格式',
+            'privacy-evidence': '案卷隱私與證據處置',
+            'timeline-schedule': '程序管轄與時限排程',
+            'case-research': '判決檢索與實務爭點',
+            'contract-review': '契約審查與法規遵循',
+            'cost-calc': '費用試算與執行工具'
+          };
+          const mockTool = {
+            id: 'tool-mock-' + Date.now(),
+            name: payload.name,
+            category_id: payload.category_id,
+            category_name: catMap[payload.category_id] || '自訂工具',
+            author: payload.author,
+            author_title: '認證律師',
+            description: payload.description,
+            tags: payload.tags,
+            rating: 5.0,
+            rating_count: 1,
+            url: payload.url,
+            is_integrated: false
+          };
+          STATIC_DB.tools.unshift(mockTool);
+          alert('🎉【GitHub Pages 展示模式】工具已在當前前端畫面模擬發布！您可以立即在搜尋框輸入名稱測試即時檢索。');
+          closeUploadModal();
+          document.getElementById('uploadToolForm').reset();
+          loadCategories();
+        }
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>
