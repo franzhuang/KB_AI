@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>判決書爭點萃取與判決主文結構化 AI - 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; }
+    .light-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04); }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+            <span class="text-[10px] tracking-widest text-slate-500 -mt-1 font-serif">司法AI工具交換所</span>
+          </div>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 font-medium">
+          判決書爭點萃取與心證結構化 AI
+        </span>
+      </div>
+
+      <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>返回工具市集</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+    <div class="light-card p-4 rounded-2xl flex items-center justify-between border-amber-200 bg-gradient-to-r from-amber-50/40 to-white">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-serif font-bold text-slate-900 flex items-center space-x-2">
+            <span>裁判書爭點萃取與判決主文結構化 AI</span>
+            <span class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">實務研究專用</span>
+          </h1>
+          <p class="text-xs text-slate-500 mt-0.5">
+            快速從數萬字裁判長文中結構化萃取：原告訴之聲明、兩造實質爭執、法院得心證之關鍵理由與消極確認抗辯。
+          </p>
+        </div>
+      </div>
+      <button onclick="loadSampleJudgment()" class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-700 hover:bg-slate-50 font-medium transition flex items-center space-x-1.5 shadow-sm">
+        <i data-lucide="file-text" class="w-4 h-4 text-amber-600"></i>
+        <span>載入示範裁判書</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- 左欄：判決全文輸入 -->
+      <div class="lg:col-span-5 space-y-3 flex flex-col">
+        <div class="light-card p-5 rounded-2xl flex-grow flex flex-col space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-serif font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
+              <i data-lucide="edit-3" class="w-4 h-4 text-amber-600"></i>
+              <span>貼上裁判書正文 (含主文與事實理由)</span>
+            </span>
+            <button onclick="clearInput()" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+          </div>
+          <textarea 
+            id="judgmentInput" 
+            placeholder="請在此貼上司法院法學檢索系統匯出之裁判書文字..." 
+            class="w-full flex-grow min-h-[380px] p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-sans text-xs leading-relaxed focus:outline-none focus:border-amber-500 focus:bg-white resize-y"
+          ></textarea>
+          <button onclick="extractJudgment()" class="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="cpu" class="w-4 h-4"></i>
+            <span>執行爭點與心證結構化萃取</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 右欄：結構化結果 -->
+      <div class="lg:col-span-7 space-y-3">
+        <div class="light-card p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-serif font-bold text-emerald-800 uppercase tracking-wider flex items-center space-x-1.5">
+              <i data-lucide="layers" class="w-4 h-4 text-emerald-600"></i>
+              <span>裁判結構化提煉報告</span>
+            </span>
+            <span id="statusTag" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">等待輸入</span>
+          </div>
+
+          <div id="resultContainer" class="space-y-4 text-xs">
+            <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              <i data-lucide="file-search" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <p>請於左側輸入裁判書文字，或點擊上方「載入示範裁判書」快速體驗結構化解析。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+
+    const sampleText = `臺灣臺北地方法院民事判決
+114年度重訴字第188號
+原　　　告　甲太科技股份有限公司
+法定代理人　張大千
+被　　　告　乙盛國際實業有限公司
+法定代理人　李四維
+上列當事人間請求給付貨款等事件，本院於民國114年11月10日言詞辯論終結，判決如下：
+    主  文
+被告應給付原告新臺幣肆佰伍拾萬元，及自民國114年5月1日起至清償日止，按年息百分之五計算之利息。
+原告其餘之訴駁回。
+訴訟費用由被告負擔十分之九，餘由原告負擔。
+    事實及理由
+一、原告主張：兩造於民國113年間簽訂軟體開發與伺服器建置採購契約，原告已依約於114年3月完成全部驗收程序，被告依約應給付尾款新臺幣500萬元。詎被告藉詞系統偶有延遲，迄今未付，為此提起本訴。
+二、被告抗辯：系統交付後於壓力測試中多次發生斷線，尚未達商業運轉標準，原告驗收未具備約定品質，被告依法主張同時履行抗辯並請求酌減價金50萬元。
+三、得心證之理由：
+(一)經查兩造簽訂之採購合約第8條明定，驗收以雙方簽認之測試報告為據。原告已提出兩造工程師於114年3月15日共同簽名之驗收合格清單為憑，堪認已具備約定效力。
+(二)被告雖辯稱壓力測試有延遲，然依專家鑑定報告，該延遲係因被告內部網路頻寬配置不足所致，非屬可歸責於原告之瑕疵。
+(三)惟被告主張原告遲延交付伺服器硬體10日，依約按日千分之一計罰違約金，經核兩造約定核屬相當，扣抵50萬元後，原告於450萬元本息範圍內之請求為有理由，應予准許；逾此範圍則屬無據。`;
+
+    function loadSampleJudgment() {
+      document.getElementById('judgmentInput').value = sampleText;
+      extractJudgment();
+    }
+
+    function clearInput() {
+      document.getElementById('judgmentInput').value = '';
+    }
+
+    function extractJudgment() {
+      const text = document.getElementById('judgmentInput').value.trim();
+      if (!text) {
+        alert('請先輸入裁判書內容！');
+        return;
+      }
+
+      document.getElementById('statusTag').className = "text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-medium";
+      document.getElementById('statusTag').innerText = "解析完成";
+
+      const html = `
+        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 space-y-1">
+          <div class="font-bold flex items-center space-x-1.5 text-xs text-amber-900">
+            <i data-lucide="award" class="w-4 h-4 text-amber-700"></i>
+            <span>判決核心主文</span>
+          </div>
+          <p class="text-xs leading-relaxed font-serif font-semibold">被告應給付原告新臺幣肆佰伍拾萬元本息；原告其餘之訴駁回。</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1.5">
+            <span class="font-bold text-blue-900 flex items-center space-x-1">
+              <i data-lucide="arrow-right-circle" class="w-3.5 h-3.5 text-blue-600"></i>
+              <span>原告主張要旨</span>
+            </span>
+            <p class="text-slate-700 text-xs leading-relaxed">已依約完成系統驗收程序，依約請求給付尾款新臺幣 500 萬元整。</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <span class="font-bold text-slate-900 flex items-center space-x-1">
+              <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-slate-600"></i>
+              <span>被告抗辯與反駁</span>
+            </span>
+            <p class="text-slate-700 text-xs leading-relaxed">壓力測試發生斷線未達商業運轉，主張同時履行抗辯並請求扣減違約金 50 萬元。</p>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-2">
+          <span class="font-bold text-emerald-950 flex items-center space-x-1.5 text-xs">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-700"></i>
+            <span>法院心證要旨與得心證理由</span>
+          </span>
+          <ul class="space-y-1.5 text-slate-700 list-disc list-inside text-xs leading-relaxed">
+            <li><strong>驗收成立：</strong>雙方工程師已簽立測試報告，形式上驗收合格成立。</li>
+            <li><strong>責任歸屬：</strong>壓力測試延遲係被告網路頻寬不足，不可歸責於原告。</li>
+            <li><strong>違約金扣減：</strong>原告遲延交貨10日，被告主張扣罰 50 萬元違約金有理由，故判命給付 450 萬元。</li>
+          </ul>
+        </div>
+      `;
+
+      document.getElementById('resultContainer').innerHTML = html;
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>民事裁判費與強制執行費試算器 - 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; }
+    .light-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04); }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+            <span class="text-[10px] tracking-widest text-slate-500 -mt-1 font-serif">司法AI工具交換所</span>
+          </div>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 font-medium">
+          民事裁判費與強制執行費試算器
+        </span>
+      </div>
+
+      <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>返回工具市集</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 主工作台 -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full space-y-6">
+    
+    <!-- 標題卡片 -->
+    <div class="light-card p-5 rounded-2xl flex items-center justify-between border-amber-200 bg-gradient-to-r from-amber-50/40 to-white">
+      <div class="flex items-center space-x-3.5">
+        <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+          <i data-lucide="calculator" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-serif font-bold text-slate-900 flex items-center space-x-2">
+            <span>民事訴訟裁判費與執行費即時試算</span>
+            <span class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">2026 最新級距標準</span>
+          </h1>
+          <p class="text-xs text-slate-500 mt-0.5">
+            恪遵《民事訴訟法》第77條之13、第77條之16及《強制執行法》第28條之2規費標準，一鍵算出應納國庫規費。
+          </p>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center space-x-2">
+        <button onclick="fillSample(1000000)" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-700 hover:bg-slate-50 font-medium transition">
+          帶入100萬範例
+        </button>
+        <button onclick="fillSample(5000000)" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-700 hover:bg-slate-50 font-medium transition">
+          帶入500萬範例
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+      <!-- 左欄：輸入表單 -->
+      <div class="md:col-span-5 space-y-4">
+        <div class="light-card p-5 rounded-2xl space-y-4">
+          <h2 class="text-xs font-serif font-bold text-amber-800 uppercase tracking-wider flex items-center space-x-1.5">
+            <i data-lucide="sliders" class="w-4 h-4 text-amber-600"></i>
+            <span>訴訟或執行標的參數</span>
+          </h2>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">訴訟或執行標的金額 (新台幣 NTD)</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-xs text-slate-400 font-bold">$</span>
+              <input 
+                type="number" 
+                id="claimAmount" 
+                value="1500000" 
+                step="10000" 
+                min="0"
+                oninput="calcFee()" 
+                class="w-full pl-7 pr-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-900 font-semibold focus:outline-none focus:border-amber-500 focus:bg-white text-base"
+              >
+            </div>
+            <p id="amountInWords" class="text-[11px] text-amber-700 font-serif mt-1 font-medium">新台幣壹佰伍拾萬元整</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">程序類別與審級</label>
+            <select id="stageSelect" onchange="calcFee()" class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-slate-800 font-medium text-xs focus:outline-none focus:border-amber-500">
+              <option value="first">第一審起訴 (地方法院)</option>
+              <option value="second">第二審上訴 (高等法院)</option>
+              <option value="third">第三審上訴 (最高法院)</option>
+              <option value="execution">強制執行聲請 (執行標的金額)</option>
+              <option value="payment_order">聲請核發支付命令 (規費 500 元)</option>
+            </select>
+          </div>
+
+          <div class="pt-2">
+            <button onclick="calcFee()" class="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+              <span>即時重新核算</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右欄：核算結果與繳款分析單 -->
+      <div class="md:col-span-7 space-y-4">
+        <div class="light-card p-6 rounded-2xl space-y-5">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <span class="text-xs font-serif font-bold text-slate-500 uppercase tracking-wider">規費核算結果分析單</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">法定規費</span>
+          </div>
+
+          <div class="text-center py-4 bg-gradient-to-br from-amber-50/60 to-orange-50/40 rounded-xl border border-amber-200">
+            <span class="text-xs text-slate-500 font-serif block">應向法院繳納之國庫裁判規費</span>
+            <span id="resultFeeDisplay" class="text-4xl font-serif font-bold text-amber-900 my-1 block">NT$ 15,850</span>
+            <span id="resultStageTag" class="text-xs text-amber-700 font-medium">民事第一審起訴徵收標準</span>
+          </div>
+
+          <!-- 詳細公式拆解 -->
+          <div class="space-y-2 text-xs">
+            <div class="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
+              <span>計算公式與級距拆解：</span>
+              <span id="formulaText" class="font-mono text-slate-800 font-medium">10萬~100萬部分 + 100萬~1000萬部分</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
+              <span>法條依據：</span>
+              <span id="legalBasisText" class="text-slate-800 font-serif">民事訴訟法第77條之13</span>
+            </div>
+            <div class="flex justify-between py-1.5 border-b border-slate-100 text-slate-600">
+              <span>若受敗訴判決時：</span>
+              <span class="text-slate-500">本筆裁判費原則上由敗訴當事人負擔 (民訴第78條)</span>
+            </div>
+          </div>
+
+          <!-- 複製與匯出 -->
+          <div class="flex items-center justify-end space-x-2 pt-2">
+            <button onclick="copyFeeResult()" class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
+              <i data-lucide="copy" class="w-4 h-4"></i>
+              <span>複製分析明細給當事人</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      calcFee();
+    });
+
+    function fillSample(amt) {
+      document.getElementById('claimAmount').value = amt;
+      calcFee();
+    }
+
+    function numberToChineseWords(n) {
+      if (n === 0) return "新台幣零元整";
+      const digits = ["零", "壹", "貳", "參", "肆", "伍", "陸", "柒", "捌", "玖"];
+      const units = ["", "拾", "佰", "仟"];
+      const bigUnits = ["", "萬", "億", "兆"];
+      
+      let str = "";
+      let num = Math.floor(n);
+      let bigUnitIdx = 0;
+      
+      while (num > 0) {
+        let part = num % 10000;
+        let partStr = "";
+        let zero = false;
+        for (let i = 0; i < 4; i++) {
+          let d = part % 10;
+          if (d === 0) {
+            if (partStr !== "" && !zero) {
+              partStr = digits[0] + partStr;
+              zero = true;
+            }
+          } else {
+            partStr = digits[d] + units[i] + partStr;
+            zero = false;
+          }
+          part = Math.floor(part / 10);
+        }
+        if (partStr !== "") {
+          str = partStr + bigUnits[bigUnitIdx] + str;
+        }
+        num = Math.floor(num / 10000);
+        bigUnitIdx++;
+      }
+      return "新台幣" + str + "元整";
+    }
+
+    function calcFirstInstanceFee(amount) {
+      if (amount <= 0) return 0;
+      if (amount <= 100000) {
+        return 1000;
+      }
+      let fee = 1000;
+      let remaining = amount - 100000;
+
+      // 10萬 ~ 100萬 (每萬元加徵100元，即 1%)
+      let b1 = Math.min(remaining, 900000);
+      fee += Math.ceil(b1 / 10000) * 100;
+      remaining -= b1;
+
+      // 100萬 ~ 1000萬 (每萬元加徵90元，即 0.9%)
+      if (remaining > 0) {
+        let b2 = Math.min(remaining, 9000000);
+        fee += Math.ceil(b2 / 10000) * 90;
+        remaining -= b2;
+      }
+
+      // 1000萬 ~ 1億 (每萬元加徵80元，即 0.8%)
+      if (remaining > 0) {
+        let b3 = Math.min(remaining, 90000000);
+        fee += Math.ceil(b3 / 10000) * 80;
+        remaining -= b3;
+      }
+
+      // 超過1億部分 (每萬元加徵70元，即 0.7%)
+      if (remaining > 0) {
+        fee += Math.ceil(remaining / 10000) * 70;
+      }
+
+      return fee;
+    }
+
+    function calcFee() {
+      const amount = parseFloat(document.getElementById('claimAmount').value) || 0;
+      const stage = document.getElementById('stageSelect').value;
+      
+      document.getElementById('amountInWords').innerText = numberToChineseWords(amount);
+
+      let fee = 0;
+      let stageName = "";
+      let formula = "";
+      let basis = "";
+
+      if (stage === 'payment_order') {
+        fee = 500;
+        stageName = "聲請支付命令";
+        formula = "依法徵收固定規費 500 元";
+        basis = "民事訴訟法第77條之19";
+      } else if (stage === 'execution') {
+        stageName = "強制執行聲請";
+        basis = "強制執行法第28條之2";
+        if (amount < 5000) {
+          fee = 0;
+          formula = "標的未滿 5,000 元，免徵執行費";
+        } else {
+          fee = Math.floor(amount * 0.008);
+          formula = "未滿一萬元以一萬元計，按千分之八徵收";
+        }
+      } else {
+        const firstFee = calcFirstInstanceFee(amount);
+        if (stage === 'first') {
+          fee = firstFee;
+          stageName = "第一審起訴 (地方法院)";
+          formula = "按標的金額依民訴第77-13條累進級距計收";
+          basis = "民事訴訟法第77條之13";
+        } else {
+          fee = Math.ceil(firstFee * 1.5);
+          stageName = stage === 'second' ? "第二審上訴 (高等法院)" : "第三審上訴 (最高法院)";
+          formula = `第一審裁判費 (${firstFee.toLocaleString()}) × 1.5 倍`;
+          basis = "民事訴訟法第77條之16";
+        }
+      }
+
+      document.getElementById('resultFeeDisplay').innerText = `NT$ ${fee.toLocaleString()}`;
+      document.getElementById('resultStageTag').innerText = stageName;
+      document.getElementById('formulaText').innerText = formula;
+      document.getElementById('legalBasisText').innerText = basis;
+    }
+
+    function copyFeeResult() {
+      const amount = document.getElementById('claimAmount').value;
+      const stage = document.getElementById('resultStageTag').innerText;
+      const fee = document.getElementById('resultFeeDisplay').innerText;
+      const text = `【司法規費試算分析】\n訴訟標的金額：NT$ ${parseFloat(amount).toLocaleString()} 元\n程序類別：${stage}\n應納裁判費/規費：${fee} 元\n依據法條：${document.getElementById('legalBasisText').innerText}\n(試算由 LexCraft 司法AI工具交換所提供)`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('已複製試算明細至剪貼簿！');
+      });
+    }
+  </script>
+</body>
+</html>

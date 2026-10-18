@@ -235,11 +235,19 @@
 
         </div>
 
+        <!-- 搜尋框正下方導引指示 (保證任何螢幕尺寸首屏皆清晰可見) -->
+        <div class="mt-8 sm:mt-10 flex flex-col items-center">
+          <a href="#categoriesSection" onclick="smoothScrollToCategories(event)" class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-white/90 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 text-slate-600 hover:text-amber-900 text-xs font-serif font-semibold shadow-sm transition-all group cursor-pointer">
+            <span>探索 AI 創作分門別類</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-amber-600 group-hover:translate-y-0.5 transition animate-bounce"></i>
+          </a>
+        </div>
+
       </div>
 
-      <!-- 向下滾動引導指示 (置於視窗底部) -->
-      <a href="#categoriesSection" class="absolute bottom-6 flex flex-col items-center space-y-1 text-slate-400 hover:text-amber-700 transition group text-[11px] font-serif">
-        <span>向下瀏覽 AI 創作分門別類</span>
+      <!-- 視窗底端向下滾動指示 -->
+      <a href="#categoriesSection" onclick="smoothScrollToCategories(event)" class="absolute bottom-4 flex flex-col items-center space-y-1 text-slate-400 hover:text-amber-700 transition group text-[11px] font-serif cursor-pointer">
+        <span>向下捲動瀏覽</span>
         <i data-lucide="chevron-down" class="w-4 h-4 group-hover:translate-y-0.5 transition animate-bounce"></i>
       </a>
 
@@ -335,11 +343,18 @@
   </div>
 
   <!-- 引入 GitHub Pages 靜態展示引擎相容腳本 -->
-  <script src="/static/static-store.js"></script>
   <script src="static-store.js"></script>
   <script>
     let currentSearchMode = 'fast';
     let searchDebounceTimer = null;
+
+    function smoothScrollToCategories(e) {
+      if (e) e.preventDefault();
+      const el = document.getElementById('categoriesSection');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();

@@ -542,6 +542,21 @@ async def page_pdf_watermark():
 async def page_legal_ocr():
     return HTMLResponse(content=get_template("legal_ocr.html"))
 
+@app.get("/tools/fee-calc", response_class=HTMLResponse)
+@app.get("/fee_calc.html", response_class=HTMLResponse)
+async def page_fee_calc():
+    return HTMLResponse(content=get_template("fee_calc.html"))
+
+@app.get("/tools/judgment-extractor", response_class=HTMLResponse)
+@app.get("/judgment_extractor.html", response_class=HTMLResponse)
+async def page_judgment_extractor():
+    return HTMLResponse(content=get_template("judgment_extractor.html"))
+
+@app.get("/tools/contract-redline", response_class=HTMLResponse)
+@app.get("/contract_redline.html", response_class=HTMLResponse)
+async def page_contract_redline():
+    return HTMLResponse(content=get_template("contract_redline.html"))
+
 @app.get("/chat", response_class=HTMLResponse)
 @app.get("/chat.html", response_class=HTMLResponse)
 async def page_chat():

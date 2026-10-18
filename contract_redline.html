@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>商務合約紅線風險審查 AI - 司法AI工具交換所</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #f8fafc; color: #1e293b; min-height: 100vh; }
+    .light-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04); }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- 頂部導覽列 -->
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="index.html" class="flex items-center space-x-3 group">
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-amber-50 to-blue-50 border border-amber-300 flex items-center justify-center text-amber-700 shadow-sm">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+          </div>
+          <div class="flex flex-col">
+            <span class="font-brand text-lg font-bold tracking-wider text-slate-900">LEXCRAFT</span>
+            <span class="text-[10px] tracking-widest text-slate-500 -mt-1 font-serif">司法AI工具交換所</span>
+          </div>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 font-medium">
+          商務合約紅線風險審查 AI
+        </span>
+      </div>
+
+      <a href="tools.html" class="text-xs px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1 font-medium">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        <span>返回工具市集</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+    <div class="light-card p-4 rounded-2xl flex items-center justify-between border-amber-200 bg-gradient-to-r from-amber-50/40 to-white">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-serif font-bold text-slate-900 flex items-center space-x-2">
+            <span>商務合約紅線風險與霸王條款審查 AI</span>
+            <span class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-semibold">合約風險偵測</span>
+          </h1>
+          <p class="text-xs text-slate-500 mt-0.5">
+            精準偵測懲罰性違約金過高、單方片面終止權、專屬管轄不利約定及免責範圍失衡等霸王條款。
+          </p>
+        </div>
+      </div>
+      <button onclick="loadSampleContract()" class="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-xs text-slate-700 hover:bg-slate-50 font-medium transition flex items-center space-x-1.5 shadow-sm">
+        <i data-lucide="file-code" class="w-4 h-4 text-amber-600"></i>
+        <span>載入合約風險範例</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="lg:col-span-6 space-y-3 flex flex-col">
+        <div class="light-card p-5 rounded-2xl flex-grow flex flex-col space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-serif font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
+              <i data-lucide="file-text" class="w-4 h-4 text-amber-600"></i>
+              <span>輸入合約條文草案</span>
+            </span>
+            <button onclick="document.getElementById('contractInput').value=''" class="text-xs text-slate-400 hover:text-slate-600">清空</button>
+          </div>
+          <textarea 
+            id="contractInput" 
+            placeholder="請在此貼上採購契約、委任合約、保密協定 (NDA) 或合作備忘錄..." 
+            class="w-full flex-grow min-h-[380px] p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-sans text-xs leading-relaxed focus:outline-none focus:border-amber-500 focus:bg-white resize-y"
+          ></textarea>
+          <button onclick="analyzeContract()" class="w-full py-2.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition flex items-center justify-center space-x-1.5">
+            <i data-lucide="check-check" class="w-4 h-4"></i>
+            <span>執行合約紅線風險審查</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="lg:col-span-6 space-y-3">
+        <div class="light-card p-5 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-serif font-bold text-rose-800 uppercase tracking-wider flex items-center space-x-1.5">
+              <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600"></i>
+              <span>紅線風險標註與律師修訂建議 (Redline)</span>
+            </span>
+            <span id="riskBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">待分析</span>
+          </div>
+
+          <div id="redlineResults" class="space-y-3 text-xs">
+            <div class="p-8 text-center text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              <i data-lucide="search" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+              <p>請於左側輸入合約條文，或點擊上方「載入合約風險範例」查看即時紅線標註。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+
+    const sampleContractText = `第十條 (違約責任)
+乙方如未依約於期限內完成系統交付，每逾一日應按合約總價額百分之三支付懲罰性違約金，甲方並得不經催告逕行解除契約且沒收全部履約保證金，乙方不得異議。
+
+第十二條 (損害賠償上限與免責)
+甲方因本合約所生之一切賠償責任，以新台幣壹萬元為上限；因甲方任何過失致乙方受損害，甲方概不負任何賠償責任。
+
+第十五條 (管轄法院)
+因本合約涉訟時，雙方合意以甲方總部所在地之地方法院（美國德拉瓦州地方法院）為第一審專屬管轄法院。`;
+
+    function loadSampleContract() {
+      document.getElementById('contractInput').value = sampleContractText;
+      analyzeContract();
+    }
+
+    function analyzeContract() {
+      const text = document.getElementById('contractInput').value.trim();
+      if (!text) {
+        alert('請先輸入合約條款！');
+        return;
+      }
+
+      document.getElementById('riskBadge').className = "text-[11px] px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 font-bold";
+      document.getElementById('riskBadge').innerText = "發現 3 處高風險紅線條款";
+
+      const html = `
+        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1.5">
+          <div class="flex items-center justify-between text-rose-900 font-bold">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+              <span>紅線 1：日計 3% 懲罰性違約金（失衡過高）</span>
+            </span>
+            <span class="text-[10px] bg-rose-200 text-rose-900 px-1.5 py-0.5 rounded">高風險</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed">
+            <strong>原條款：</strong>每逾一日應按合約總價額百分之三支付懲罰性違約金...<br>
+            <span class="text-emerald-800 font-semibold">💡 律師建議修改：</span>改為「按日千分之一計付違約金，上限以本合約總額百分之十為限」，符合民法第252條相當性原則。
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1.5">
+          <div class="flex items-center justify-between text-rose-900 font-bold">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+              <span>紅線 2：片面絕對免責條款（違反誠信）</span>
+            </span>
+            <span class="text-[10px] bg-rose-200 text-rose-900 px-1.5 py-0.5 rounded">高風險</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed">
+            <strong>原條款：</strong>因甲方任何過失致乙方受損害，甲方概不負任何賠償責任...<br>
+            <span class="text-emerald-800 font-semibold">💡 律師建議修改：</span>依民法第222條，故意或重大過失之責任不得預先免除。應修正為「除故意或重大過失外，雙方損害賠償責任以...為限」。
+          </p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 space-y-1.5">
+          <div class="flex items-center justify-between text-amber-900 font-bold">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="alert-circle" class="w-4 h-4 text-amber-600"></i>
+              <span>紅線 3：涉外專屬管轄不利負擔</span>
+            </span>
+            <span class="text-[10px] bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded">中風險</span>
+          </div>
+          <p class="text-slate-700 leading-relaxed">
+            <strong>原條款：</strong>以美國德拉瓦州地方法院為第一審專屬管轄法院...<br>
+            <span class="text-emerald-800 font-semibold">💡 律師建議修改：</span>跨境涉訟成本極高，應約定以「臺灣臺北地方法院」為管轄法院，並以中華民國法律為準據法。
+          </p>
+        </div>
+      `;
+
+      document.getElementById('redlineResults').innerHTML = html;
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

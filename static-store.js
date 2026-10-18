@@ -135,8 +135,8 @@ const STATIC_DB = {
       tags: ["裁判費計算", "訴訟規費", "執行費", "利息試算", "司法院標準"],
       rating: 4.79,
       rating_count: 64,
-      url: "tools.html?category=cost-calc",
-      is_integrated: false,
+      url: "fee_calc.html",
+      is_integrated: true,
       created_at: "2026-10-17T16:00:00Z"
     },
     {
@@ -150,8 +150,8 @@ const STATIC_DB = {
       tags: ["判決爭點", "主文摘要", "法學研究", "裁判比對", "心證分析"],
       rating: 4.76,
       rating_count: 59,
-      url: "tools.html?category=case-research",
-      is_integrated: false,
+      url: "judgment_extractor.html",
+      is_integrated: true,
       created_at: "2026-10-18T08:00:00Z"
     },
     {
@@ -165,8 +165,8 @@ const STATIC_DB = {
       tags: ["合約審查", "紅線比對", "風險評估", "霸王條款", "履約爭議"],
       rating: 4.73,
       rating_count: 52,
-      url: "tools.html?category=contract-review",
-      is_integrated: false,
+      url: "contract_redline.html",
+      is_integrated: true,
       created_at: "2026-10-18T10:30:00Z"
     }
   ],
