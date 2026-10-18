@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>司法AI工具交換所 - 正在為您導向...</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['"Noto Serif TC"', 'Georgia', 'serif'],
+            brand: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 selection:bg-amber-100 selection:text-amber-900">
+  <div class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-xl p-8 text-center space-y-5">
+    <div class="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mx-auto shadow-sm">
+      <i data-lucide="scale" class="w-8 h-8"></i>
+    </div>
+
+    <div>
+      <h1 class="text-xl font-serif font-bold text-slate-900 mb-1">司法AI工具交換所</h1>
+      <p class="text-xs text-slate-500 font-serif">由 黃耀平律師 建置</p>
+    </div>
+
+    <div class="py-3 px-4 rounded-xl bg-amber-50/60 border border-amber-200 text-xs text-amber-900 space-y-1">
+      <p class="font-semibold">正在自動為您接駁至目標頁面...</p>
+      <p class="text-[11px] text-slate-500">若瀏覽器未自動跳轉，請點擊下方按鈕返回。</p>
+    </div>
+
+    <div class="pt-2">
+      <a href="index.html" class="inline-flex items-center justify-center space-x-2 w-full py-2.5 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm transition">
+        <i data-lucide="home" class="w-4 h-4"></i>
+        <span>立即返回首頁總覽</span>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    // 智慧路由接駁 (GitHub Pages SPA 路由修復)
+    (function() {
+      const pathname = window.location.pathname.toLowerCase();
+      const routes = {
+        'tools': 'tools.html',
+        'chat': 'chat.html',
+        'bulletin': 'bulletin.html',
+        'legal-letter': 'legal_letter.html',
+        'de-id': 'deid.html',
+        'deid': 'deid.html',
+        'event-reminder': 'events_reminder.html',
+        'events_reminder': 'events_reminder.html',
+        'pdf-watermark': 'pdf_watermark.html',
+        'legal-ocr': 'legal_ocr.html',
+        'fee-calc': 'fee_calc.html',
+        'judgment-extractor': 'judgment_extractor.html',
+        'contract-redline': 'contract_redline.html'
+      };
+
+      for (const [key, target] of Object.entries(routes)) {
+        if (pathname.includes(key)) {
+          window.location.replace(target);
+          return;
+        }
+      }
+
+      // 預設 1 秒後導向首頁
+      setTimeout(() => {
+        window.location.replace('index.html');
+      }, 800);
+    })();
+  </script>
+</body>
+</html>
