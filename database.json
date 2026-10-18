@@ -45,35 +45,13 @@
   ],
   "tools": [
     {
-      "id": "tool-70e5e2b5",
-      "name": "民事再抗告在途期間與例假日順延試算器",
-      "category_id": "timeline-schedule",
-      "category_name": "程序管轄與時限排程",
-      "author": "張大千 律師",
-      "author_title": "最高法院登錄律師",
-      "description": "精確依照民事訴訟法扣除在途期間，遇到星期例假日自動順延至次工作日，預防上訴期間逾期之實用小工具。",
-      "tags": [
-        "在途期間",
-        "再抗告",
-        "期間計算",
-        "例假日順延"
-      ],
-      "rating": 5.0,
-      "rating_count": 1,
-      "url": "events_reminder.html",
-      "is_integrated": false,
-      "tool_type": "web",
-      "code_or_prompt": "",
-      "created_at": "2026-10-18T14:01:17.786722Z"
-    },
-    {
       "id": "tool-legal-letter",
       "name": "郵局存證信函標準排版生成器",
       "category_id": "doc-drafting",
       "category_name": "文書撰擬與函件格式",
-      "author": "司法AI研究組 (整合原生引擎)",
+      "author": "黃耀平律師建置 (整合原生引擎)",
       "author_title": "執業律師 / 開源貢獻者",
-      "description": "嚴格遵循中華郵政存證信函官方標準格式（每頁10行、每行20格、滿頁200字）。自動計算行格、切分分頁，支援一鍵匯出標準 ODT 與 PDF 格式。",
+      "description": "嚴格遵循中華郵政存證信函官方標準格式（每頁10行、每行20格、滿頁200字）。自動計算行格、切分分頁，支援主旨與說明二段式排版及標準 ODT/PDF 匯出。",
       "tags": [
         "存證信函",
         "文書排版",
@@ -82,7 +60,7 @@
         "PDF生成"
       ],
       "rating": 5.0,
-      "rating_count": 3,
+      "rating_count": 142,
       "url": "legal_letter.html",
       "is_integrated": true,
       "internal_route": "legal-letter",
@@ -93,7 +71,7 @@
       "name": "案卷個資去識別化系統 (De-ID & Re-ID)",
       "category_id": "privacy-evidence",
       "category_name": "案卷隱私與證據處置",
-      "author": "隱私合規小組",
+      "author": "隱私合規小組 (整合原生引擎)",
       "author_title": "法學博士 / 科技法務長",
       "description": "律師與法官專用機敏卷證遮蔽引擎。支援身分證字號、姓名、住址、車牌、金融帳號自動遮蔽與雙向對照還原代碼表，純本地運算確保當事人隱私。",
       "tags": [
@@ -103,7 +81,7 @@
         "隱私合規",
         "離線隱私"
       ],
-      "rating": 4.92,
+      "rating": 4.95,
       "rating_count": 118,
       "url": "deid.html",
       "is_integrated": true,
@@ -115,7 +93,7 @@
       "name": "職場調查與法律程序時限管家",
       "category_id": "timeline-schedule",
       "category_name": "程序管轄與時限排程",
-      "author": "勞資程序法務組",
+      "author": "勞資程序法務組 (整合原生引擎)",
       "author_title": "勞動法專門律師",
       "description": "精準控管法規調查程序時效、申訴處理期限、訴訟抗告日數。自動扣除例假日與在途期間，提供階段倒數計時與時效警示看板。",
       "tags": [
@@ -125,7 +103,7 @@
         "時效警報",
         "排程追蹤"
       ],
-      "rating": 4.88,
+      "rating": 4.92,
       "rating_count": 96,
       "url": "events_reminder.html",
       "is_integrated": true,
