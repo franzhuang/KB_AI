@@ -85,7 +85,7 @@ class LegalLetterRequest(BaseModel):
     copy_recipient_addr: Optional[str] = ""
     subject: Optional[str] = ""  # 選填主旨：若有填則格式化為 一、主旨： 二、說明：
     content: str
-    font_size: Optional[float] = 14.0
+    font_size: Optional[float] = 16.0
     output_format: Optional[str] = "odt" # odt or pdf
     keep_blank_pages: Optional[bool] = False
 

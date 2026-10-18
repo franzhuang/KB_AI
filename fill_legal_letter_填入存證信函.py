@@ -129,8 +129,11 @@ def split_into_grid_lines(paragraphs, chars_per_line=20):
     return grid_lines
 
 
-def fill_odt(template_bytes: bytes, output_path: str, data: dict, keep_blank_pages: bool = False, font_size: float = None):
-    """將資料填入 ODT 範本（直接使用 bytes 解壓處理）。"""
+def fill_odt(template_bytes: bytes, output_path: str, data: dict, keep_blank_pages: bool = False, font_size: float = 16.0):
+    """將資料填入 ODT 範本（直接使用 bytes 解壓處理）。字級預設 16pt，支援 16pt 與 18pt。"""
+    if font_size is None or font_size < 14:
+        font_size = 16.0
+
     grid_lines = split_into_grid_lines(data['paragraphs'], chars_per_line=20)
     total_lines = len(grid_lines)
     pages_needed = max(1, (total_lines + 9) // 10)
@@ -148,26 +151,25 @@ def fill_odt(template_bytes: bytes, output_path: str, data: dict, keep_blank_pag
                 if item.filename == 'content.xml':
                     root = etree.fromstring(xml_bytes)
 
-                    # 若有自訂字級，動態建立自訂字級樣式
-                    custom_content_style = 'P_CONTENT_CUSTOM' if font_size else 'P19'
-                    if font_size:
-                        auto_styles = root.find(f'{{{NAMESPACES["office"]}}}automatic-styles')
-                        if auto_styles is None:
-                            auto_styles = etree.SubElement(root, f'{{{NAMESPACES["office"]}}}automatic-styles')
-                        fs_val = f'{font_size:g}pt' if not str(font_size).endswith('pt') else str(font_size)
-                        c_style = etree.SubElement(auto_styles, f'{{{NAMESPACES["style"]}}}style', {
-                            f'{{{NAMESPACES["style"]}}}name': custom_content_style,
-                            f'{{{NAMESPACES["style"]}}}family': 'paragraph',
-                            f'{{{NAMESPACES["style"]}}}parent-style-name': 'Table_20_Contents',
-                        })
-                        etree.SubElement(c_style, f'{{{NAMESPACES["style"]}}}paragraph-properties', {
-                            f'{{{NAMESPACES["fo"]}}}text-align': 'center',
-                            f'{{{NAMESPACES["style"]}}}justify-single-word': 'false',
-                        })
-                        etree.SubElement(c_style, f'{{{NAMESPACES["style"]}}}text-properties', {
-                            f'{{{NAMESPACES["fo"]}}}font-size': fs_val,
-                            f'{{{NAMESPACES["style"]}}}font-size-asian': fs_val,
-                        })
+                    # 動態建立自訂字級樣式 (預設 16pt / 18pt)
+                    custom_content_style = 'P_CONTENT_CUSTOM'
+                    auto_styles = root.find(f'{{{NAMESPACES["office"]}}}automatic-styles')
+                    if auto_styles is None:
+                        auto_styles = etree.SubElement(root, f'{{{NAMESPACES["office"]}}}automatic-styles')
+                    fs_val = f'{font_size:g}pt' if not str(font_size).endswith('pt') else str(font_size)
+                    c_style = etree.SubElement(auto_styles, f'{{{NAMESPACES["style"]}}}style', {
+                        f'{{{NAMESPACES["style"]}}}name': custom_content_style,
+                        f'{{{NAMESPACES["style"]}}}family': 'paragraph',
+                        f'{{{NAMESPACES["style"]}}}parent-style-name': 'Table_20_Contents',
+                    })
+                    etree.SubElement(c_style, f'{{{NAMESPACES["style"]}}}paragraph-properties', {
+                        f'{{{NAMESPACES["fo"]}}}text-align': 'center',
+                        f'{{{NAMESPACES["style"]}}}justify-single-word': 'false',
+                    })
+                    etree.SubElement(c_style, f'{{{NAMESPACES["style"]}}}text-properties', {
+                        f'{{{NAMESPACES["fo"]}}}font-size': fs_val,
+                        f'{{{NAMESPACES["style"]}}}font-size-asian': fs_val,
+                    })
 
                     # 1. 填入每一頁的頁首（寄件人、收件人、副本收件人）
                     for p_idx in range(total_pages):
@@ -303,10 +305,10 @@ def convert_to_pdf(odt_path: str, output_dir: str = None):
 def main():
     manual_epilog = """
 使用範例：
-  %(prog)s text1                         自動讀取 text1，產出 text1.odt (預設字級 14pt)
+  %(prog)s text1                         自動讀取 text1，產出 text1.odt (預設字級 16pt)
   %(prog)s text1 --pdf                   自動讀取 text1，產出 text1.odt 與 text1.pdf
-  %(prog)s text1 --font-size 12          將內文字級調整為 12pt (預設為 14pt)
-  %(prog)s text1 -fs 12.5 --pdf          自訂字級 12.5pt 並同步產出 PDF
+  %(prog)s text1 --font-size 18          將內文字級調整為 18pt (特大字體)
+  %(prog)s text1 -fs 16 --pdf            自訂字級 16pt 並同步產出 PDF
   %(prog)s text1 -o out.odt              自訂輸出 ODT 檔案名稱
   %(prog)s text1 --keep-blank-pages      保留範本中全部 10 頁 (預設會自動移除未填寫之空白頁)
 
@@ -320,11 +322,7 @@ def main():
 
 字級設定說明：
   - 官方郵局存證信函用紙格式為每頁 10 行、每行 20 格 (一格一字，每頁最多 200 字)。
-  - 範本預設字級為 14pt (標楷體)。
-  - 格子列高約 0.9cm (約 25.5pt)，建議設定範圍為 10pt ~ 15pt：
-      * 11pt ~ 13pt：文字稍小，格子內留白舒適、版面整齊美觀。
-      * 14pt       ：官方標準預設值。
-      * 15pt 以上  ：字體偏大，若超過 16pt 可能會切到字體上下邊緣或撐開格線。
+  - 預設字級為 16pt (標楷體)，支援 16pt (清晰易讀) 與 18pt (特大字級)。
   - 調整字級僅改變格子內字元顯示大小，不會改變一行 20 字之郵局存證信函法定規格。
 """
     parser = argparse.ArgumentParser(
@@ -334,7 +332,7 @@ def main():
     )
     parser.add_argument("text_file", nargs="?", default="text", help="輸入純文字/Markdown檔案路徑 (例如: text 或 text1，預設: text)")
     parser.add_argument("-t", "--text", default=None, help="輸入文字檔案路徑 (同 positional argument)")
-    parser.add_argument("-fs", "--font-size", type=float, default=None, help="自訂內文字級大小 (pt)，預設為 14pt (建議範圍: 10 ~ 15)")
+    parser.add_argument("-fs", "--font-size", type=float, default=16.0, help="自訂內文字級大小 (pt)，預設為 16pt (支援 16pt、18pt)")
     parser.add_argument("-i", "--template", default=None, help="自訂 ODT 範本檔案路徑 (預設使用腳本內建範本)")
     parser.add_argument("-o", "--output", default=None, help="輸出 ODT 檔案路徑 (預設: 和純文字檔名同名之 .odt)")
     parser.add_argument("--keep-blank-pages", action="store_true", help="保留範本中全部 10 頁 (預設會自動刪除未使用的空白頁)")
