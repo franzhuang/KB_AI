@@ -339,4 +339,13 @@ function staticSearch(query, mode = "fast") {
 
     return { query, mode: "ai", results: allResults, ai_insight: insight, count: allResults.length };
   }
+};
+
+// 全域導出確保在任何瀏覽器環境與腳本呼叫下皆可百分之百存取
+if (typeof window !== 'undefined') {
+  window.STATIC_DB = STATIC_DB;
+  window.staticSearch = staticSearch;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { STATIC_DB, staticSearch };
 }
