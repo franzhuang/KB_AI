@@ -98,7 +98,6 @@
     </div>
   </footer>
 
-  <script src="/static/static-store.js"></script>
   <script src="static-store.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -109,7 +108,8 @@
     async function loadAnnouncements() {
       try {
         const res = await fetch('/api/announcements');
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const list = await res.json();
         renderAnnouncementsList(list);
       } catch (err) {

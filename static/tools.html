@@ -291,7 +291,8 @@
     async function loadCategories() {
       try {
         const res = await fetch('/api/categories');
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         categoriesData = await res.json();
         renderSidebarCategories();
       } catch (err) {
@@ -374,7 +375,8 @@
         }
 
         const res = await fetch(endpoint);
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const tools = await res.json();
         renderToolsGrid(tools);
       } catch (err) {
@@ -491,7 +493,8 @@
       activeReviewToolId = toolId;
       try {
         const res = await fetch(`/api/tools/${toolId}`);
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const data = await res.json();
         renderReviewModalContent(data.tool, data.reviews);
       } catch (err) {
@@ -552,8 +555,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
-        if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && !contentType.includes('text/html')) {
           alert('感謝您為同行提供寶貴之實務評分！已為您重新計算加權排序。');
           closeReviewModal();
           loadTools();
@@ -612,7 +615,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && !contentType.includes('text/html')) {
           alert('🎉 恭喜！工具已成功發布至分類市集！');
           closeUploadModal();
           document.getElementById('uploadToolForm').reset();

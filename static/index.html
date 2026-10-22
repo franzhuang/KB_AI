@@ -422,7 +422,8 @@
     async function executeSearch(query) {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&mode=${currentSearchMode}`);
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const data = await res.json();
         renderDropdownResults(data);
       } catch (err) {
@@ -518,7 +519,8 @@
     async function loadCategories() {
       try {
         const res = await fetch('/api/categories');
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const categories = await res.json();
         renderCategoriesList(categories);
       } catch (err) {
@@ -584,7 +586,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && !contentType.includes('text/html')) {
           alert('🎉 恭喜！工具已成功發布至市集，同行已可立即搜尋並進行星級評分！');
           closeUploadModal();
           document.getElementById('uploadToolForm').reset();

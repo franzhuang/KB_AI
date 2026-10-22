@@ -159,7 +159,6 @@
 
   </main>
 
-  <script src="/static/static-store.js"></script>
   <script src="static-store.js"></script>
   <script>
     let activeChannel = 'general';
@@ -194,7 +193,8 @@
     async function loadMessages() {
       try {
         const res = await fetch(`/api/chat/messages?channel=${activeChannel}`);
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         const messages = await res.json();
         renderMessagesList(messages);
       } catch (err) {
@@ -267,7 +267,8 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error("API Unavailable");
+        const contentType = res.headers.get('content-type') || '';
+        if (!res.ok || contentType.includes('text/html')) throw new Error("API Unavailable");
         loadMessages();
       } catch (err) {
         if (typeof STATIC_DB !== 'undefined') {
