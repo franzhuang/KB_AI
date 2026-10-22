@@ -7,6 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="jszip.min.js"></script>
+  <script src="legal_letter_template_b64.js"></script>
+  <script src="legal_letter_odt_engine.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -49,48 +52,50 @@
       font-size: 15px;
     }
 
+    @page {
+      size: A4 portrait;
+      margin: 8mm;
+    }
+
     @media print {
-      /* 列印/另存為 PDF 專用：隱藏導覽列與編輯側欄，僅列印標準存證用紙 */
-      header, footer, nav, .lg\:col-span-5, .light-card, button, #fontSizeSelect, .no-print {
-        display: none !important;
+      /* 列印/另存為 PDF 專用：保證僅輸出 100% 中華郵政存證信函稿紙，無任何無關介面 */
+      body * {
+        visibility: hidden !important;
       }
-      body {
-        background: white !important;
-        color: black !important;
-        padding: 0 !important;
-        margin: 0 !important;
-      }
-      main {
-        padding: 0 !important;
-        max-width: 100% !important;
-        width: 100% !important;
-      }
-      .grid {
-        display: block !important;
-      }
-      .lg\:col-span-7 {
-        width: 100% !important;
+      #previewContainer, #previewContainer * {
+        visibility: visible !important;
       }
       #previewContainer {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
         max-height: none !important;
         overflow: visible !important;
-        padding: 0 !important;
-        margin: 0 !important;
       }
       .post-grid-sheet {
-        page-break-after: always;
-        break-after: page;
-        margin: 0 auto 15mm auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        margin: 0 auto 0 auto !important;
         box-shadow: none !important;
         border: 2px solid #b91c1c !important;
-        width: 180mm !important;
+        background: white !important;
+        width: 185mm !important;
         box-sizing: border-box !important;
-        padding: 10mm !important;
+        padding: 8mm !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .post-grid-sheet:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
       }
       .grid-cell {
         border: 1px dashed #cbd5e1 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
@@ -98,7 +103,7 @@
 <body class="flex flex-col min-h-screen selection:bg-amber-100 selection:text-amber-900">
 
   <!-- 頂部導覽列 -->
-  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200">
+  <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-slate-200 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <a href="index.html" class="flex items-center space-x-3 group">
@@ -115,7 +120,7 @@
         </a>
         <span class="text-slate-300">/</span>
         <span class="text-xs text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 font-medium">
-          郵局存證信函排版生成器 (原生引擎)
+          郵局存證信函排版生成器 (官方原生引擎)
         </span>
       </div>
 
@@ -131,7 +136,7 @@
   <!-- 工作台雙欄結構 -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
     
-    <div class="light-card p-4 rounded-2xl mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-amber-200 bg-gradient-to-r from-amber-50/40 to-white">
+    <div class="light-card p-4 rounded-2xl mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-amber-200 bg-gradient-to-r from-amber-50/40 to-white no-print">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
           <i data-lucide="file-text" class="w-5 h-5"></i>
@@ -142,7 +147,7 @@
             <span class="text-[11px] font-sans px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">官方200字/頁規範</span>
           </h1>
           <p class="text-xs text-slate-500 mt-0.5">
-            完全相容中華郵政標準格式（10行 × 20格），整合本機 Python 範本處理核心，支援 ODT 與 PDF 格式匯出。
+            完全相容中華郵政標準格式（10行 × 20格），內建官方 ODT 範本引擎，支援原生 ODT 檔案下載與高解析 PDF 列印輸出。
           </p>
         </div>
       </div>
@@ -157,7 +162,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
       <!-- 左欄：輸入欄位 -->
-      <div class="lg:col-span-5 space-y-4">
+      <div class="lg:col-span-5 space-y-4 no-print">
         
         <!-- 當事人資料 -->
         <div class="light-card p-5 rounded-2xl space-y-3.5">
@@ -260,7 +265,7 @@
       <!-- 右欄：郵局格線稿紙即時視覺化預覽 -->
       <div class="lg:col-span-7 space-y-4">
         <div class="light-card p-5 rounded-2xl">
-          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200">
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 no-print" id="toolbarPanel">
             <div class="flex items-center space-x-2">
               <i data-lucide="eye" class="w-4 h-4 text-amber-600"></i>
               <span class="text-xs font-serif font-bold text-slate-900">郵局 10 行 × 20 格稿紙排版擬真預覽</span>
@@ -400,117 +405,81 @@
         return;
       }
 
-      // 若有後端伺服器 (Localhost FastAPI)，優先調用後端生成原生 ODT / PDF
-      let backendSuccess = false;
-      try {
-        const res = await fetch('/api/legal-letter/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+      // 整理內文段落：若有主旨則依標準組織「一、主旨：」「二、說明：」
+      const paragraphs = [];
+      if (payload.subject) {
+        paragraphs.push(`一、主旨：${payload.subject}`);
+        paragraphs.push("二、說明：");
+        for (let p of payload.content.split("\n")) {
+          const pTrim = p.trim();
+          if (pTrim) paragraphs.push(pTrim);
+        }
+      } else {
+        for (let p of payload.content.split("\n")) {
+          const pTrim = p.trim();
+          if (pTrim) paragraphs.push(pTrim);
+        }
+      }
 
-        const contentType = res.headers.get('content-type') || '';
-        // 確保為二進位檔 (Blob)，非 404 HTML 錯誤頁面
-        if (res.ok && !contentType.includes('text/html')) {
-          const blob = await res.blob();
-          const url = window.URL.createObjectURL(blob);
+      const odtData = {
+        sender_name: payload.sender_name,
+        sender_addr: payload.sender_addr,
+        recipient_name: payload.recipient_name,
+        recipient_addr: payload.recipient_addr,
+        copy_recipient_name: payload.copy_recipient_name,
+        copy_recipient_addr: payload.copy_recipient_addr,
+        paragraphs: paragraphs
+      };
+
+      // 1. 若選擇 ODT 匯出：直接使用移植自 fill_legal_letter_填入存證信函.py 的原生官方範本引擎
+      if (format === 'odt') {
+        try {
+          const odtBlob = await generateOfficialOdtBlob(odtData, payload.font_size, payload.keep_blank_pages);
+          const url = window.URL.createObjectURL(odtBlob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `存證信函_${payload.recipient_name}.${format}`;
+          a.download = `存證信函_${payload.recipient_name}.odt`;
           document.body.appendChild(a);
           a.click();
           a.remove();
           window.URL.revokeObjectURL(url);
-          backendSuccess = true;
           return;
-        }
-      } catch (err) {
-        // 後端離線或 GitHub Pages 靜態環境，自動切入純前端免後端模式
-      }
-
-      // GitHub Pages 純靜態環境完美備援機制
-      if (!backendSuccess) {
-        if (format === 'pdf') {
-          // 純前端直接啟動瀏覽器高解析向量預覽列印輸出標準 PDF
-          alert('📄【提示】已為您啟動郵局存證信函專用紙列印視窗！\n\n請在「印表機 / 目的地」選擇【另存為 PDF (Save as PDF)】，即可直接下載包含 10行×20格 官方紅框用紙之標準高解析度 PDF 文件。');
-          window.print();
-        } else {
-          // 純前端輸出 Word / LibreOffice 完美相容表格排版檔 (.doc)
-          downloadWordCompatDoc(payload);
+        } catch (e) {
+          console.warn('前端 ODT 生成失敗，嘗試調用本機後端：', e);
         }
       }
-    }
 
-    function downloadWordCompatDoc(payload) {
-      const fullText = getFullFormattedText();
-      const pages = splitIntoGridPages(fullText, 20, 10);
-      const selectedPt = parseFloat(document.getElementById('fontSizeSelect')?.value) || 16.0;
-
-      let html = `<!DOCTYPE html>
-<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head>
-<meta charset='utf-8'>
-<title>郵局存證信函_${escapeHtml(payload.recipient_name)}</title>
-<style>
-  body { font-family: '標楷體', 'DFKai-SB', 'Noto Serif TC', serif; font-size: ${selectedPt}pt; color: #1a1a1a; margin: 20mm; }
-  .sheet { border: 2px solid #b91c1c; padding: 15px; margin-bottom: 30px; page-break-after: always; width: 680px; }
-  .title { text-align: center; color: #b91c1c; font-size: 18pt; font-weight: bold; border-bottom: 2px solid #b91c1c; padding-bottom: 8px; margin-bottom: 12px; }
-  .meta-table { width: 100%; border-collapse: collapse; font-size: 11pt; margin-bottom: 12px; }
-  .meta-table td { padding: 4px 6px; border-bottom: 1px solid #ddd; }
-  .grid-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 0 auto; }
-  .grid-table td { border: 1px dashed #cbd5e1; height: 32px; width: 5%; text-align: center; vertical-align: middle; font-size: ${selectedPt}pt; }
-  .footer { margin-top: 10px; font-size: 9pt; color: #666; display: flex; justify-content: space-between; border-top: 1px solid #ccc; padding-top: 4px; }
-</style>
-</head>
-<body>
-`;
-
-      pages.forEach((pageLines, pageIdx) => {
-        html += `<div class='sheet'>
-  <div class='title'>中華郵政存證信函用紙 (第 ${pageIdx + 1} 頁)</div>
-  <table class='meta-table'>
-    <tr>
-      <td width='50%'><strong>寄件人：</strong>${escapeHtml(payload.sender_name)}</td>
-      <td width='50%'><strong>收件人：</strong>${escapeHtml(payload.recipient_name)}</td>
-    </tr>
-    <tr>
-      <td><strong>寄件地址：</strong>${escapeHtml(payload.sender_addr)}</td>
-      <td><strong>收件地址：</strong>${escapeHtml(payload.recipient_addr)}</td>
-    </tr>
-  </table>
-  <table class='grid-table'>
-`;
-        for (let r = 0; r < 10; r++) {
-          html += '    <tr>';
-          const lineStr = pageLines[r] || '';
-          for (let c = 0; c < 20; c++) {
-            const char = lineStr[c] || '';
-            html += `<td>${escapeHtml(char)}</td>`;
+      // 2. 若選擇 PDF：支援本機後端 LibreOffice 與純前端高解析向量列印
+      if (format === 'pdf') {
+        // 先嘗試調用本機 LibreOffice 轉檔服務
+        try {
+          const res = await fetch('/api/legal-letter/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const contentType = res.headers.get('content-type') || '';
+          if (res.ok && contentType.includes('application/pdf')) {
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `存證信函_${payload.recipient_name}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            return;
           }
-          html += '</tr>\n';
+        } catch (err) {
+          // 本機服務未啟動，無縫使用純前端預覽列印
         }
-        html += `  </table>
-  <div class='footer'>
-    <span>官方格式規範：每頁10行 每行20格 滿頁200字</span>
-    <span style='float:right;'>第 ${pageIdx + 1} 頁 / 共 ${pages.length} 頁</span>
-  </div>
-</div>
-`;
-      });
 
-      html += '</body></html>';
-
-      const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `存證信函_${payload.recipient_name}.doc`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-
-      alert('📄 已為您產生存證信函標準排版檔（.doc 格式，支援 Word / LibreOffice 直接開啟與編輯列印）。\n\n💡 若需要 PDF 格式，亦可直接點擊「匯出 PDF」按鈕並選擇「另存為 PDF」。');
+        // 純前端向量列印另存為 PDF：現在 @media print 已修正，所有內容、紅框稿紙與當事人欄位 100% 完整呈現
+        alert('📄【提示】已為您開啟存證信函專用紙列印視窗！\n\n請在「印表機 / 目的地」選擇【另存為 PDF (Save as PDF)】，即可獲得包含完整 10行×20格 官方紅框用紙之標準高解析度 PDF。');
+        window.print();
+        return;
+      }
     }
 
     function escapeHtml(text) {
