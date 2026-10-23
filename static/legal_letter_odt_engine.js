@@ -83,10 +83,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
         const tabs = spans[0].getElementsByTagNameNS(ODF_NAMESPACES.text, 'tab');
         if (tabs.length > 0) {
           const tabEl = tabs[0];
-          while (tabEl.nextSibling) {
-            spans[0].removeChild(tabEl.nextSibling);
+          if (tabEl.nextSibling && tabEl.nextSibling.nodeType === 3) {
+            tabEl.nextSibling.nodeValue = `姓名: ${data.sender_name}`;
+          } else {
+            spans[0].insertBefore(doc.createTextNode(`姓名: ${data.sender_name}`), tabEl.nextSibling);
           }
-          spans[0].appendChild(doc.createTextNode(`姓名: ${data.sender_name}`));
         }
       }
     }
@@ -96,10 +97,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
       const tabs = ps[3].getElementsByTagNameNS(ODF_NAMESPACES.text, 'tab');
       if (tabs.length > 0) {
         const tabEl = tabs[0];
-        while (tabEl.nextSibling) {
-          ps[3].removeChild(tabEl.nextSibling);
+        if (tabEl.nextSibling && tabEl.nextSibling.nodeType === 3) {
+          tabEl.nextSibling.nodeValue = `詳細地址：${data.sender_addr}`;
+        } else {
+          ps[3].insertBefore(doc.createTextNode(`詳細地址：${data.sender_addr}`), tabEl.nextSibling);
         }
-        ps[3].appendChild(doc.createTextNode(`詳細地址：${data.sender_addr}`));
       }
     }
 
@@ -108,10 +110,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
       const tabs = ps[4].getElementsByTagNameNS(ODF_NAMESPACES.text, 'tab');
       if (tabs.length > 0) {
         const tabEl = tabs[0];
-        while (tabEl.nextSibling) {
-          ps[4].removeChild(tabEl.nextSibling);
+        if (tabEl.nextSibling && tabEl.nextSibling.nodeType === 3) {
+          tabEl.nextSibling.nodeValue = `姓名：${data.recipient_name}`;
+        } else {
+          ps[4].insertBefore(doc.createTextNode(`姓名：${data.recipient_name}`), tabEl.nextSibling);
         }
-        ps[4].appendChild(doc.createTextNode(`姓名：${data.recipient_name}`));
       }
     }
 
@@ -120,10 +123,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
       const tabs = ps[6].getElementsByTagNameNS(ODF_NAMESPACES.text, 'tab');
       if (tabs.length > 0) {
         const tabEl = tabs[0];
-        while (tabEl.nextSibling) {
-          ps[6].removeChild(tabEl.nextSibling);
+        if (tabEl.nextSibling && tabEl.nextSibling.nodeType === 3) {
+          tabEl.nextSibling.nodeValue = `詳細地址：${data.recipient_addr}`;
+        } else {
+          ps[6].insertBefore(doc.createTextNode(`詳細地址：${data.recipient_addr}`), tabEl.nextSibling);
         }
-        ps[6].appendChild(doc.createTextNode(`詳細地址：${data.recipient_addr}`));
       }
     }
 
@@ -140,10 +144,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
       const tabs = ps[8].getElementsByTagNameNS(ODF_NAMESPACES.text, 'tab');
       if (tabs.length > 0) {
         const tabEl = tabs[0];
-        while (tabEl.nextSibling) {
-          ps[8].removeChild(tabEl.nextSibling);
+        if (tabEl.nextSibling && tabEl.nextSibling.nodeType === 3) {
+          tabEl.nextSibling.nodeValue = `詳細地址：${data.copy_recipient_addr}`;
+        } else {
+          ps[8].insertBefore(doc.createTextNode(`詳細地址：${data.copy_recipient_addr}`), tabEl.nextSibling);
         }
-        ps[8].appendChild(doc.createTextNode(`詳細地址：${data.copy_recipient_addr}`));
       }
     }
   }
@@ -161,10 +166,11 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
         if (sList.length > 0) {
           sList[0].setAttributeNS(ODF_NAMESPACES.text, 'text:c', '2');
           const sEl = sList[0];
-          while (sEl.nextSibling) {
-            p.removeChild(sEl.nextSibling);
+          if (sEl.nextSibling && sEl.nextSibling.nodeType === 3) {
+            sEl.nextSibling.nodeValue = `${pagesNeeded}  頁，正本 `;
+          } else {
+            p.insertBefore(doc.createTextNode(`${pagesNeeded}  頁，正本 `), sEl.nextSibling);
           }
-          p.appendChild(doc.createTextNode(`${pagesNeeded}  頁，正本 `));
         }
       }
     }
