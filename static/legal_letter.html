@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>郵局存證信函標準排版生成系統 | 司法AI工具交換所</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="jszip.min.js"></script>
-  <script src="legal_letter_template_b64.js"></script>
-  <script src="legal_letter_odt_engine.js"></script>
+  <script src="jszip.min.js?v=20261023_0958"></script>
+  <script src="legal_letter_template_b64.js?v=20261023_0958"></script>
+  <script src="legal_letter_odt_engine.js?v=20261023_0958"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -326,18 +329,18 @@
 
           <div class="space-y-2">
             <div class="grid grid-cols-3 gap-2">
-              <input type="text" id="senderName" placeholder="寄件人姓名" value="陳大文 律師" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
-              <input type="text" id="senderAddr" placeholder="寄件人完整地址" value="臺北市中正區重慶南路一段122號8樓" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="senderName" placeholder="寄件人姓名" value="黃耀平律師" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="senderAddr" placeholder="寄件人完整地址" value="台北市中正區重慶南路一段122號8樓" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
             </div>
             
             <div class="grid grid-cols-3 gap-2">
-              <input type="text" id="recipientName" placeholder="收件人姓名" value="林小明" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
-              <input type="text" id="recipientAddr" placeholder="收件人完整地址" value="新北市板橋區縣民大道二段7號10樓" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="recipientName" placeholder="收件人姓名" value="李大同" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="recipientAddr" placeholder="收件人完整地址" value="高雄市新興區中正三路25號5樓" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
             </div>
 
             <div class="grid grid-cols-3 gap-2">
-              <input type="text" id="copyRecipientName" placeholder="副本收件人 (選填)" value="宏達股份有限公司" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
-              <input type="text" id="copyRecipientAddr" placeholder="副本地址 (選填)" value="臺北市內湖區瑞光路500號" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="copyRecipientName" placeholder="副本收件人 (選填)" value="財團法人法律扶助基金會" class="col-span-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
+              <input type="text" id="copyRecipientAddr" placeholder="副本地址 (選填)" value="台北市大安區金山南路二段189號5樓" class="col-span-2 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white">
             </div>
           </div>
         </div>
@@ -350,12 +353,7 @@
               <span>存證信函本文與主旨</span>
             </h2>
             <div class="flex items-center space-x-2 text-xs">
-              <span class="text-slate-500 text-[11px] font-medium">字級:</span>
-              <select id="fontSizeSelect" onchange="updatePreview()" class="bg-white border border-slate-300 text-amber-800 px-2 py-0.5 rounded text-[11px] font-medium focus:outline-none focus:border-amber-500">
-                <option value="" selected>官方預設 (14pt，標準格線)</option>
-                <option value="12.0">12 pt (留白整齊)</option>
-                <option value="15.0">15 pt (字體略大)</option>
-              </select>
+              <span class="text-[11px] font-sans px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">官方標準字級 (P19 無損格線)</span>
             </div>
           </div>
 
@@ -382,9 +380,8 @@
               oninput="updatePreview()" 
               placeholder="請輸入存證信函內容...每段換行將自動對齊郵局格線"
               class="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white leading-relaxed font-serif"
-            >一、緣本律師受當事人陳先生委託，就台端積欠借款事宜依法致函催告。
-二、查台端於民國114年5月1日向委託人借貸新台幣一百萬元整，約定應於民國115年3月1日前清償完畢，並簽有借據在案。
-三、詎屆清償期後，委託人屢次催討，台端均置之不理。限台端於函到七日內出面清償，逾期將依法提起民事訴訟並聲請強制執行，切勿自誤為禱。</textarea>
+            >查台端前於民國一百一十四年九月一日向本人借款新台幣壹佰萬元整，約定清償期為民國一百一十五年三月一日。詎屆清償期後，屢經本人以存證信函及電話催討，台端均藉詞推諉，迄今分文未付。
+為此特發本函，限台端於函到七日內出面清償上述款項，否則本人將依法提起民事訴訟並聲請強制執行，絕不寬貸，希勿自誤為禱。</textarea>
           </div>
 
           <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
@@ -447,11 +444,16 @@
     });
 
     function fillDemoData() {
-      document.getElementById('letterSubject').value = "為函告台端於文到七日內出面清償租金並騰空返還房屋事，請查照。";
+      document.getElementById('senderName').value = "黃耀平律師";
+      document.getElementById('senderAddr').value = "台北市中正區重慶南路一段122號8樓";
+      document.getElementById('recipientName').value = "李大同";
+      document.getElementById('recipientAddr').value = "高雄市新興區中正三路25號5樓";
+      document.getElementById('copyRecipientName').value = "財團法人法律扶助基金會";
+      document.getElementById('copyRecipientAddr').value = "台北市大安區金山南路二段189號5樓";
+      document.getElementById('letterSubject').value = "";
       document.getElementById('letterContent').value = 
-`(一)緣委託人前於民國114年9月20日與台端簽訂租賃契約，租期自同日起至115年9月19日止。
-(二)查台端自115年1月起即未依約按月繳納租金，迄今已積欠租金逾二期以上，扣除押租金後仍積欠新台幣八萬五千元整。
-(三)特此依民法第440條及土地法第100條之規定，限台端於文到七日內出面清償租金並騰空返還房屋，否則本律師將依法提起遷讓房屋之訴，請台端自重。`;
+`查台端前於民國一百一十四年九月一日向本人借款新台幣壹佰萬元整，約定清償期為民國一百一十五年三月一日。詎屆清償期後，屢經本人以存證信函及電話催討，台端均藉詞推諉，迄今分文未付。
+為此特發本函，限台端於函到七日內出面清償上述款項，否則本人將依法提起民事訴訟並聲請強制執行，絕不寬貸，希勿自誤為禱。`;
       updatePreview();
     }
 
@@ -518,9 +520,7 @@
       const rAddr = escapeHtml(document.getElementById('recipientAddr').value);
       const cName = escapeHtml(document.getElementById('copyRecipientName').value);
       const cAddr = escapeHtml(document.getElementById('copyRecipientAddr').value);
-      const fontSizeVal = document.getElementById('fontSizeSelect')?.value;
-      const selectedPt = fontSizeVal ? parseFloat(fontSizeVal) : null;
-      const charFontSize = selectedPt ? `${selectedPt}pt` : '14pt';
+      const charFontSize = '14pt'; // 官方標準 14pt
 
       pages.forEach((pageLines, pageIdx) => {
         const sheet = document.createElement('div');
@@ -629,8 +629,7 @@
     }
 
     async function downloadLetter(format) {
-      const fontSizeVal = document.getElementById('fontSizeSelect').value;
-      const fontSize = fontSizeVal ? parseFloat(fontSizeVal) : null;
+      const fontSize = null; // 永遠嚴格遵循官方範本 P19，絕不改動字級樣式
 
       const payload = {
         sender_name: document.getElementById('senderName').value.trim(),

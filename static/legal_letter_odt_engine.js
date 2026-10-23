@@ -29,33 +29,8 @@ function fillOdtXmlDoc(doc, data, fontSize = null, keepBlankPages = false) {
   const pagesNeeded = Math.max(1, Math.ceil(totalLines / 10));
   const totalPages = keepBlankPages ? 10 : Math.min(10, pagesNeeded);
 
-  // 若有自訂字級，動態建立自訂字級樣式；若無則使用範本預設 P19
-  const customContentStyle = fontSize ? 'P_CONTENT_CUSTOM' : 'P19';
-  if (fontSize) {
-    let autoStyles = doc.getElementsByTagNameNS(ODF_NAMESPACES.office, 'automatic-styles')[0];
-    if (!autoStyles) {
-      autoStyles = doc.createElementNS(ODF_NAMESPACES.office, 'office:automatic-styles');
-      doc.documentElement.appendChild(autoStyles);
-    }
-    const fsVal = (typeof fontSize === 'number' ? fontSize : parseFloat(fontSize)) + 'pt';
-
-    const cStyle = doc.createElementNS(ODF_NAMESPACES.style, 'style:style');
-    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:name', customContentStyle);
-    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:family', 'paragraph');
-    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:parent-style-name', 'Table_20_Contents');
-
-    const pProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:paragraph-properties');
-    pProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:text-align', 'center');
-    pProp.setAttributeNS(ODF_NAMESPACES.style, 'style:justify-single-word', 'false');
-    cStyle.appendChild(pProp);
-
-    const tProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:text-properties');
-    tProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:font-size', fsVal);
-    tProp.setAttributeNS(ODF_NAMESPACES.style, 'style:font-size-asian', fsVal);
-    cStyle.appendChild(tProp);
-
-    autoStyles.appendChild(cStyle);
-  }
+  // 100% 維持官方原始範本樣式 P19，絕不注入自訂樣式
+  const customContentStyle = 'P19';
 
   // 取得全部表格
   const allTables = doc.getElementsByTagNameNS(ODF_NAMESPACES.table, 'table');
@@ -196,9 +171,6 @@ function fillOdtXmlDoc(doc, data, fontSize = null, keepBlankPages = false) {
         const pList = cells[c].getElementsByTagNameNS(ODF_NAMESPACES.text, 'p');
         if (pList.length > 0) {
           pList[0].textContent = char;
-          if (fontSize) {
-            pList[0].setAttributeNS(ODF_NAMESPACES.text, 'text:style-name', customContentStyle);
-          }
         } else {
           const pNew = doc.createElementNS(ODF_NAMESPACES.text, 'text:p');
           pNew.setAttributeNS(ODF_NAMESPACES.text, 'text:style-name', customContentStyle);
