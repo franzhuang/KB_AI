@@ -23,38 +23,39 @@ function splitIntoGridLines(paragraphs, charsPerLine = 20) {
   return gridLines;
 }
 
-function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
-  if (!fontSize || fontSize < 14) fontSize = 16.0;
+function fillOdtXmlDoc(doc, data, fontSize = null, keepBlankPages = false) {
   const gridLines = splitIntoGridLines(data.paragraphs || [], 20);
   const totalLines = gridLines.length;
   const pagesNeeded = Math.max(1, Math.ceil(totalLines / 10));
   const totalPages = keepBlankPages ? 10 : Math.min(10, pagesNeeded);
 
-  // 1. 動態建立自訂字級樣式 (預設 16pt / 18pt)
-  const customContentStyle = 'P_CONTENT_CUSTOM';
-  let autoStyles = doc.getElementsByTagNameNS(ODF_NAMESPACES.office, 'automatic-styles')[0];
-  if (!autoStyles) {
-    autoStyles = doc.createElementNS(ODF_NAMESPACES.office, 'office:automatic-styles');
-    doc.documentElement.appendChild(autoStyles);
+  // 若有自訂字級，動態建立自訂字級樣式；若無則使用範本預設 P19
+  const customContentStyle = fontSize ? 'P_CONTENT_CUSTOM' : 'P19';
+  if (fontSize) {
+    let autoStyles = doc.getElementsByTagNameNS(ODF_NAMESPACES.office, 'automatic-styles')[0];
+    if (!autoStyles) {
+      autoStyles = doc.createElementNS(ODF_NAMESPACES.office, 'office:automatic-styles');
+      doc.documentElement.appendChild(autoStyles);
+    }
+    const fsVal = (typeof fontSize === 'number' ? fontSize : parseFloat(fontSize)) + 'pt';
+
+    const cStyle = doc.createElementNS(ODF_NAMESPACES.style, 'style:style');
+    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:name', customContentStyle);
+    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:family', 'paragraph');
+    cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:parent-style-name', 'Table_20_Contents');
+
+    const pProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:paragraph-properties');
+    pProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:text-align', 'center');
+    pProp.setAttributeNS(ODF_NAMESPACES.style, 'style:justify-single-word', 'false');
+    cStyle.appendChild(pProp);
+
+    const tProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:text-properties');
+    tProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:font-size', fsVal);
+    tProp.setAttributeNS(ODF_NAMESPACES.style, 'style:font-size-asian', fsVal);
+    cStyle.appendChild(tProp);
+
+    autoStyles.appendChild(cStyle);
   }
-  const fsVal = (typeof fontSize === 'number' ? fontSize : parseFloat(fontSize)) + 'pt';
-
-  const cStyle = doc.createElementNS(ODF_NAMESPACES.style, 'style:style');
-  cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:name', customContentStyle);
-  cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:family', 'paragraph');
-  cStyle.setAttributeNS(ODF_NAMESPACES.style, 'style:parent-style-name', 'Table_20_Contents');
-
-  const pProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:paragraph-properties');
-  pProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:text-align', 'center');
-  pProp.setAttributeNS(ODF_NAMESPACES.style, 'style:justify-single-word', 'false');
-  cStyle.appendChild(pProp);
-
-  const tProp = doc.createElementNS(ODF_NAMESPACES.style, 'style:text-properties');
-  tProp.setAttributeNS(ODF_NAMESPACES.fo, 'fo:font-size', fsVal);
-  tProp.setAttributeNS(ODF_NAMESPACES.style, 'style:font-size-asian', fsVal);
-  cStyle.appendChild(tProp);
-
-  autoStyles.appendChild(cStyle);
 
   // 取得全部表格
   const allTables = doc.getElementsByTagNameNS(ODF_NAMESPACES.table, 'table');
@@ -195,11 +196,13 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
         const pList = cells[c].getElementsByTagNameNS(ODF_NAMESPACES.text, 'p');
         if (pList.length > 0) {
           pList[0].textContent = char;
-          pList[0].setAttributeNS(ODF_NAMESPACES.text, 'text:style-name', customContentStyle);
+          if (fontSize) {
+            pList[0].setAttributeNS(ODF_NAMESPACES.text, 'text:style-name', customContentStyle);
+          }
         } else {
           const pNew = doc.createElementNS(ODF_NAMESPACES.text, 'text:p');
           pNew.setAttributeNS(ODF_NAMESPACES.text, 'text:style-name', customContentStyle);
-          pNew.textContent = char;
+          if (char) pNew.textContent = char;
           cells[c].appendChild(pNew);
         }
       }
@@ -246,7 +249,7 @@ function fillOdtXmlDoc(doc, data, fontSize = 16.0, keepBlankPages = false) {
 /**
  * 在瀏覽器中產生中華郵政標準 ODT 二進位 Blob 物件
  */
-async function generateOfficialOdtBlob(data, fontSize = 16.0, keepBlankPages = false) {
+async function generateOfficialOdtBlob(data, fontSize = null, keepBlankPages = false) {
   if (typeof JSZip === 'undefined') {
     throw new Error('JSZip 程式庫未載入');
   }

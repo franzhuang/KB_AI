@@ -348,8 +348,9 @@
             <div class="flex items-center space-x-2 text-xs">
               <span class="text-slate-500 text-[11px] font-medium">字級:</span>
               <select id="fontSizeSelect" onchange="updatePreview()" class="bg-white border border-slate-300 text-amber-800 px-2 py-0.5 rounded text-[11px] font-medium focus:outline-none focus:border-amber-500">
-                <option value="16.0" selected>16 pt (清晰易讀)</option>
-                <option value="18.0">18 pt (大字級)</option>
+                <option value="" selected>官方預設 (14pt，標準格線)</option>
+                <option value="12.0">12 pt (留白整齊)</option>
+                <option value="15.0">15 pt (字體略大)</option>
               </select>
             </div>
           </div>
@@ -513,8 +514,9 @@
       const rAddr = escapeHtml(document.getElementById('recipientAddr').value);
       const cName = escapeHtml(document.getElementById('copyRecipientName').value);
       const cAddr = escapeHtml(document.getElementById('copyRecipientAddr').value);
-      const selectedPt = parseFloat(document.getElementById('fontSizeSelect')?.value) || 16.0;
-      const charFontSize = selectedPt >= 18 ? '16pt' : '14pt';
+      const fontSizeVal = document.getElementById('fontSizeSelect')?.value;
+      const selectedPt = fontSizeVal ? parseFloat(fontSizeVal) : null;
+      const charFontSize = selectedPt ? `${selectedPt}pt` : '14pt';
 
       pages.forEach((pageLines, pageIdx) => {
         const sheet = document.createElement('div');
@@ -623,6 +625,9 @@
     }
 
     async function downloadLetter(format) {
+      const fontSizeVal = document.getElementById('fontSizeSelect').value;
+      const fontSize = fontSizeVal ? parseFloat(fontSizeVal) : null;
+
       const payload = {
         sender_name: document.getElementById('senderName').value.trim(),
         sender_addr: document.getElementById('senderAddr').value.trim(),
@@ -632,7 +637,7 @@
         copy_recipient_addr: document.getElementById('copyRecipientAddr').value.trim(),
         subject: document.getElementById('letterSubject').value.trim(),
         content: document.getElementById('letterContent').value.trim(),
-        font_size: parseFloat(document.getElementById('fontSizeSelect').value),
+        font_size: fontSize,
         output_format: format,
         keep_blank_pages: document.getElementById('keepBlankPages').checked
       };
@@ -668,7 +673,7 @@
         paragraphs: paragraphs
       };
 
-      // 1. 若選擇 ODT 匯出：直接使用移植自 fill_legal_letter_填入存證信函.py 的原生官方範本引擎
+      // 1. 若選擇 ODT 匯出：完全依據 fill_legal_letter_填入存證信函.py 之官方 ODT 範本封裝
       if (format === 'odt') {
         try {
           const odtBlob = await generateOfficialOdtBlob(odtData, payload.font_size, payload.keep_blank_pages);
@@ -682,13 +687,14 @@
           window.URL.revokeObjectURL(url);
           return;
         } catch (e) {
-          console.warn('前端 ODT 生成失敗，嘗試調用本機後端：', e);
+          console.error('ODT 生成失敗：', e);
+          alert('ODT 生成失敗: ' + e.message);
         }
       }
 
-      // 2. 若選擇 PDF：支援本機後端 LibreOffice 與純前端高解析向量列印
+      // 2. 若選擇 PDF：
       if (format === 'pdf') {
-        // 先嘗試調用本機 LibreOffice 轉檔服務
+        // 先嘗試調用本機後端 LibreOffice 轉檔服務
         try {
           const res = await fetch('/api/legal-letter/generate', {
             method: 'POST',
@@ -709,11 +715,23 @@
             return;
           }
         } catch (err) {
-          // 本機服務未啟動，無縫使用純前端預覽列印
+          // 本機服務未啟動，處於靜態環境 (如 GitHub Pages)
         }
 
-        // 純前端向量列印另存為 PDF：現在 @media print 已修正，所有內容、紅框稿紙與當事人欄位 100% 完整呈現
-        alert('📄【提示】已為您開啟存證信函專用紙列印視窗！\n\n請在「印表機 / 目的地」選擇【另存為 PDF (Save as PDF)】，即可獲得包含完整 10行×20格 官方紅框用紙之標準高解析度 PDF。');
+        // 自動下載官方標準 ODT 檔案
+        try {
+          const odtBlob = await generateOfficialOdtBlob(odtData, payload.font_size, payload.keep_blank_pages);
+          const url = window.URL.createObjectURL(odtBlob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `存證信函_${payload.recipient_name}.odt`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          window.URL.revokeObjectURL(url);
+        } catch (e) {}
+
+        alert('📄【官方標準存證信函文件】\n\n1. 已為您自動下載中華郵政官方範本 ODT 檔案（使用 LibreOffice 開啟即為 100% 官方標準排版，可直接另存為 PDF）。\n2. 同步開啟列印視窗，您亦可直接於印表機選擇「另存為 PDF」存檔。');
         window.print();
         return;
       }
