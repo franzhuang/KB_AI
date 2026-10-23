@@ -446,10 +446,15 @@ async def generate_legal_letter(req: LegalLetterRequest):
     調用現有的 fill_legal_letter_填入存證信函.py 引擎生成 ODT 或 PDF
     """
     try:
-        # 解碼內建 ODT 範本
-        raw_b64 = fl.EMBEDDED_ODT_TEMPLATE_B64.strip()
-        compressed_bytes = base64.b64decode(raw_b64)
-        template_bytes = zlib.decompress(compressed_bytes)
+        # 讀取使用者提供之官方 ODT 範本
+        tpl_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "郵局存證信函用紙.ott檔.odt")
+        if os.path.exists(tpl_path):
+            with open(tpl_path, "rb") as f:
+                template_bytes = f.read()
+        else:
+            raw_b64 = fl.EMBEDDED_ODT_TEMPLATE_B64.strip()
+            compressed_bytes = base64.b64decode(raw_b64)
+            template_bytes = zlib.decompress(compressed_bytes)
 
         # 整理內文段落：若有主旨則依標準組織「一、主旨：」「二、說明：」
         paragraphs = []

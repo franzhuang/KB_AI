@@ -46,7 +46,7 @@ CITY_COUNTY_REGEX = (
 def parse_name_address(line: str):
     """從一行字串中分離出姓名與地址。"""
     cleaned = re.sub(r'^[-\s*#]+\s*', '', line).strip()
-    cleaned = re.sub(r'^(寄件人|收件人|副\s*本收件人|副本收件人)[：:]\s*', '', cleaned).strip()
+    cleaned = re.sub(r'^(寄件人|收件人|副\s*本收件人|副本收件人|副本)[:：\s]\s*', '', cleaned).strip()
 
     m = re.search(CITY_COUNTY_REGEX, cleaned)
     if m:
@@ -365,9 +365,15 @@ def main():
         with open(args.template, 'rb') as f:
             template_bytes = f.read()
     else:
-        raw_b64 = EMBEDDED_ODT_TEMPLATE_B64.strip()
-        compressed_bytes = base64.b64decode(raw_b64)
-        template_bytes = zlib.decompress(compressed_bytes)
+        # 優先讀取目錄下由使用者提供的官方範本檔案，確保與真實郵局範本完全一致
+        default_tpl = os.path.join(os.path.dirname(os.path.abspath(__file__)), '郵局存證信函用紙.ott檔.odt')
+        if os.path.exists(default_tpl):
+            with open(default_tpl, 'rb') as f:
+                template_bytes = f.read()
+        else:
+            raw_b64 = EMBEDDED_ODT_TEMPLATE_B64.strip()
+            compressed_bytes = base64.b64decode(raw_b64)
+            template_bytes = zlib.decompress(compressed_bytes)
 
     data = parse_text_file(input_text)
     fill_odt(template_bytes, output_path, data, keep_blank_pages=args.keep_blank_pages, font_size=args.font_size)

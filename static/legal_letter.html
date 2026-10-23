@@ -300,12 +300,16 @@
           </p>
         </div>
       </div>
-      <div class="flex items-center space-x-2 shrink-0">
-        <button onclick="fillDemoData()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-xs text-slate-700 border border-slate-300 shadow-sm transition flex items-center space-x-1 font-medium">
-          <i data-lucide="wand-2" class="w-3.5 h-3.5 text-amber-600"></i>
-          <span>載入催告範本</span>
-        </button>
-      </div>
+        <div class="flex items-center space-x-2 shrink-0">
+          <button onclick="openImportModal()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-xs text-slate-700 border border-slate-300 shadow-sm transition flex items-center space-x-1 font-medium">
+            <i data-lucide="file-up" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>匯入純文字 (相容 py 格式)</span>
+          </button>
+          <button onclick="fillDemoData()" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-xs text-slate-700 border border-slate-300 shadow-sm transition flex items-center space-x-1 font-medium">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>載入催告範本</span>
+          </button>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -715,10 +719,10 @@
             return;
           }
         } catch (err) {
-          // 本機服務未啟動，處於靜態環境 (如 GitHub Pages)
+          // 本機後端服務未啟動，處於靜態環境 (如 GitHub Pages)
         }
 
-        // 自動下載官方標準 ODT 檔案
+        // 純靜態環境：自動下載官方標準 ODT 檔案，並彈出清楚說明引導
         try {
           const odtBlob = await generateOfficialOdtBlob(odtData, payload.font_size, payload.keep_blank_pages);
           const url = window.URL.createObjectURL(odtBlob);
@@ -729,12 +733,137 @@
           a.click();
           a.remove();
           window.URL.revokeObjectURL(url);
-        } catch (e) {}
 
-        alert('📄【官方標準存證信函文件】\n\n1. 已為您自動下載中華郵政官方範本 ODT 檔案（使用 LibreOffice 開啟即為 100% 官方標準排版，可直接另存為 PDF）。\n2. 同步開啟列印視窗，您亦可直接於印表機選擇「另存為 PDF」存檔。');
-        window.print();
+          showStaticNoticeModal(payload.recipient_name);
+        } catch (e) {
+          alert('ODT 生成失敗: ' + e.message);
+        }
         return;
       }
+    }
+
+    function showStaticNoticeModal(recipientName) {
+      const modal = document.getElementById('staticNoticeModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+      }
+    }
+
+    function closeStaticNoticeModal() {
+      const modal = document.getElementById('staticNoticeModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function openImportModal() {
+      const modal = document.getElementById('importTextModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.getElementById('importRawText').focus();
+        lucide.createIcons();
+      }
+    }
+
+    function closeImportModal() {
+      const modal = document.getElementById('importTextModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function parseTextContent(raw) {
+      const lines = raw.split(/\r?\n/);
+      let senderName = '', senderAddr = '';
+      let recipientName = '', recipientAddr = '';
+      let copyName = '', copyAddr = '';
+      let isInBody = false;
+      let bodyLines = [];
+
+      const cityCountyRegex = /(臺北市|台北市|新北市|桃園市|臺中市|台中市|臺南市|台南市|高雄市|基隆市|新竹市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義市|嘉義縣|屏東縣|宜蘭縣|花蓮縣|臺東縣|台東縣|澎湖縣|金門縣|連江縣)/;
+
+      function parseNameAddr(line) {
+        let cleaned = line.replace(/^[-\s*#]+\s*/, '').trim();
+        cleaned = cleaned.replace(/^(寄件人|收件人|副\s*本收件人|副本收件人|副本)[:：\s]\s*/, '').trim();
+        const m = cleaned.match(cityCountyRegex);
+        if (m) {
+          return [cleaned.substring(0, m.index).trim(), cleaned.substring(m.index).trim()];
+        }
+        const parts = cleaned.split(/\s+/);
+        if (parts.length >= 2) {
+          return [parts[0], parts.slice(1).join(' ')];
+        }
+        return [cleaned, ''];
+      }
+
+      for (let line of lines) {
+        const trimmed = line.trim();
+        if (!isInBody && /^[-\s*#]*內容[：:]/.test(trimmed)) {
+          isInBody = true;
+          const after = line.replace(/^[-\s*#]*內容[：:]\s*/, '');
+          if (after.trim()) bodyLines.push(after);
+          continue;
+        }
+        if (!isInBody) {
+          if (!trimmed) continue;
+          if (/^(寄件人|sender)/i.test(trimmed) || (!senderName && !trimmed.startsWith('- 收件人') && !trimmed.startsWith('- 副本'))) {
+            const [n, a] = parseNameAddr(trimmed);
+            if (!senderName) { senderName = n; senderAddr = a; continue; }
+          }
+          if (/^(收件人|recipient)/i.test(trimmed) || (senderName && !recipientName && !trimmed.startsWith('- 副本'))) {
+            const [n, a] = parseNameAddr(trimmed);
+            if (!recipientName) { recipientName = n; recipientAddr = a; continue; }
+          }
+          if (/^(副本|副\s*本收件人)/i.test(trimmed)) {
+            const [n, a] = parseNameAddr(trimmed);
+            copyName = n; copyAddr = a; continue;
+          }
+        } else {
+          if (trimmed) bodyLines.push(line);
+        }
+      }
+
+      return {
+        sender_name: senderName,
+        sender_addr: senderAddr,
+        recipient_name: recipientName,
+        recipient_addr: recipientAddr,
+        copy_recipient_name: copyName,
+        copy_recipient_addr: copyAddr,
+        content: bodyLines.join('\n')
+      };
+    }
+
+    function applyImportedText() {
+      const raw = document.getElementById('importRawText').value;
+      if (!raw.trim()) {
+        alert('請先貼上或輸入文字！');
+        return;
+      }
+      const data = parseTextContent(raw);
+      if (data.sender_name) document.getElementById('senderName').value = data.sender_name;
+      if (data.sender_addr) document.getElementById('senderAddr').value = data.sender_addr;
+      if (data.recipient_name) document.getElementById('recipientName').value = data.recipient_name;
+      if (data.recipient_addr) document.getElementById('recipientAddr').value = data.recipient_addr;
+      if (data.copy_recipient_name) document.getElementById('copyRecipientName').value = data.copy_recipient_name;
+      if (data.copy_recipient_addr) document.getElementById('copyRecipientAddr').value = data.copy_recipient_addr;
+      if (data.content) {
+        document.getElementById('letterContent').value = data.content;
+        document.getElementById('letterSubject').value = '';
+      }
+      closeImportModal();
+      updatePreview();
+    }
+
+    function handleFileImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('importRawText').value = e.target.result;
+      };
+      reader.readAsText(file, 'utf-8');
     }
 
     function escapeHtml(text) {
@@ -750,5 +879,106 @@
       });
     }
   </script>
+
+  <!-- 純靜態環境 PDF 下載指引彈窗 -->
+  <div id="staticNoticeModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center space-x-3 text-amber-700">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+          <i data-lucide="file-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-serif font-bold text-base text-slate-900">官方標準存證信函已成功下載！</h3>
+          <p class="text-xs text-slate-500">中華郵政官方 ODT 範本原檔無損填寫</p>
+        </div>
+      </div>
+      
+      <div class="bg-amber-50/60 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-2">
+        <div class="font-bold flex items-center space-x-1">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+          <span>已為您下載 100% 官方標準規格之 <code class="bg-amber-100 px-1 py-0.5 rounded font-mono">.odt</code> 檔案</span>
+        </div>
+        <p class="text-[11px] text-slate-600 leading-relaxed">
+          本系統直接採用郵局官方《郵局存證信函用紙.ott檔.odt》進行原生資料填入，每頁10行×20格，完全未動到官方版型與格線規格。
+        </p>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 space-y-1.5">
+        <div class="font-bold text-slate-900 flex items-center space-x-1">
+          <i data-lucide="help-circle" class="w-4 h-4 text-blue-600"></i>
+          <span>如何取得官方最權威之法定 PDF？</span>
+        </div>
+        <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600 leading-relaxed">
+          <li>以 <b>LibreOffice</b> 或 <b>Microsoft Word</b> 開啟剛下載的 <code class="font-mono">.odt</code> 檔案。</li>
+          <li>點選工具列中的 <b>「檔案 ➔ 匯出為 ➔ 匯出為 PDF」</b>（或直接另存為 PDF）。</li>
+          <li>即可取得排版分毫不差、字級完美的正式存證信函 PDF。</li>
+        </ol>
+        <p class="text-[10px] text-red-600 font-medium pt-1">
+          ⚠️ 提示：請勿使用瀏覽器網頁列印，瀏覽器列印會縮放破壞郵局指定之標準稿紙比例。
+        </p>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="closeStaticNoticeModal()" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-sm">
+          我知道了，關閉視窗
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 純文字批次匯入彈窗 (相容原 py 格式) -->
+  <div id="importTextModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2 text-slate-900">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-serif font-bold text-sm">純文字匯入存證信函欄位</h3>
+            <p class="text-[11px] text-slate-500">完全相容 fill_legal_letter 腳本的純文字格式</p>
+          </div>
+        </div>
+        <button onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-slate-700">請貼上純文字內容或選擇檔案：</label>
+          <label class="cursor-pointer text-[11px] text-blue-600 hover:text-blue-800 flex items-center space-x-1 font-medium">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>選取純文字檔 (.txt)</span>
+            <input type="file" accept=".txt,.md,text/*" onchange="handleFileImport(event)" class="hidden">
+          </label>
+        </div>
+        <textarea 
+          id="importRawText" 
+          rows="10" 
+          placeholder="格式範例：
+寄件人 張三 台北市中正區忠孝西路一段1號
+收件人 李四 高雄市新興區中正三路2號
+副本 王五 台中市西區台灣大道二段3號 (選填)
+內容：
+查台端前於民國一百一十五年一月一日向本人借款..."
+          class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-xs font-mono text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white leading-relaxed"
+        ></textarea>
+        <p class="text-[10px] text-slate-500">
+          系統將自動辨識寄件人、收件人、副本及內文段落，並將資料填入存證信函各對應欄位。
+        </p>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button onclick="closeImportModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 transition">
+          取消
+        </button>
+        <button onclick="applyImportedText()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm flex items-center space-x-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          <span>解析並帶入欄位</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
