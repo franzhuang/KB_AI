@@ -265,6 +265,9 @@ async function generateOfficialOdtBlob(data, fontSize = null, keepBlankPages = f
   const newXmlText = fillOdtXmlDoc(doc, data, fontSize, keepBlankPages);
   zip.file('content.xml', newXmlText);
 
+  // 確保 mimetype 以 STORE (無壓縮, 壓縮比 0) 存入，嚴格符合 ODF 國際規範
+  zip.file('mimetype', 'application/vnd.oasis.opendocument.text', { compression: 'STORE' });
+
   const blob = await zip.generateAsync({
     type: 'blob',
     mimeType: 'application/vnd.oasis.opendocument.text',
