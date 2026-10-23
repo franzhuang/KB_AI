@@ -10,9 +10,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Noto+Serif+TC:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="jszip.min.js?v=20261023_1001"></script>
-  <script src="legal_letter_template_b64.js?v=20261023_1001"></script>
-  <script src="legal_letter_odt_engine.js?v=20261023_1001"></script>
+  <script src="jszip.min.js?v=20261023_1015"></script>
+  <script src="legal_letter_template_b64.js?v=20261023_1015"></script>
+  <script src="legal_letter_odt_engine.js?v=20261023_1015"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -397,14 +397,14 @@
         <div class="light-card p-4 rounded-2xl flex items-center justify-between gap-3 border-amber-200 bg-amber-50/30">
           <div class="text-xs text-slate-700">
             <span class="font-bold text-amber-900">準備匯出官方文件</span>
-            <p class="text-[11px] text-slate-500">即時產生標準 ODT 與 PDF 格式</p>
+            <p class="text-[11px] text-slate-500">官方標準 ODT 原檔無損填寫</p>
           </div>
           <div class="flex items-center space-x-2">
-            <button onclick="downloadLetter('odt')" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+            <button onclick="downloadLetter('odt')" class="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm" title="下載官方標準 ODT 檔 (推薦)">
               <i data-lucide="download" class="w-4 h-4"></i>
-              <span>匯出 ODT</span>
+              <span>匯出 ODT (推薦)</span>
             </button>
-            <button onclick="downloadLetter('pdf')" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+            <button onclick="downloadLetter('pdf')" class="px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm" title="若有後端服務可直接產出 PDF，靜態網頁將提供轉檔指引">
               <i data-lucide="file-down" class="w-4 h-4"></i>
               <span>匯出 PDF</span>
             </button>
@@ -721,27 +721,13 @@
           // 本機後端服務未啟動，處於靜態環境 (如 GitHub Pages)
         }
 
-        // 純靜態環境：自動下載官方標準 ODT 檔案，並彈出清楚說明引導
-        try {
-          const odtBlob = await generateOfficialOdtBlob(odtData, payload.font_size, payload.keep_blank_pages);
-          const url = window.URL.createObjectURL(odtBlob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `存證信函_${payload.recipient_name}.odt`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          window.URL.revokeObjectURL(url);
-
-          showStaticNoticeModal(payload.recipient_name);
-        } catch (e) {
-          alert('ODT 生成失敗: ' + e.message);
-        }
+        // 純靜態環境（如 GitHub Pages）：不私自下載 .odt，直接顯示說明彈窗引導使用者
+        showStaticNoticeModal();
         return;
       }
     }
 
-    function showStaticNoticeModal(recipientName) {
+    function showStaticNoticeModal() {
       const modal = document.getElementById('staticNoticeModal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -754,6 +740,11 @@
       if (modal) {
         modal.classList.add('hidden');
       }
+    }
+
+    function downloadOdtFromModal() {
+      closeStaticNoticeModal();
+      downloadLetter('odt');
     }
 
     function openImportModal() {
@@ -882,44 +873,48 @@
   <!-- 純靜態環境 PDF 下載指引彈窗 -->
   <div id="staticNoticeModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
-      <div class="flex items-center space-x-3 text-amber-700">
-        <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-          <i data-lucide="file-check" class="w-5 h-5"></i>
+      <div class="flex items-center space-x-3 text-slate-800 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="file-text" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="font-serif font-bold text-base text-slate-900">官方標準存證信函已成功下載！</h3>
-          <p class="text-xs text-slate-500">中華郵政官方 ODT 範本原檔無損填寫</p>
+          <h3 class="font-serif font-bold text-base text-slate-900">存證信函 PDF 匯出說明</h3>
+          <p class="text-xs text-slate-500">純靜態網頁環境與官方 100% 格式保障</p>
         </div>
       </div>
       
-      <div class="bg-amber-50/60 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-2">
-        <div class="font-bold flex items-center space-x-1">
-          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-          <span>已為您下載 100% 官方標準規格之 <code class="bg-amber-100 px-1 py-0.5 rounded font-mono">.odt</code> 檔案</span>
+      <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-2">
+        <div class="font-bold flex items-center space-x-1.5 text-amber-900">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+          <span>為什麼靜態網頁不使用「瀏覽器列印」輸出 PDF？</span>
         </div>
         <p class="text-[11px] text-slate-600 leading-relaxed">
-          本系統直接採用郵局官方《郵局存證信函用紙.ott檔.odt》進行原生資料填入，每頁10行×20格，完全未動到官方版型與格線規格。
+          中華郵政存證信函具有嚴格的法定稿紙規格（每頁 20 行 × 10 格）。瀏覽器的網頁列印會縮放邊界與字元間距，造成格線移位與格式破壞。為確保 <b>100% 官方標準格式絕不跑版</b>，本系統嚴禁採用網頁直接列印。
         </p>
       </div>
 
-      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 space-y-1.5">
-        <div class="font-bold text-slate-900 flex items-center space-x-1">
-          <i data-lucide="help-circle" class="w-4 h-4 text-blue-600"></i>
-          <span>如何取得官方最權威之法定 PDF？</span>
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 space-y-2">
+        <div class="font-bold text-slate-900 flex items-center space-x-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+          <span>如何取得最完美的正式 PDF？（推薦二步驟）</span>
         </div>
-        <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600 leading-relaxed">
-          <li>以 <b>LibreOffice</b> 或 <b>Microsoft Word</b> 開啟剛下載的 <code class="font-mono">.odt</code> 檔案。</li>
-          <li>點選工具列中的 <b>「檔案 ➔ 匯出為 ➔ 匯出為 PDF」</b>（或直接另存為 PDF）。</li>
-          <li>即可取得排版分毫不差、字級完美的正式存證信函 PDF。</li>
+        <ol class="list-decimal list-inside space-y-1.5 text-[11px] text-slate-600 leading-relaxed pl-1">
+          <li>點擊下方 <b>【立即下載官方標準 ODT】</b> 取得 100% 吻合郵局原檔規格之文件。</li>
+          <li>以 <b>LibreOffice</b> 或 <b>Microsoft Word</b> 開啟該 ODT 檔案。</li>
+          <li>點選工具列 <b>「檔案 ➔ 另存為 / 匯出為 PDF」</b>，即可取得分毫不差的完美法定 PDF！</li>
         </ol>
-        <p class="text-[10px] text-red-600 font-medium pt-1">
-          ⚠️ 提示：請勿使用瀏覽器網頁列印，瀏覽器列印會縮放破壞郵局指定之標準稿紙比例。
-        </p>
+        <div class="text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+          💡 若在本地端電腦啟動 <code>python3 app.py</code>，後端會自動調用本機 LibreOffice 直接一鍵產出 PDF。
+        </div>
       </div>
 
-      <div class="flex justify-end pt-2">
-        <button onclick="closeStaticNoticeModal()" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-sm">
-          我知道了，關閉視窗
+      <div class="flex items-center justify-end space-x-2 pt-2">
+        <button onclick="closeStaticNoticeModal()" class="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold transition">
+          關閉
+        </button>
+        <button onclick="downloadOdtFromModal()" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-sm flex items-center space-x-1.5">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>立即下載官方標準 ODT (.odt)</span>
         </button>
       </div>
     </div>
